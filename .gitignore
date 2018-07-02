@@ -65,3 +65,6 @@ target/
 
 # OSX
 .DS_Store
+
+# Firmware
+MicroPython_ESP32_psRAM_LoBo
