@@ -7,7 +7,7 @@ from setuptools import setup
 
 setup(
     name="py.garden",
-    version=version,
+    version='0.0.1',
     author="Thijs Triemstra",
     author_email="info@collab.nl",
     description="Python scripts for garden monitoring using ESP32",
