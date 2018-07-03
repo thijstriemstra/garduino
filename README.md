@@ -8,6 +8,7 @@ Checkout code:
 ```
 git clone https://github.com/thijstriemstra/py-garden.git
 cd py-garden
+```
 
 Install library and dependencies:
 
