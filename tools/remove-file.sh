@@ -6,4 +6,7 @@ if [ $# -eq 0 ]
     exit 1
 fi
 
-ampy --baud=$BAUD --port=$PORT --delay=$DELAY rmdir $1
+ampy --baud=$BAUD --port=$PORT --delay=$DELAY rm $1
+
+echo
+echo $1": OK " $(expr `date +%s` - $start_time)s

@@ -14,8 +14,10 @@ setup(
     license="MIT",
     keywords="esp32 micropython DS18B20 BH1750 raindrops soil detection rain sensor temperature moisture",
     url="https://github.com/thijstriemstra/py-garden",
+    packages=["pygarden"],
     install_requires=[
-        'pyserial'
+        'pyserial',
+        'adafruit-ampy'
     ],
     extras_require={
         'docs': [
