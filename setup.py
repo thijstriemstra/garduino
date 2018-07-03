@@ -17,7 +17,7 @@ setup(
     packages=["pygarden"],
     install_requires=[
         'pyserial',
-        'ampy'
+        'adafruit-ampy'
     ],
     extras_require={
         'docs': [
