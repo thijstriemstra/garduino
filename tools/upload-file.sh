@@ -6,6 +6,9 @@ if [ $# -eq 0 ]
     exit 1
 fi
 
+echo "Uploading: "$1
+
 ampy --baud=$BAUD --port=$PORT --delay=$DELAY put $1
 
-echo $1': OK'
+echo
+echo $1": OK " $(expr `date +%s` - $start_time)s

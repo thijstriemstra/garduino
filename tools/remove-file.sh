@@ -8,4 +8,5 @@ fi
 
 ampy --baud=$BAUD --port=$PORT --delay=$DELAY rm $1
 
-echo $1': OK'
+echo
+echo $1": OK " $(expr `date +%s` - $start_time)s
