@@ -6,4 +6,6 @@ if [ $# -eq 0 ]
     exit 1
 fi
 
-ampy --baud=$BAUD --port=$PORT --delay=$DELAY rmdir $1
+ampy --baud=$BAUD --port=$PORT --delay=$DELAY rm $1
+
+echo $1': OK'
