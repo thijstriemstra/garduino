@@ -1,12 +1,11 @@
 from machine import deepsleep
 from network import STA_IF, WLAN
 
+from pygarden.util import MQTTClient
 from pygarden.sensor.soil import SoilSensor
 from pygarden.sensor.rain import RainSensor
 from pygarden.sensor.light import LightSensor
 from pygarden.sensor.temperature import TemperatureSensor
-
-from umqtt.robust import MQTTClient
 
 
 __all__ = ['Application', 'run']
@@ -80,7 +79,7 @@ class Application(object):
             client_id=self.client_id,
             server=self.server,
             user=self.user,
-            password=self.password,
+            password=self.password
         )
         self.client.connect()
 

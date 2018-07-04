@@ -38,11 +38,11 @@ class RainSensor(object):
 
     def publish(self, client):
         sensorValue = self.read()
-        val = str(100 - (sensorValue / (MAX_VALUE / 100)))
+        msg = str(100 - (sensorValue / (MAX_VALUE / 100)))
 
-        print("* Rain: {}% on topic '{}'".format(val, self.topic))
+        print("* Rain: {}% on topic '{}'".format(msg, self.topic))
 
-        client.publish(self.topic, val)
+        client.publish(self.topic, msg)
 
     def start(self):
         while True:

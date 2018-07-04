@@ -55,3 +55,51 @@ def setup_rtc(scl_pin, sda_pin):
     
     print('Local time: {}'.format('TODO'))
     print('#' * 30)
+
+
+DEFAULT = 'default'
+
+class MQTTClient(object):
+    def __init__(self, client_id, server, user=None, password=None,
+                 ctype=DEFAULT):
+        self.client_id = client_id
+        self.server = server
+        self.user = user
+        self.password = password
+
+        if ctype == DEFAULT:
+            from network import mqtt
+            self.client = mqtt(self.client_id, 'mqtt://' + self.server,
+                user=self.user, password=self.password, cleansession=True,
+                connected_cb=self.connected, disconnected_cb=self.disconnected,
+                published_cb=self.published)
+
+        else:
+            from umqtt.robust import MQTTClient
+            self.client = MQTTClient(
+                client_id=self.client_id,
+                server=self.server,
+                user=self.user,
+                password=self.password
+            )
+
+    def connect(self):
+        if ctype == DEFAULT:
+            self.client.start()
+        else:
+            self.client.connect()
+
+    def disconnect(self):
+        if ctype == DEFAULT:
+            self.client.free()
+        else:
+            self.client.disconnect()
+
+    def connected(self, task):
+        print("[{}] Connected".format(task))
+
+    def disconnected(self, task):
+        print("[{}] Disconnected".format(task))
+
+    def published(self, pub):
+        print("[{}] Published: {}".format(pub[0], pub[1]))
