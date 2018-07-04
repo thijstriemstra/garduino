@@ -43,7 +43,7 @@ def setup_rtc(scl_pin, sda_pin):
     Pull time from RTC at startup.
     """
     from machine import I2C
-    from pygarden.ds3231 import DS3231
+    from pygarden.lib.ds3231 import DS3231
 
     print('#' * 30)
     print('Realtime clock: SDA pin {} and SCL pin {}'.format(

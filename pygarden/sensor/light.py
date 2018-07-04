@@ -1,6 +1,6 @@
 from machine import I2C
 
-from pygarden.bh1750 import BH1750
+from pygarden.lib.bh1750 import BH1750
 
 
 __all__ = ['LightSensor']
