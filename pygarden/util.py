@@ -2,6 +2,12 @@
 Utilities.
 """
 
+from machine import I2C
+from network import WLAN, STA_IF
+
+
+DEFAULT = 'default'
+
 
 def get_config(fname='settings.conf'):
     """
@@ -19,8 +25,6 @@ def setup_network(ssid, password):
     """
     Create WIFI network connection.
     """
-    from network import WLAN, STA_IF
-
     sta_if = WLAN(STA_IF)
     if not sta_if.isconnected():
         print('Connecting to {} network...'.format(ssid))
@@ -42,7 +46,6 @@ def setup_rtc(scl_pin, sda_pin):
     """
     Pull time from RTC at startup.
     """
-    from machine import I2C
     from pygarden.lib.ds3231 import DS3231
 
     print('#' * 30)
@@ -52,12 +55,13 @@ def setup_rtc(scl_pin, sda_pin):
     i2c = I2C(id=0, scl=scl_pin, sda=sda_pin)
     d = DS3231(i2c)
     d.get_time(set_rtc=True)
-    
+
+    # cleanup
+    i2c.deinit()
+
     print('Local time: {}'.format('TODO'))
     print('#' * 30)
 
-
-DEFAULT = 'default'
 
 class MQTTClient(object):
     def __init__(self, client_id, server, user=None, password=None,

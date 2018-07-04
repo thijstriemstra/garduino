@@ -19,4 +19,4 @@ application = Application(
 )
 
 # start app
-application.start()
+# application.start()
