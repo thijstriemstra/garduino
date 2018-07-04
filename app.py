@@ -9,7 +9,7 @@ from pygarden.sensor.temperature import TemperatureSensor
 from umqtt.robust import MQTTClient
 
 
-__all__ = ['Application', 'main']
+__all__ = ['Application', 'run']
 
 
 class Application(object):
@@ -135,7 +135,7 @@ class Application(object):
         print()
 
 
-def main(interval, user, password, server, device_id):
+def run(interval, user, password, server, device_id):
     """
     Create and return application.
     """

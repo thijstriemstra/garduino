@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 
-from app import main
+from app import run as Application
 
-__all__ = ['app']
+__all__ = ['application']
 
 
 print()
 print('Loading application...')
 print()
 
-# application
-app = main(
+# create application
+application = Application(
     interval=int(cfg.get('general', 'interval')),
     user=cfg.get('broker', 'user'),
     password=cfg.get('broker', 'password'),
@@ -18,5 +18,5 @@ app = main(
     device_id=cfg.get('broker', 'device_id')
 )
 
-# start
-app.start()
+# start app
+application.start()
