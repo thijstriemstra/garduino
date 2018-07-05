@@ -1,3 +1,6 @@
+#!/bin/bash
+set -e
+
 source tools/shared.sh
 
 if [ $# -eq 0 ]

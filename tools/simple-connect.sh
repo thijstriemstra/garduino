@@ -1,3 +1,6 @@
+#!/bin/bash
+set -e
+
 echo 'Press CTRL-] to exit.'
 
 source tools/shared.sh
