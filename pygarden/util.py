@@ -52,7 +52,7 @@ def setup_rtc(scl_pin, sda_pin):
     print('Realtime clock: SDA pin {} and SCL pin {}'.format(
         sda_pin, scl_pin))
 
-    i2c = I2C(id=0, scl=scl_pin, sda=sda_pin)
+    i2c = I2C(id=1, scl=scl_pin, sda=sda_pin)
     d = DS3231(i2c)
     d.get_time(set_rtc=True)
 
@@ -64,14 +64,18 @@ def setup_rtc(scl_pin, sda_pin):
 
 
 class MQTTClient(object):
-    def __init__(self, client_id, server, user=None, password=None,
-                 ctype=DEFAULT):
+    """
+    """
+    def __init__(self, client_id, server, connected_cb,
+                 user=None, password=None, ctype=DEFAULT):
         self.client_id = client_id
         self.server = server
         self.user = user
         self.password = password
+        self.ctype = ctype
+        self.connected_cb = connected_cb
 
-        if ctype == DEFAULT:
+        if self.ctype == DEFAULT:
             from network import mqtt
             self.client = mqtt(self.client_id, 'mqtt://' + self.server,
                 user=self.user, password=self.password, cleansession=True,
@@ -88,19 +92,21 @@ class MQTTClient(object):
             )
 
     def connect(self):
-        if ctype == DEFAULT:
+        if self.ctype == DEFAULT:
             self.client.start()
         else:
             self.client.connect()
 
     def disconnect(self):
-        if ctype == DEFAULT:
+        if self.ctype == DEFAULT:
             self.client.free()
         else:
             self.client.disconnect()
 
     def connected(self, task):
         print("[{}] Connected".format(task))
+
+        self.connected_cb(task)
 
     def disconnected(self, task):
         print("[{}] Disconnected".format(task))
