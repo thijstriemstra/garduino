@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from app import run as Application
+from app import run as Application, create_sensors
 
+print()
 print('Loading application...')
 print()
 
@@ -11,9 +12,10 @@ application = Application(
     user=cfg.get('broker', 'user'),
     password=cfg.get('broker', 'password'),
     server=cfg.get('broker', 'server'),
-    device_id=cfg.get('broker', 'device_id')
+    device_id=cfg.get('broker', 'device_id'),
+    sensors=create_sensors(cfg)
 )
-del Application
+del Application, create_sensors
 
 # start app
 # application.start()

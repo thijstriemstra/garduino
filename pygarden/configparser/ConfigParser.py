@@ -112,7 +112,6 @@ class ConfigParser:
                 fp.write('\n')
             fp.write('\n')
 
-
     def remove_option(self, section, option):
         """Remove an option."""
         if not self.has_section(section) \

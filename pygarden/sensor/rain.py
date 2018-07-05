@@ -30,9 +30,6 @@ class RainSensor(object):
         self.pin.atten(self.pin.ATTN_11DB)  # Full Scale: 3.3v
         self.pin.width(self.pin.WIDTH_12BIT)  # Set the 12-bit data width
 
-        print("Rain sensor {} is using analog pin {} and topic '{}'".format(
-            self.label, self.pin_nr, self.topic))
-
     def read(self):
         return self.pin.read()
 
@@ -56,3 +53,7 @@ class RainSensor(object):
 
     def destroy(self):
         self.pin.deinit()
+
+    def __repr__(self, *args, **kwargs):
+        return 'RainSensor [label={} pin={}]'.format(
+            self.label, self.pin_nr)

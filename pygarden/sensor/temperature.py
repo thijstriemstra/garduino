@@ -48,15 +48,11 @@ class TemperatureSensor(object):
         self.addrs = [self.ds1, self.ds2]
         if not self.addrs:
             raise TemperatureSensorNotFound(
-                'No DS18B20 found at bus on pin %d' % self.pin_nr)
+                'No temperature sensor found at bus on pin %d' % self.pin_nr)
 
         # internal sensor
         self.is1 = InternalTemperatureSensor()
         self.addrs.append(self.is1)
-
-        for index, addr in enumerate(self.addrs):
-            print("Temperature sensor {} is using pin {} and topic '{}'".format(
-                index, self.pin_nr, self.topic.format(addr.rom_code())))
 
     def read(self):
         """
@@ -90,3 +86,7 @@ class TemperatureSensor(object):
         self.ds1.deinit()
         self.ds2.deinit()
         self.ow.deinit()
+
+    def __repr__(self, *args, **kwargs):
+        return 'TemperatureSensor [devices={} pin={}]'.format(
+            len(self.addrs), self.pin_nr)

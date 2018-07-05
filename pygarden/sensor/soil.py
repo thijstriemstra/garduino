@@ -22,7 +22,8 @@ class SoilSensor(object):
     """
     prev = 0
 
-    def __init__(self, label='1', pin_nr=32, topic='devices/{}/soil/{}/percentage',
+    def __init__(self, label='1', pin_nr=32,
+                 topic='devices/{}/soil/{}/percentage',
                  client_id=None):
         self.label = label
         self.pin_nr = pin_nr
@@ -31,9 +32,6 @@ class SoilSensor(object):
         self.pin = ADC(Pin(pin_nr))
         self.pin.atten(self.pin.ATTN_11DB)  # Full Scale: 3.3v
         self.pin.width(self.pin.WIDTH_12BIT)  # Set the 12-bit data width
-
-        print("Soil sensor {} is using analog pin {} and topic '{}'".format(
-            self.label, self.pin_nr, self.topic))
 
     def read(self):
         return self.pin.read()
@@ -57,3 +55,7 @@ class SoilSensor(object):
 
     def destroy(self):
         self.pin.deinit()
+
+    def __repr__(self, *args, **kwargs):
+        return 'SoilSensor [label={} pin={}]'.format(
+            self.label, self.pin_nr)

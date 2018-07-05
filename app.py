@@ -2,68 +2,37 @@ from machine import deepsleep
 from network import STA_IF, WLAN
 
 from pygarden.mqtt import MQTTClient
-from pygarden.sensor.soil import SoilSensor
-from pygarden.sensor.light import LightSensor
-from pygarden.sensor.temperature import TemperatureSensor
 
 
-__all__ = ['run']
+__all__ = ['run', 'create_sensors']
 
 
 class Application(object):
-    def __init__(self, client_id, server, interval=60,
+    def __init__(self, client_id, server, sensors, interval=60,
                  user=None, password=None):
         """
         :param client_id: Unique MQTT client ID
         :type client_id: str
         :param server: MQTT broker IP/hostname
         :type server: str
+        :param sensors: List of sensors objects.
+        :type sensors: list
         :param interval: How often to publish data
         :type interval: int
         """
         self.client_id = client_id
         self.server = server
+        self.sensors = sensors
         self.user = user
         self.password = password
         self.interval = interval
 
-        # setup sensors
-        print('=' * 80)
-        print()
-        self.soil_sensor1 = SoilSensor(
-            label='1',
-            pin_nr=32,
-            client_id=self.client_id
-        )
-        self.soil_sensor2 = SoilSensor(
-            label='2',
-            pin_nr=33,
-            client_id=self.client_id
-        )
-        """self.rain_sensor = RainSensor(
-            label='1',
-            pin_nr=35,
-            client_id=self.client_id
-        )"""
-        self.temp_sensor = TemperatureSensor(
-            pin_nr=23,
-            client_id=self.client_id
-        )
-        self.light_sensor = LightSensor(
-            i2c_id=0,
-            sda_pin=15,
-            scl_pin=2,
-            client_id=self.client_id
-        )
-        print()
-        print('=' * 80)
-
-        self.sensors = [self.soil_sensor1, self.soil_sensor2,
-            self.temp_sensor, self.light_sensor]
-
-        print()
-        print('Application ready: using {} sensors.'.format(
+        print('Application ready - using {} sensors'.format(
             len(self.sensors)))
+        if len(sensors) > 0:
+            print()
+            for sensor in self.sensors:
+                print(' - {}'.format(sensor))
         print()
 
     def start(self):
@@ -94,6 +63,7 @@ class Application(object):
         # close connection
         self.client.disconnect()
 
+        # go to sleep
         self.sleep()
 
     def sleep(self):
@@ -105,7 +75,7 @@ class Application(object):
 
     def stop(self):
         """
-        Stop publishing and destroy sensors.
+        Destroy sensors.
         """
         print('Destroying {} sensors...'.format(len(self.sensors)))
 
@@ -134,7 +104,65 @@ class Application(object):
         print()
 
 
-def run(interval, user, password, server, device_id):
+def isEnabled(cfg, section):
+    return cfg.has_section(section) and (
+        str(cfg.get(section, 'enabled')).lower() != 'false')
+
+
+def create_sensors(cfg):
+    """
+    """
+    sensors = []
+    device_id = cfg.get('broker', 'device_id')
+
+    # temperature
+    if isEnabled(cfg, 'temperature'):
+        from pygarden.sensor.temperature import TemperatureSensor
+
+        temp_sensor = TemperatureSensor(
+            pin_nr=int(cfg.get('temperature', 'pin')),
+            client_id=device_id
+        )
+        sensors.append(temp_sensor)
+
+    # light
+    if isEnabled(cfg, 'light'):
+        from pygarden.sensor.light import LightSensor
+
+        light_sensor = LightSensor(
+            i2c_id=int(cfg.get('light', 'i2c_id')),
+            sda_pin=int(cfg.get('light', 'sda_pin')),
+            scl_pin=int(cfg.get('light', 'scl_pin')),
+            client_id=device_id
+        )
+        sensors.append(light_sensor)
+
+    # soil
+    if isEnabled(cfg, 'soil'):
+        from pygarden.sensor.soil import SoilSensor
+        for index, pin_nr in enumerate(cfg.get('soil', 'pin_nrs').split(',')):
+            soil_sensor = SoilSensor(
+                label=str(index),
+                pin_nr=int(pin_nr),
+                client_id=device_id
+            )
+            sensors.append(soil_sensor)
+
+    # rain
+    if isEnabled(cfg, 'rain'):
+        from pygarden.sensor.rain import RainSensor
+        for index, pin_nr in enumerate(cfg.get('rain', 'pin_nrs').split(',')):
+            rain_sensor = RainSensor(
+                label=str(index),
+                pin_nr=int(pin_nr),
+                client_id=device_id
+            )
+            sensors.append(rain_sensor)
+
+    return sensors
+
+
+def run(interval, user, password, server, device_id, sensors):
     """
     Create and return application.
     """
@@ -161,6 +189,7 @@ def run(interval, user, password, server, device_id):
     return Application(
         client_id=device_id,
         server=server,
+        sensors=sensors,
         interval=interval,
         user=user,
         password=password
