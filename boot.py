@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from pygarden import util
+
 print("""
  ____  __.  _____    _________
 |    |/ _| /  _  \  /   _____/
@@ -10,7 +12,6 @@ print("""
 )
 
 # load configuration file
-from pygarden import util
 cfg = util.get_config()
 
 # create network connection
