@@ -12,7 +12,7 @@ class InternalTemperatureSensor(object):
     """
     Represents the internal ESP32 temperature sensor.
     """
-    def read_temp(self):
+    def convert_read(self):
         return internal_temp()[1]
 
     def rom_code(self):
@@ -23,9 +23,11 @@ class TemperatureSensor(object):
     """
     Represents a collection of DS18X20 temperature sensors.
     """
-    def __init__(self, pin_nr=23, topic='devices/{}/temperature/{}/celsius', client_id=None):
+    def __init__(self, pin_nr=23, topic='devices/{}/temperature/{}/celsius',
+                 client_id=None):
         """
-        Finds address of one or more DS18B20 sensors on bus specified by ``pin``.
+        Finds address of one or more DS18B20 sensors on bus specified by
+        ``pin``.
 
         :param pin: 1-Wire bus pin
         :type pin: int
@@ -65,7 +67,7 @@ class TemperatureSensor(object):
         """
         temps = []
         for ds in self.addrs:
-            temp = ds.read_temp()
+            temp = ds.convert_read()
             addr = ds.rom_code()
             temps.append({
                 'address': addr,
