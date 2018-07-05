@@ -36,20 +36,21 @@ def setup_network(ssid, password):
     print('IP: {}'.format(ncfg[0]))
     print('Router: {}'.format(ncfg[2]))
     print('DNS: {}'.format(ncfg[3]))
+    print('--------------')
     print()
 
 
-def setup_rtc(scl_pin, sda_pin):
+def setup_rtc(i2c_id, scl_pin, sda_pin):
     """
     Pull time from RTC at startup.
     """
     from pygarden.lib.ds3231 import DS3231
 
     print('#' * 30)
-    print('Realtime clock: SDA pin {} and SCL pin {}'.format(
-        sda_pin, scl_pin))
+    print('Realtime clock: bus {} with SDA pin {} and SCL pin {}'.format(
+        i2c_id, sda_pin, scl_pin))
 
-    i2c = I2C(id=1, scl=scl_pin, sda=sda_pin)
+    i2c = I2C(id=i2c_id, scl=scl_pin, sda=sda_pin, mode=I2C.MASTER)
     d = DS3231(i2c)
     d.get_time(set_rtc=True)
 

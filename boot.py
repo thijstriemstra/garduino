@@ -22,6 +22,7 @@ util.setup_network(
 
 # setup realtime clock
 util.setup_rtc(
+    i2c_id=1,
     scl_pin=int(cfg.get('rtc', 'scl_pin')),
     sda_pin=int(cfg.get('rtc', 'sda_pin'))
 )

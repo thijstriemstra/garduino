@@ -1,14 +1,13 @@
 from machine import deepsleep
 from network import STA_IF, WLAN
 
-from pygarden.util import MQTTClient
+from pygarden.mqtt import MQTTClient
 from pygarden.sensor.soil import SoilSensor
-from pygarden.sensor.rain import RainSensor
 from pygarden.sensor.light import LightSensor
 from pygarden.sensor.temperature import TemperatureSensor
 
 
-__all__ = ['Application', 'run']
+__all__ = ['run']
 
 
 class Application(object):
@@ -41,26 +40,26 @@ class Application(object):
             pin_nr=33,
             client_id=self.client_id
         )
-        self.rain_sensor = RainSensor(
+        """self.rain_sensor = RainSensor(
             label='1',
             pin_nr=35,
             client_id=self.client_id
-        )
+        )"""
         self.temp_sensor = TemperatureSensor(
             pin_nr=23,
             client_id=self.client_id
         )
         self.light_sensor = LightSensor(
-            i2c_id=1,
-            sda_pin=16,
-            scl_pin=17,
+            i2c_id=0,
+            sda_pin=15,
+            scl_pin=2,
             client_id=self.client_id
         )
         print()
         print('=' * 80)
 
         self.sensors = [self.soil_sensor1, self.soil_sensor2,
-            self.rain_sensor, self.light_sensor, self.temp_sensor]
+            self.temp_sensor, self.light_sensor]
 
         print()
         print('Application ready: using {} sensors.'.format(
@@ -79,10 +78,12 @@ class Application(object):
             client_id=self.client_id,
             server=self.server,
             user=self.user,
-            password=self.password
+            password=self.password,
+            connected_cb=self.connected
         )
         self.client.connect()
 
+    def connected(self, task):
         print('Connection: OK')
         print('-' * 40)
         print()
@@ -93,7 +94,6 @@ class Application(object):
         # close connection
         self.client.disconnect()
 
-        # go into deep sleep for a while
         self.sleep()
 
     def sleep(self):
@@ -125,7 +125,7 @@ class Application(object):
         print()
 
         for sensor in self.sensors:
-            sensor.publish(self.client)
+            sensor.publish(self.client.client)
 
         print()
         print('*' * 20)

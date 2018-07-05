@@ -2,10 +2,6 @@
 
 from app import run as Application
 
-__all__ = ['application']
-
-
-print()
 print('Loading application...')
 print()
 
@@ -17,6 +13,7 @@ application = Application(
     server=cfg.get('broker', 'server'),
     device_id=cfg.get('broker', 'device_id')
 )
+del Application
 
 # start app
 # application.start()
