@@ -9,8 +9,10 @@ import machine
 import sys
 DS3231_I2C_ADDR = 104
 
+
 class DS3231Exception(OSError):
     pass
+
 
 if sys.platform == 'pyboard':
     import pyb
@@ -22,15 +24,19 @@ else:
         print('warning: machine module does not support the RTC.')
         rtc = None
 
+
 def bcd2dec(bcd):
     return (((bcd & 0xf0) >> 4) * 10 + (bcd & 0x0f))
+
 
 def dec2bcd(dec):
     tens, units = divmod(dec, 10)
     return (tens << 4) + units
 
+
 def tobytes(num):
     return num.to_bytes(1, 'little')
+
 
 class DS3231:
     def __init__(self, i2c):
