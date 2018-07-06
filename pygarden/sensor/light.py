@@ -14,14 +14,14 @@ class LightSensor(object):
     """
     Represents a light sensor.
     """
-    def __init__(self, i2c_id=0, sda_pin=16, scl_pin=17,
-                 topic='devices/{}/light/lux', client_id=None):
+    def __init__(self, i2c_id=0, sda_pin=16, scl_pin=17, topic='light/lux'):
         self.i2c_id = i2c_id
         self.sda_pin = sda_pin
         self.scl_pin = scl_pin
+        self.topic = topic
 
-        self.topic = topic.format(client_id)
-        self.i2c = I2C(id=self.i2c_id, scl=self.scl_pin, sda=self.sda_pin, mode=I2C.MASTER)
+        self.i2c = I2C(id=self.i2c_id, scl=self.scl_pin, sda=self.sda_pin,
+                       mode=I2C.MASTER)
         self.addrs = self.i2c.scan()
 
         if not self.addrs:

@@ -23,17 +23,19 @@ class TemperatureSensor(object):
     """
     Represents a collection of DS18X20 temperature sensors.
     """
-    def __init__(self, pin_nr=23, topic='devices/{}/temperature/{}/celsius',
-                 client_id=None):
+    def __init__(self, pin_nr=23, roms={}, topic='temperature/{}/celsius'):
         """
         Finds address of one or more DS18B20 sensors on bus specified by
         ``pin``.
 
-        :param pin: 1-Wire bus pin
-        :type pin: int
+        :param pin_nr: 1-Wire bus pin
+        :type pin_nr: int
+        :param roms:
+        :type roms: dict
         """
         self.pin_nr = pin_nr
-        self.topic = topic.format(client_id, '{}')
+        self.roms = roms
+        self.topic = topic
 
         try:
             self.ow = Onewire(self.pin_nr)
@@ -54,6 +56,16 @@ class TemperatureSensor(object):
         self.is1 = InternalTemperatureSensor()
         self.addrs.append(self.is1)
 
+        # labels
+        c1 = self.ds1.rom_code()
+        c2 = self.ds2.rom_code()
+        c3 = 'internal'
+        self.labels = {
+            c1: self.roms[c1],
+            c2: self.roms[c2],
+            c3: c3
+        }
+
     def read(self):
         """
         Reads temperature from sensors.
@@ -65,9 +77,11 @@ class TemperatureSensor(object):
         for ds in self.addrs:
             temp = ds.convert_read()
             addr = ds.rom_code()
+            label = self.labels[addr]
             temps.append({
                 'address': addr,
-                'temperature': temp
+                'temperature': temp,
+                'label': label
             })
 
         return temps
@@ -75,12 +89,12 @@ class TemperatureSensor(object):
     def publish(self, client):
         sensorValue = self.read()
         for sensor in sensorValue:
-            addr = sensor['address']
-            val = str(sensor['temperature'])
-            tpc = self.topic.format(addr)
+            label = sensor['label']
+            msg = str(sensor['temperature'])
+            tpc = self.topic.format(label)
             print("* Temperature {}: {} on topic '{}'".format(
-                addr, val, tpc))
-            client.publish(tpc, val)
+                label, msg, tpc))
+            client.publish(tpc, msg)
 
     def destroy(self):
         self.ds1.deinit()

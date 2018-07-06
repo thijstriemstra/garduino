@@ -22,12 +22,10 @@ class SoilSensor(object):
     """
     prev = 0
 
-    def __init__(self, label='1', pin_nr=32,
-                 topic='devices/{}/soil/{}/percentage',
-                 client_id=None):
+    def __init__(self, label='1', pin_nr=32, topic='soil/{}/percentage'):
         self.label = label
         self.pin_nr = pin_nr
-        self.topic = 'devices/{}/soil/'.format(client_id) + '{}/percentage'.format(self.label)
+        self.topic = topic
 
         self.pin = ADC(Pin(pin_nr))
         self.pin.atten(self.pin.ATTN_11DB)  # Full Scale: 3.3v
@@ -38,10 +36,10 @@ class SoilSensor(object):
 
     def publish(self, client):
         sensorValue = self.read()
-        val = str(sensorValue / (MAX_VALUE / 100))
+        msg = str(sensorValue / (MAX_VALUE / 100))
         print("* Soil {}: {}% on topic '{}'".format(
-            self.label, val, self.topic))
-        client.publish(self.topic, val)
+            self.label, msg, self.topic))
+        client.publish(self.topic, msg)
 
     def start(self):
         while True:
