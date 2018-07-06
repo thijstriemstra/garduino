@@ -1,3 +1,6 @@
+#!/bin/bash
+set -e
+
 source tools/shared.sh
 
 export firmware=esp32-20180511-v1.9.4.bin

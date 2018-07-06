@@ -1,71 +1,40 @@
 from machine import deepsleep
 from network import STA_IF, WLAN
 
-from pygarden.sensor.soil import SoilSensor
-from pygarden.sensor.rain import RainSensor
-from pygarden.sensor.light import LightSensor
-from pygarden.sensor.temperature import TemperatureSensor
-
-from umqtt.robust import MQTTClient
+from pygarden.mqtt import MQTTClient
 
 
-__all__ = ['Application', 'main']
+__all__ = ['run']
 
 
 class Application(object):
-    def __init__(self, client_id, server, interval=60,
+    def __init__(self, client_id, server, cfg, interval=60,
                  user=None, password=None):
         """
         :param client_id: Unique MQTT client ID
         :type client_id: str
         :param server: MQTT broker IP/hostname
         :type server: str
+        :param cfg:
         :param interval: How often to publish data
         :type interval: int
         """
         self.client_id = client_id
         self.server = server
+        self.cfg = cfg
         self.user = user
         self.password = password
         self.interval = interval
+        self.main_topic = self.cfg.get('general', 'base_topic') + '/' + self.client_id + '/'
 
-        # setup sensors
-        print('=' * 80)
-        print()
-        self.soil_sensor1 = SoilSensor(
-            label='1',
-            pin_nr=32,
-            client_id=self.client_id
-        )
-        self.soil_sensor2 = SoilSensor(
-            label='2',
-            pin_nr=33,
-            client_id=self.client_id
-        )
-        self.rain_sensor = RainSensor(
-            label='1',
-            pin_nr=35,
-            client_id=self.client_id
-        )
-        self.temp_sensor = TemperatureSensor(
-            pin_nr=23,
-            client_id=self.client_id
-        )
-        self.light_sensor = LightSensor(
-            i2c_id=1,
-            sda_pin=16,
-            scl_pin=17,
-            client_id=self.client_id
-        )
-        print()
-        print('=' * 80)
-
-        self.sensors = [self.soil_sensor1, self.soil_sensor2,
-            self.rain_sensor, self.light_sensor, self.temp_sensor]
-
-        print()
-        print('Application ready: using {} sensors.'.format(
+        # create sensors
+        self.sensors = self.create_sensors()
+        print('Application ready - using {} sensors'.format(
             len(self.sensors)))
+        if len(self.sensors) > 0:
+            print()
+            for sensor in self.sensors:
+                print(' - {}'.format(sensor))
         print()
 
     def start(self):
@@ -81,9 +50,11 @@ class Application(object):
             server=self.server,
             user=self.user,
             password=self.password,
+            connected_cb=self.connected
         )
         self.client.connect()
 
+    def connected(self, task):
         print('Connection: OK')
         print('-' * 40)
         print()
@@ -94,7 +65,7 @@ class Application(object):
         # close connection
         self.client.disconnect()
 
-        # go into deep sleep for a while
+        # go to sleep
         self.sleep()
 
     def sleep(self):
@@ -106,7 +77,7 @@ class Application(object):
 
     def stop(self):
         """
-        Stop publishing and destroy sensors.
+        Destroy sensors.
         """
         print('Destroying {} sensors...'.format(len(self.sensors)))
 
@@ -126,7 +97,7 @@ class Application(object):
         print()
 
         for sensor in self.sensors:
-            sensor.publish(self.client)
+            sensor.publish(self.client.client)
 
         print()
         print('*' * 20)
@@ -134,8 +105,72 @@ class Application(object):
         print('*' * 20)
         print()
 
+    def isEnabled(self, section):
+        return self.cfg.has_section(section) and (
+            str(self.cfg.get(section, 'enabled')).lower() != 'false')
 
-def main(interval, user, password, server, device_id):
+    def create_sensors(self):
+        """
+        """
+        sensors = []
+
+        # temperature
+        if self.isEnabled('temperature'):
+            from pygarden.sensor.temperature import TemperatureSensor
+
+            roms = {}
+            for rom in self.cfg.get('temperature', 'roms').split(','):
+                roms[rom] = self.cfg.get('temperature', rom)
+
+            temp_sensor = TemperatureSensor(
+                pin_nr=int(self.cfg.get('temperature', 'pin')),
+                roms=roms,
+                topic=self.main_topic + 'temperature_{}'
+            )
+            sensors.append(temp_sensor)
+
+        # light
+        if self.isEnabled('light'):
+            from pygarden.sensor.light import LightSensor
+
+            light_sensor = LightSensor(
+                i2c_id=int(self.cfg.get('light', 'i2c_id')),
+                sda_pin=int(self.cfg.get('light', 'sda_pin')),
+                scl_pin=int(self.cfg.get('light', 'scl_pin')),
+                topic=self.main_topic + 'light'
+            )
+            sensors.append(light_sensor)
+
+        # soil
+        if self.isEnabled('soil'):
+            from pygarden.sensor.soil import SoilSensor
+            for index, pin_nr in enumerate(
+                    self.cfg.get('soil', 'pin_nrs').split(',')):
+                label = str(index)
+                soil_sensor = SoilSensor(
+                    label=label,
+                    pin_nr=int(pin_nr),
+                    topic=self.main_topic + 'soil_' + label
+                )
+                sensors.append(soil_sensor)
+
+        # rain
+        if self.isEnabled('rain'):
+            from pygarden.sensor.rain import RainSensor
+            for index, pin_nr in enumerate(
+                    self.cfg.get('rain', 'pin_nrs').split(',')):
+                label = str(index)
+                rain_sensor = RainSensor(
+                    label=label,
+                    pin_nr=int(pin_nr),
+                    topic=self.main_topic + 'rain_' + label
+                )
+                sensors.append(rain_sensor)
+
+        return sensors
+
+
+def run(interval, user, password, server, device_id, cfg):
     """
     Create and return application.
     """
@@ -162,6 +197,7 @@ def main(interval, user, password, server, device_id):
     return Application(
         client_id=device_id,
         server=server,
+        cfg=cfg,
         interval=interval,
         user=user,
         password=password

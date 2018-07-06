@@ -68,3 +68,5 @@ target/
 
 # Firmware
 MicroPython_ESP32_psRAM_LoBo
+
+settings.conf
