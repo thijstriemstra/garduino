@@ -18,4 +18,5 @@ application = Application(
 del Application
 
 # start app
-# application.start()
+if cfg.get('general', 'auto_start').lower() != 'false':
+    application.start()

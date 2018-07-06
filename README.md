@@ -30,7 +30,8 @@ Example of configuration file:
 
 ```
 [general]
-interval = 120
+auto_start = True
+interval = 500
 base_topic = mygarden
 
 [network]
