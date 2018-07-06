@@ -10,7 +10,7 @@ def get_config(fname='settings.conf'):
     """
     Load configuration file.
     """
-    from pygarden.configparser.ConfigParser import ConfigParser
+    from pygarden.lib.configparser.ConfigParser import ConfigParser
 
     cfg = ConfigParser()
     cfg.read(fname)
