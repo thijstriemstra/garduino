@@ -10,6 +10,10 @@ class LightSensorNotFound(Exception):
     pass
 
 
+class LightSensorError(Exception):
+    pass
+
+
 class LightSensor(object):
     """
     Represents a light sensor.
@@ -32,7 +36,11 @@ class LightSensor(object):
                 'No light sensor found on bus %d with SDA pin %d and SCL pin %d' % (
                 self.i2c_id, sda_pin, scl_pin))
 
-        self.sensor = BH1750(bus=self.i2c)
+        try:
+            self.sensor = BH1750(bus=self.i2c, addr=0x5c)
+        except OSError as e:
+            print('Addresses found: {}'.format(self.addrs))
+            raise LightSensorError(str(e))
 
     def read(self, mode=BH1750.ONCE_HIRES_1):
         """

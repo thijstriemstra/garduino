@@ -44,6 +44,7 @@ password = mqtt-password
 device_id = my_garden1
 
 [rtc]
+enabled = True
 scl_pin = 4
 sda_pin = 0
 

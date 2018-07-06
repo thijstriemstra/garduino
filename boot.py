@@ -21,11 +21,14 @@ util.setup_network(
 )
 
 # setup realtime clock
-util.setup_rtc(
-    i2c_id=1,
-    scl_pin=int(cfg.get('rtc', 'scl_pin')),
-    sda_pin=int(cfg.get('rtc', 'sda_pin'))
-)
+if cfg.get('rtc', 'enabled').lower() != 'false':
+    util.setup_rtc(
+        i2c_id=1,
+        scl_pin=int(cfg.get('rtc', 'scl_pin')),
+        sda_pin=int(cfg.get('rtc', 'sda_pin'))
+    )
+else:
+    print('Realtime clock disabled.')
 
 # cleanup
 del util
