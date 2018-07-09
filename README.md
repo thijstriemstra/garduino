@@ -48,6 +48,7 @@ device_id = my_garden1
 enabled = True
 scl_pin = 4
 sda_pin = 0
+timezone = Europe/Amsterdam
 
 [temperature]
 enabled = True

@@ -2,13 +2,17 @@
 Utilities.
 """
 
-from machine import I2C
+import time
+import utime
+from machine import I2C, RTC
 from network import WLAN, STA_IF
 
 from pygarden.lib import logging
 
 
 logger = logging.getLogger(__name__)
+
+time_fmt = '%Y-%m-%d %H:%M:%S'
 
 
 def get_config(fname='settings.conf'):
@@ -45,7 +49,7 @@ def setup_network(ssid, password):
     logger.info('')
 
 
-def setup_rtc(i2c_id, scl_pin, sda_pin):
+def setup_rtc(i2c_id, scl_pin, sda_pin, timezone='Europe/Amsterdam'):
     """
     Pull time from RTC at startup.
     """
@@ -54,15 +58,25 @@ def setup_rtc(i2c_id, scl_pin, sda_pin):
     logger.info('#' * 30)
     logger.info('Realtime clock: bus {} with SDA pin {} and SCL pin {}'.format(
         i2c_id, sda_pin, scl_pin))
+    logger.info('Timezone: {}'.format(timezone))
 
+    # sync
+    rtc = RTC()
+    rtc.ntp_sync('pool.ntp.org', 3600, timezone)
+    # wait for it
+    while rtc.synced() is False:
+        time.sleep(1)
+
+    # setup
     i2c = I2C(id=i2c_id, scl=scl_pin, sda=sda_pin, mode=I2C.MASTER)
     d = DS3231(i2c)
-    d.get_time(set_rtc=True)
+    d.save_time()
 
     # cleanup
     i2c.deinit()
 
-    logger.info('Local time: {}'.format('TODO'))
+    local_time = utime.strftime(time_fmt, utime.localtime())
+    logger.info('Local time: {}'.format(local_time))
     logger.info('#' * 30)
 
 
