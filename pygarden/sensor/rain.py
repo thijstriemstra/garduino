@@ -2,9 +2,13 @@ import time
 
 from machine import Pin, ADC
 
+from pygarden.lib import logging
+
 
 __all__ = ['RainSensor']
 
+
+logger = logging.getLogger(__name__)
 
 MAX_VALUE = 3171
 
@@ -36,7 +40,7 @@ class RainSensor(object):
         sensorValue = self.read()
         msg = str(100 - (sensorValue / (MAX_VALUE / 100)))
 
-        print("* Rain: {}% on topic '{}'".format(msg, self.topic))
+        logger.debug("* Rain: {}% on topic '{}'".format(msg, self.topic))
 
         client.publish(self.topic, msg)
 
@@ -46,7 +50,7 @@ class RainSensor(object):
             sensorValue = self.read()
             if sensorValue != self.prev:
                 perc = str(100 - (sensorValue / (MAX_VALUE / 100)))
-                print('{} ({}%)'.format(sensorValue, perc))
+                logger.debug('{} ({}%)'.format(sensorValue, perc))
                 self.prev = sensorValue
                 time.sleep(0.1)
 

@@ -14,6 +14,9 @@ print("""
 # load configuration file
 cfg = util.get_config()
 
+# setup logging
+util.setupLogging()
+
 # create network connection
 util.setup_network(
     ssid=cfg.get('network', 'ssid'),

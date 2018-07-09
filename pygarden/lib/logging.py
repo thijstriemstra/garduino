@@ -1,4 +1,5 @@
 import sys
+from utime import strftime, localtime
 
 CRITICAL = 50
 ERROR    = 40
@@ -16,6 +17,7 @@ _level_dict = {
 }
 
 _stream = sys.stderr
+
 
 class Logger:
 
@@ -38,7 +40,9 @@ class Logger:
 
     def log(self, level, msg, *args):
         if level >= (self.level or _level):
-            _stream.write("%s:%s:" % (self._level_str(level), self.name))
+            default_time_format = '%Y-%m-%d %H:%M:%S'
+            now = strftime(default_time_format, localtime())
+            _stream.write(_format % (now))
             if not args:
                 print(msg, file=_stream)
             else:
@@ -68,6 +72,7 @@ class Logger:
 
 
 _level = INFO
+_format = "%s:%s:"
 _loggers = {}
 
 def getLogger(name):
@@ -84,11 +89,11 @@ def debug(msg, *args):
     getLogger(None).debug(msg, *args)
 
 def basicConfig(level=INFO, filename=None, stream=None, format=None):
-    global _level, _stream
+    global _level, _stream, _format
     _level = level
+    if format:
+        _format = format
     if stream:
         _stream = stream
     if filename is not None:
         print("logging.basicConfig: filename arg is not supported")
-    if format is not None:
-        print("logging.basicConfig: format arg is not supported")

@@ -2,9 +2,13 @@ import time
 
 from machine import Pin, ADC
 
+from pygarden.lib import logging
+
 
 __all__ = ['SoilSensor']
 
+
+logger = logging.getLogger(__name__)
 
 MAX_VALUE = 3171
 
@@ -37,7 +41,7 @@ class SoilSensor(object):
     def publish(self, client):
         sensorValue = self.read()
         msg = str(sensorValue / (MAX_VALUE / 100))
-        print("* Soil {}: {}% on topic '{}'".format(
+        logger.debug("* Soil {}: {}% on topic '{}'".format(
             self.label, msg, self.topic))
         client.publish(self.topic, msg)
 
@@ -47,7 +51,7 @@ class SoilSensor(object):
             sensorValue = self.read()
             if sensorValue != self.prev:
                 perc = sensorValue / (MAX_VALUE / 100)
-                print('{} ({}%)'.format(sensorValue, perc))
+                logger.debug('{} ({}%)'.format(sensorValue, perc))
                 self.prev = sensorValue
                 time.sleep(0.1)
 
