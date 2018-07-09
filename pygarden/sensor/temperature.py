@@ -1,7 +1,11 @@
 from machine import Onewire, internal_temp
 
+from pygarden.lib import logging
+
 
 __all__ = ['TemperatureSensor']
+
+logger = logging.getLogger(__name__)
 
 
 class TemperatureSensorNotFound(Exception):
@@ -92,7 +96,7 @@ class TemperatureSensor(object):
             label = sensor['label']
             msg = str(sensor['temperature'])
             tpc = self.topic.format(label)
-            print("* Temperature {}: {} on topic '{}'".format(
+            logger.debug("* Temperature {}: {} on topic '{}'".format(
                 label, msg, tpc))
             client.publish(tpc, msg)
 

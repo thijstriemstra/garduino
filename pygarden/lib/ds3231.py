@@ -45,7 +45,7 @@ class DS3231:
         if DS3231_I2C_ADDR not in self.ds3231.scan():
             raise DS3231Exception("DS3231 not found on I2C bus at %d" % DS3231_I2C_ADDR)
 
-    def get_time(self, set_rtc = False):
+    def get_time(self, set_rtc=False):
         if set_rtc:
             self.await_transition()      # For accuracy set RTC immediately after a seconds transition
         else:

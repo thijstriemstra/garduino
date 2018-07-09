@@ -38,6 +38,9 @@ base_topic = mygarden
 ssid = MyInternet
 password = passw0rd
 
+[log]
+logfile = log.txt
+
 [broker]
 server = 192.168.2.12
 user = mqtt-user
@@ -48,6 +51,7 @@ device_id = my_garden1
 enabled = True
 scl_pin = 4
 sda_pin = 0
+timezone = Europe/Amsterdam
 
 [temperature]
 enabled = True

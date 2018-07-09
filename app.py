@@ -1,10 +1,13 @@
 from machine import deepsleep
 from network import STA_IF, WLAN
 
+from pygarden.lib import logging
 from pygarden.mqtt import MQTTClient
 
 
 __all__ = ['run']
+
+logger = logging.getLogger(__name__)
 
 
 class Application(object):
@@ -29,20 +32,20 @@ class Application(object):
 
         # create sensors
         self.sensors = self.create_sensors()
-        print('Application ready - using {} sensors'.format(
+        logger.info('Application ready - using {} sensors'.format(
             len(self.sensors)))
         if len(self.sensors) > 0:
-            print()
+            logger.info('')
             for sensor in self.sensors:
-                print(' - {}'.format(sensor))
-        print()
+                logger.info(' - {}'.format(sensor))
+        logger.info('')
 
     def start(self):
         """
         Start publishing data and go into deep sleep afterwards.
         """
-        print('-' * 40)
-        print('Connecting to broker: {}'.format(self.server))
+        logger.info('-' * 40)
+        logger.info('Connecting to broker: {}'.format(self.server))
 
         # connect to MQTT server
         self.client = MQTTClient(
@@ -55,9 +58,9 @@ class Application(object):
         self.client.connect()
 
     def connected(self, task):
-        print('Connection: OK')
-        print('-' * 40)
-        print()
+        logger.info('Connection: OK')
+        logger.info('-' * 40)
+        logger.info('')
 
         # publish
         self.publish()
@@ -69,9 +72,9 @@ class Application(object):
         self.sleep()
 
     def sleep(self):
-        print('Going to sleep for {} seconds...'.format(self.interval))
-        print('*' * 40)
-        print()
+        logger.info('Going to sleep for {} seconds...'.format(self.interval))
+        logger.info('*' * 40)
+        logger.info('')
 
         deepsleep(self.interval * 1000)
 
@@ -79,31 +82,31 @@ class Application(object):
         """
         Destroy sensors.
         """
-        print('Destroying {} sensors...'.format(len(self.sensors)))
+        logger.debug('Destroying {} sensors...'.format(len(self.sensors)))
 
         for sensor in self.sensors:
             sensor.destroy()
 
-        print('Destroy: OK')
-        print()
+        logger.info('Destroy: OK')
+        logger.info('')
 
     def publish(self):
         """
         Start publishing sensor data.
         """
-        print('*' * 20)
-        print('Publishing data...')
-        print('*' * 20)
-        print()
+        logger.info('*' * 20)
+        logger.info('Publishing data...')
+        logger.info('*' * 20)
+        logger.info('')
 
         for sensor in self.sensors:
             sensor.publish(self.client.client)
 
-        print()
-        print('*' * 20)
-        print('Published data: OK')
-        print('*' * 20)
-        print()
+        logger.info('')
+        logger.info('*' * 20)
+        logger.info('Published data: OK')
+        logger.info('*' * 20)
+        logger.info('')
 
     def isEnabled(self, section):
         return self.cfg.has_section(section) and (
@@ -174,25 +177,25 @@ def run(interval, user, password, server, device_id, cfg):
     """
     Create and return application.
     """
-    print('+' * 40)
-    print('Device: {}'.format(device_id))
-    print('Interval: {} seconds'.format(interval))
+    logger.info('+' * 40)
+    logger.info('Device: {}'.format(device_id))
+    logger.info('Interval: {} seconds'.format(interval))
 
     sta_if = WLAN(STA_IF)
     if not sta_if.isconnected():
-        print('No internet connection.')
+        logger.info('No internet connection.')
     else:
         ip = sta_if.ifconfig()[0]
-        print('Local IP address: {}'.format(ip))
+        logger.info('Local IP address: {}'.format(ip))
 
-    print('+' * 40)
-    print()
+    logger.info('+' * 40)
+    logger.info('')
 
-    print('-' * 40)
-    print('MQTT broker: {}'.format(server))
-    print('Username: {}'.format(user))
-    print('-' * 40)
-    print()
+    logger.info('-' * 40)
+    logger.info('MQTT broker: {}'.format(server))
+    logger.info('Username: {}'.format(user))
+    logger.info('-' * 40)
+    logger.info('')
 
     return Application(
         client_id=device_id,

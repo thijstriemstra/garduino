@@ -1,5 +1,10 @@
+from pygarden.lib import logging
+
 
 DEFAULT = 'default'
+
+
+logger = logging.getLogger(__name__)
 
 
 class MQTTClient(object):
@@ -43,12 +48,12 @@ class MQTTClient(object):
             self.client.disconnect()
 
     def connected(self, task):
-        print("[{}] Connected".format(task))
+        logger.info("[{}] Connected".format(task))
 
         self.connected_cb(task)
 
     def disconnected(self, task):
-        print("[{}] Disconnected".format(task))
+        logger.info("[{}] Disconnected".format(task))
 
     def published(self, pub):
-        print("[{}] Published: {}".format(pub[0], pub[1]))
+        logger.debug("[{}] Published: {}".format(pub[0], pub[1]))

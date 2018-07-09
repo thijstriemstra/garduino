@@ -1,9 +1,13 @@
 from machine import I2C
 
+from pygarden.lib import logging
 from pygarden.lib.bh1750 import BH1750
 
 
 __all__ = ['LightSensor']
+
+
+logger = logging.getLogger(__name__)
 
 
 class LightSensorNotFound(Exception):
@@ -39,7 +43,7 @@ class LightSensor(object):
         try:
             self.sensor = BH1750(bus=self.i2c)
         except OSError as e:
-            print('Addresses found: {}'.format(self.addrs))
+            logger.warning('Addresses found: {}'.format(self.addrs))
             raise LightSensorError(str(e))
 
     def read(self, mode=BH1750.ONCE_HIRES_1):
@@ -50,7 +54,7 @@ class LightSensor(object):
 
     def publish(self, client):
         msg = str(self.read())
-        print("* Light: {} on topic '{}'".format(msg, self.topic))
+        logger.debug("* Light: {} on topic '{}'".format(msg, self.topic))
         client.publish(self.topic, msg)
 
     def destroy(self):
