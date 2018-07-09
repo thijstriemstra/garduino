@@ -42,11 +42,21 @@ class Logger:
         if level >= (self.level or _level):
             default_time_format = '%Y-%m-%d %H:%M:%S'
             now = strftime(default_time_format, localtime())
-            _stream.write(_format % (now))
+            timestamp = _format % (now)
+            _stream.write(timestamp)
+            d = None
             if not args:
-                print(msg, file=_stream)
+                d = msg
             else:
-                print(msg % args, file=_stream)
+                d = msg % args
+
+            print(d, file=_stream)
+            # also write to file
+            if _file is not None:
+                f = open(_file, 'a')
+                # include timestamp and newline
+                f.write(timestamp + d + '\n')
+                f.close()
 
     def debug(self, msg, *args):
         self.log(DEBUG, msg, *args)
@@ -72,7 +82,8 @@ class Logger:
 
 
 _level = INFO
-_format = "%s:%s:"
+_format = "%s "
+_file = None
 _loggers = {}
 
 def getLogger(name):
@@ -88,12 +99,12 @@ def info(msg, *args):
 def debug(msg, *args):
     getLogger(None).debug(msg, *args)
 
-def basicConfig(level=INFO, filename=None, stream=None, format=None):
-    global _level, _stream, _format
+def basicConfig(level=INFO, format=None, filename=None, stream=None):
+    global _level, _stream, _format, _file
     _level = level
     if format:
         _format = format
     if stream:
         _stream = stream
     if filename is not None:
-        print("logging.basicConfig: filename arg is not supported")
+        _file = filename

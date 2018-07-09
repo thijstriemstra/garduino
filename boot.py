@@ -15,7 +15,9 @@ print("""
 cfg = util.get_config()
 
 # setup logging
-util.setupLogging()
+util.setupLogging(
+    logfile=cfg.get('log', 'logfile')
+)
 
 # create network connection
 util.setup_network(

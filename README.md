@@ -38,6 +38,9 @@ base_topic = mygarden
 ssid = MyInternet
 password = passw0rd
 
+[log]
+logfile = log.txt
+
 [broker]
 server = 192.168.2.12
 user = mqtt-user

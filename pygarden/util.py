@@ -2,6 +2,7 @@
 Utilities.
 """
 
+import os
 import time
 import utime
 from machine import I2C, RTC
@@ -80,10 +81,11 @@ def setup_rtc(i2c_id, scl_pin, sda_pin, timezone='Europe/Amsterdam'):
     logger.info('#' * 30)
 
 
-def setupLogging(level=logging.DEBUG):
+def setupLogging(level=logging.DEBUG, logfile=None):
     """
     """
     logging.basicConfig(
         level=level,
-        format="%s "
+        format="%s ",
+        filename=logfile
     )
