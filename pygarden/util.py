@@ -2,7 +2,6 @@
 Utilities.
 """
 
-import os
 import time
 import utime
 from machine import I2C, RTC

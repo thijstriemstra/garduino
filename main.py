@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from boot import cfg
 from app import run as Application
 
 print()
