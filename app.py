@@ -53,11 +53,15 @@ class Application(object):
             server=self.server,
             user=self.user,
             password=self.password,
-            connected_cb=self.connected
+            connected_cb=self.connected,
+            disconnected_cb=self.disconnected
         )
         self.client.connect()
 
     def connected(self, task):
+        """
+        Connected to MQTT broker.
+        """
         logger.info('Connection: OK')
         logger.info('-' * 40)
         logger.info('')
@@ -65,13 +69,21 @@ class Application(object):
         # publish
         self.publish()
 
-        # close connection
-        self.client.disconnect()
+        # shutdown
+        self.stop()
 
-        # go to sleep
-        self.sleep()
+    def disconnected(self, task):
+        """
+        Disconnected from MQTT broker.
+        """
+        logger.info('Disconnected')
+        logger.info('-' * 40)
+        logger.info('')
 
     def sleep(self):
+        """
+        Place device into deepsleep.
+        """
         logger.info('Going to sleep for {} seconds...'.format(self.interval))
         logger.info('*' * 40)
         logger.info('')
@@ -80,15 +92,27 @@ class Application(object):
 
     def stop(self):
         """
-        Destroy sensors.
+        Disconnect from MQTT broker.
         """
-        logger.debug('Destroying {} sensors...'.format(len(self.sensors)))
+        # close connection
+        # self.client.disconnect()
 
+        self.destroy()
+
+    def destroy(self):
+        """
+        Destroy sensors and go to sleep.
+        """
+        # destroy
+        logger.debug('Destroying {} sensors...'.format(len(self.sensors)))
         for sensor in self.sensors:
             sensor.destroy()
 
         logger.info('Destroy: OK')
         logger.info('')
+
+        # go to sleep
+        self.sleep()
 
     def publish(self):
         """
@@ -99,6 +123,7 @@ class Application(object):
         logger.info('*' * 20)
         logger.info('')
 
+        # publish
         for sensor in self.sensors:
             sensor.publish(self.client.client)
 
@@ -109,6 +134,12 @@ class Application(object):
         logger.info('')
 
     def isEnabled(self, section):
+        """
+        Check if ``section`` is present and enabled in configuration file.
+
+        :param section:
+        :type section: str
+        """
         return self.cfg.has_section(section) and (
             str(self.cfg.get(section, 'enabled')).lower() != 'false')
 
