@@ -54,7 +54,8 @@ class Application(object):
             user=self.user,
             password=self.password,
             connected_cb=self.connected,
-            disconnected_cb=self.disconnected
+            disconnected_cb=self.disconnected,
+            published_cb=self.published
         )
         self.client.connect()
 
@@ -132,6 +133,12 @@ class Application(object):
         logger.info('Published data: OK')
         logger.info('*' * 20)
         logger.info('')
+
+    def published(self, pub):
+        """
+        Called when a message has been published.
+        """
+        logger.info('[{}] Published: {}'.format(pub[0], pub[1]))
 
     def isEnabled(self, section):
         """

@@ -11,7 +11,7 @@ class MQTTClient(object):
     """
     """
     def __init__(self, client_id, server, connected_cb, disconnected_cb,
-                 user=None, password=None, ctype=DEFAULT):
+                 published_cb, user=None, password=None, ctype=DEFAULT):
         self.client_id = client_id
         self.server = server
         self.user = user
@@ -19,6 +19,7 @@ class MQTTClient(object):
         self.ctype = ctype
         self.connected_cb = connected_cb
         self.disconnected_cb = disconnected_cb
+        self.published_cb = published_cb
 
         if self.ctype == DEFAULT:
             from network import mqtt
@@ -61,3 +62,5 @@ class MQTTClient(object):
 
     def published(self, pub):
         logger.debug("[{}] Published: {}".format(pub[0], pub[1]))
+
+        self.published_cb(pub)
