@@ -75,7 +75,7 @@ class Application(object):
         self.publish()
 
         # shutdown
-        self.stop()
+        #self.stop()
 
     def disconnected(self, task):
         """
@@ -104,21 +104,6 @@ class Application(object):
 
         self.destroy()
 
-    def destroy(self):
-        """
-        Destroy sensors and go to sleep.
-        """
-        # destroy
-        logger.debug('Destroying {} sensors...'.format(len(self.sensors)))
-        for sensor in self.sensors:
-            sensor.destroy()
-
-        logger.info('Destroy: OK')
-        logger.info('')
-
-        # go to sleep
-        #self.sleep()
-
     def publish(self):
         """
         Start publishing sensor data.
@@ -129,8 +114,9 @@ class Application(object):
         logger.info('')
 
         # publish
-        for sensor in self.sensors:
-            sensor.publish(self.client.client)
+        #for sensor in self.sensors:
+        #    sensor.publish(self.client.client)
+        self.sensors[0].publish(self.client.client)
 
         logger.info('')
         logger.info('*' * 20)
@@ -143,6 +129,22 @@ class Application(object):
         Called when a message has been published.
         """
         logger.info('[{}] Published: {}'.format(pub[0], pub[1]))
+
+    def destroy(self):
+        """
+        Destroy sensors and go to sleep.
+        """
+        # destroy
+        logger.debug('Destroying {} sensors...'.format(len(self.sensors)))
+        #for sensor in self.sensors:
+        #    sensor.destroy()
+        self.sensors[0].destroy()
+
+        logger.info('Destroy: OK')
+        logger.info('')
+
+        # go to sleep
+        #self.sleep()
 
     def isEnabled(self, section):
         """
