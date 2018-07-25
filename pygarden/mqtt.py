@@ -26,6 +26,8 @@ class MQTTClient(object):
         self.ssid = ssid
         self.wifi_pw = wifi_pw
 
+        logger.info('Connection type: {}'.format(self.ctype))
+
         if self.ctype == ASYNC:
             # Set up client
             mqtt_as.MQTTClient.DEBUG = True
