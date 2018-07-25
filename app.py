@@ -1,10 +1,14 @@
+import gc
 import uasyncio as asyncio
+gc.collect()
 
 from machine import deepsleep
 from network import STA_IF, WLAN
+gc.collect()
 
 from pygarden.lib import logging
 from pygarden.mqtt import MQTTClient
+gc.collect()
 
 
 __all__ = ['run']
