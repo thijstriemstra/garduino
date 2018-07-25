@@ -34,6 +34,7 @@ class MQTTClient(object):
                 'server': self.server,
                 'user': self.user,
                 'password': self.password,
+                'port': 0,
                 'keepalive': 120,
                 'ping_interval': 0,
                 'ssl': False,
