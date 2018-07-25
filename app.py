@@ -62,6 +62,7 @@ class Application(object):
             ssid=self.cfg.get('network', 'ssid'),
             wifi_pw=self.cfg.get('network', 'password')
         )
+        self.client.connect()
 
     def connected(self, task):
         """
