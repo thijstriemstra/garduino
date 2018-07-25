@@ -67,6 +67,7 @@ target/
 # Firmware / 3rd-party
 MicroPython_ESP32_psRAM_LoBo
 micropython-mqtt
+micropython/
 
 # app
 settings.conf
