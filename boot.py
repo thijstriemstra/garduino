@@ -1,16 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import gc
+
+from micropython import mem_info
+
 from pygarden import util
+
 from app import run as Application
 
-print("""
- ____  __.  _____    _________
-|    |/ _| /  _  \  /   _____/
-|      <  /  /_\  \ \_____  \
-|    |  \/    |    \/        \
-|____|__ \____|__  /_______  /
-"""
-)
 
 # load configuration file
 cfg = util.get_config()
@@ -51,8 +48,10 @@ application = Application(
     cfg=cfg
 )
 
-# cleanup
+# free memory
 del util, Application
+gc.collect()
+mem_info()
 
 # start app
 if cfg.get('general', 'auto_start').lower() != 'false':

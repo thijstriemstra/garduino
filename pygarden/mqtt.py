@@ -1,5 +1,5 @@
 from pygarden.lib import logging
-from pygarden.lib import mqtt_as
+from pygarden.lib.mqtt_as import MQTTClient
 
 
 ASYNC = 'async'
@@ -29,7 +29,7 @@ class MQTTClient(object):
         if self.ctype == ASYNC:
             # Set up client
             MQTTClient.DEBUG = True
-            self.client = mqtt_as.MQTTClient({
+            self.client = MQTTClient({
                 'client_id': self.client_id,
                 'server': self.server,
                 'user': self.user,
