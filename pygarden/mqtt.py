@@ -56,8 +56,7 @@ class MQTTClient(object):
         elif self.ctype == LOBO_C:
             from network import mqtt
             self.client = mqtt(self.client_id, 'mqtt://' + self.server,
-                user=self.user, password=self.password, cleansession=True,
-                autoreconnect=True,
+                user=self.user, password=self.password,
                 connected_cb=self.connected,
                 disconnected_cb=self.disconnected,
                 published_cb=self.published
