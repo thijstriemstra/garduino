@@ -1,6 +1,7 @@
 from pygarden.lib import logging
 
 
+DEFAULT = 'default'
 ASYNC = 'async'
 LOBO_C = 'lobo_c'
 
@@ -13,7 +14,7 @@ class MQTTClient(object):
     MQTT client that publishes messages.
     """
     def __init__(self, client_id, server, connected_cb, disconnected_cb,
-                 published_cb, user=None, password=None, ctype=LOBO_C,
+                 published_cb, user=None, password=None, ctype=DEFAULT,
                  ssid=None, wifi_pw=None):
         self.client_id = client_id
         self.server = server
