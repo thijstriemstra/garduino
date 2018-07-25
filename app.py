@@ -63,7 +63,10 @@ class Application(object):
         )
         self.client.connect()
 
-    def connected(self, task):
+        # call manually for umqtt
+        self.client.connected()
+
+    def connected(self, task=None):
         """
         Connected to MQTT broker.
         """
@@ -75,7 +78,7 @@ class Application(object):
         self.publish()
 
         # shutdown
-        #self.stop()
+        self.stop()
 
     def disconnected(self, task):
         """
@@ -114,9 +117,9 @@ class Application(object):
         logger.info('')
 
         # publish
-        #for sensor in self.sensors:
-        #    sensor.publish(self.client.client)
-        self.sensors[1].publish(self.client.client)
+        for sensor in self.sensors:
+            sensor.publish(self.client.client)
+        #self.sensors[1].publish(self.client.client)
 
         logger.info('')
         logger.info('*' * 20)
@@ -136,9 +139,9 @@ class Application(object):
         """
         # destroy
         logger.debug('Destroying {} sensors...'.format(len(self.sensors)))
-        #for sensor in self.sensors:
-        #    sensor.destroy()
-        self.sensors[1].destroy()
+        for sensor in self.sensors:
+            sensor.destroy()
+        #self.sensors[1].destroy()
 
         logger.info('Destroy: OK')
         logger.info('')
