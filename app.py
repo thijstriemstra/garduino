@@ -1,5 +1,3 @@
-import uasyncio as asyncio
-
 from machine import deepsleep
 from network import STA_IF, WLAN
 
@@ -31,6 +29,7 @@ class Application(object):
         self.interval = interval
         self.main_topic = self.cfg.get('general', 'base_topic') + '/' + self.client_id + '/'
 
+        import uasyncio as asyncio
         self.loop = asyncio.get_event_loop()
 
         # create sensors
