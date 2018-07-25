@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import gc
 from boot import cfg
 from app import run as Application
 
@@ -18,9 +17,6 @@ application = Application(
     cfg=cfg
 )
 del Application
-
-# cleanup
-gc.collect()
 
 # start app
 if cfg.get('general', 'auto_start').lower() != 'false':
