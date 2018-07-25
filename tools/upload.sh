@@ -1,13 +1,13 @@
 #!/bin/bash
 set -e
 
-source tools/shared.sh
-
 if [ $# -eq 0 ]
   then
     echo "No filename supplied!"
     exit 1
 fi
+
+source tools/shared.sh
 
 echo "Uploading: "$1
 
