@@ -117,7 +117,7 @@ class Application(object):
         #for sensor in self.sensors:
         #    sensor.publish(self.client.client)
         r = self.client.client.status()
-        logger.info(r)
+        logger.info(str(r))
         self.sensors[1].publish(self.client.client)
 
         import utime
