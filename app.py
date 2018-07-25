@@ -100,7 +100,7 @@ class Application(object):
         Disconnect from MQTT broker.
         """
         # close connection
-        # self.client.disconnect()
+        self.client.disconnect()
 
         self.destroy()
 

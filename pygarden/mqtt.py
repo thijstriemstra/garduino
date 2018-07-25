@@ -87,6 +87,7 @@ class MQTTClient(object):
                 return
 
         elif self.ctype == LOBO_C:
+            logger.info('Connection type 2: {}'.format(self.ctype))
             self.client.start()
 
         else:
