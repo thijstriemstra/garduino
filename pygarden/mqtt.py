@@ -79,15 +79,7 @@ class MQTTClient(object):
             )
 
     def connect(self):
-        if self.ctype == ASYNC:
-            try:
-                await self.client.connect()
-            except OSError:
-                logger.error('Connection failed.')
-                return
-
-        elif self.ctype == LOBO_C:
-            logger.info('Connection type 2: {}'.format(self.ctype))
+        if self.ctype == LOBO_C:
             self.client.start()
 
         else:
