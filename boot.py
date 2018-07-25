@@ -49,9 +49,9 @@ application = Application(
 )
 
 # free memory
-del util, Application
 gc.collect()
 mem_info()
+del mem_info, gc, util, Application
 
 # start app
 if cfg.get('general', 'auto_start').lower() != 'false':
