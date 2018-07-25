@@ -76,6 +76,8 @@ class Application(object):
         logger.info('-' * 40)
         logger.info('')
 
+        utime.sleep(1)
+
         # publish
         self.publish()
 
@@ -107,7 +109,7 @@ class Application(object):
         # close connection
         self.client.disconnect()
 
-        #self.destroy()
+        self.destroy()
 
     def publish(self):
         """
@@ -121,8 +123,7 @@ class Application(object):
         # publish
         for sensor in self.sensors:
             sensor.publish(self.client.client)
-            utime.sleep(2)
-        #self.sensors[1].publish(self.client.client)
+            utime.sleep(3)
 
         logger.info('')
         logger.info('*' * 20)
@@ -144,13 +145,13 @@ class Application(object):
         logger.debug('Destroying {} sensors...'.format(len(self.sensors)))
         for sensor in self.sensors:
             sensor.destroy()
-        #self.sensors[1].destroy()
+            utime.sleep(2)
 
         logger.info('Destroy: OK')
         logger.info('')
 
         # go to sleep
-        #self.sleep()
+        self.sleep()
 
     def isEnabled(self, section):
         """
