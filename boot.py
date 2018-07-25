@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from pygarden import util
+from app import run as Application
 
 print("""
  ____  __.  _____    _________
@@ -36,5 +37,23 @@ if cfg.get('rtc', 'enabled').lower() != 'false':
 else:
     print('Realtime clock disabled.')
 
+print()
+print('Loading application...')
+print()
+
+# create application
+application = Application(
+    interval=int(cfg.get('general', 'interval')),
+    user=cfg.get('broker', 'user'),
+    password=cfg.get('broker', 'password'),
+    server=cfg.get('broker', 'server'),
+    device_id=cfg.get('broker', 'device_id'),
+    cfg=cfg
+)
+
 # cleanup
-del util
+del util, Application
+
+# start app
+if cfg.get('general', 'auto_start').lower() != 'false':
+    application.start()
