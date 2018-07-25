@@ -1,7 +1,8 @@
 from pygarden.lib import logging
 
 
-DEFAULT = 'default'
+ASYNC = 'async'
+LOBO_C = 'lobo_c'
 
 
 logger = logging.getLogger(__name__)
@@ -11,7 +12,7 @@ class MQTTClient(object):
     """
     """
     def __init__(self, client_id, server, connected_cb, disconnected_cb,
-                 published_cb, user=None, password=None, ctype=DEFAULT):
+                 published_cb, user=None, password=None, ctype=ASYNC):
         self.client_id = client_id
         self.server = server
         self.user = user
@@ -21,13 +22,32 @@ class MQTTClient(object):
         self.disconnected_cb = disconnected_cb
         self.published_cb = published_cb
 
-        if self.ctype == DEFAULT:
+        if self.ctype == ASYNC:
+            import uasyncio as asyncio
+            from pygarden.lib.mqtt_as import MQTTClient
+
+            self.loop = asyncio.get_event_loop()
+
+            # Set up client
+            MQTTClient.DEBUG = True
+            #client = MQTTClient(config)
+
+            """
+            try:
+                loop.run_until_complete(main(client))
+            finally:  # Prevent LmacRxBlk:1 errors.
+                client.close()
+            """
+
+        elif self.ctype == LOBO_C:
             from network import mqtt
             self.client = mqtt(self.client_id, 'mqtt://' + self.server,
                 user=self.user, password=self.password, cleansession=True,
                 autoreconnect=True,
-                connected_cb=self.connected, disconnected_cb=self.disconnected,
-                published_cb=self.published)
+                connected_cb=self.connected,
+                disconnected_cb=self.disconnected,
+                published_cb=self.published
+        )
 
         else:
             from umqtt.robust import MQTTClient
@@ -39,13 +59,13 @@ class MQTTClient(object):
             )
 
     def connect(self):
-        if self.ctype == DEFAULT:
+        if self.ctype == LOBO_C:
             self.client.start()
         else:
             self.client.connect()
 
     def disconnect(self):
-        if self.ctype == DEFAULT:
+        if self.ctype == LOBO_C:
             self.client.stop()
         else:
             self.client.disconnect()
