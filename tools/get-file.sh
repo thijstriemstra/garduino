@@ -9,7 +9,7 @@ if [ $# -eq 0 ]
     exit 1
 fi
 
-ampy --baud=$BAUD --port=$PORT --delay=$DELAY get $1
+ampy --baud=$BAUD --port=$PORT --delay=$DELAY get $1 $1
 
 echo
 echo $1": OK " $(expr `date +%s` - $start_time)s
