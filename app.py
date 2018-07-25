@@ -1,4 +1,4 @@
-import uasyncio as asyncio
+import utime
 
 from machine import deepsleep
 from network import STA_IF, WLAN
@@ -23,6 +23,8 @@ class Application(object):
         :param cfg:
         :param interval: How often to publish data
         :type interval: int
+        :param user:
+        :param password:
         """
         self.client_id = client_id
         self.server = server
@@ -119,6 +121,7 @@ class Application(object):
         # publish
         for sensor in self.sensors:
             sensor.publish(self.client.client)
+            utime.sleep(2)
         #self.sensors[1].publish(self.client.client)
 
         logger.info('')
