@@ -89,7 +89,7 @@ class MQTTClient(object):
 
     def disconnect(self):
         if self.ctype == LOBO_C:
-            self.client.stop()
+            self.client.free()
         else:
             self.client.disconnect()
 
