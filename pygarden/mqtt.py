@@ -29,7 +29,8 @@ class MQTTClient(object):
         logger.info('Connection type: {}'.format(self.ctype))
 
         if self.ctype == ASYNC:
-            # Set up client
+            from pygarden.lib import mqtt_as
+
             mqtt_as.MQTTClient.DEBUG = True
             self.client = mqtt_as.MQTTClient({
                 'client_id': self.client_id,
@@ -55,16 +56,22 @@ class MQTTClient(object):
 
         elif self.ctype == LOBO_C:
             from network import mqtt
-            self.client = mqtt(self.client_id, 'mqtt://' + self.server,
-                user=self.user, password=self.password,
+
+            url = 'mqtt://' + self.server
+            self.client = mqtt(
+                name=self.client_id,
+                server=url,
+                user=self.user,
+                password=self.password,
                 connected_cb=self.connected,
                 disconnected_cb=self.disconnected,
                 published_cb=self.published
-        )
+            )
 
         else:
-            from umqtt.robust import MQTTClient
-            self.client = MQTTClient(
+            from umqtt.robust import MQTTClient as Robust
+
+            self.client = Robust(
                 client_id=self.client_id,
                 server=self.server,
                 user=self.user,
@@ -90,10 +97,6 @@ class MQTTClient(object):
             self.client.stop()
         else:
             self.client.disconnect()
-
-    async def conn_han(self, client):
-        # await client.subscribe('foo_topic', 1)
-        self.connected_cb(client)
 
     def connected(self, task):
         logger.info("[{}] Connected".format(task))
