@@ -102,7 +102,7 @@ class Application(object):
         # close connection
         self.client.disconnect()
 
-        self.destroy()
+        #self.destroy()
 
     def publish(self):
         """
@@ -119,9 +119,6 @@ class Application(object):
         r = self.client.client.status()
         logger.info(str(r))
         self.sensors[1].publish(self.client.client)
-
-        import utime
-        utime.sleep(2)
 
         logger.info('')
         logger.info('*' * 20)
