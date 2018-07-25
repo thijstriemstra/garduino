@@ -116,7 +116,10 @@ class Application(object):
         # publish
         #for sensor in self.sensors:
         #    sensor.publish(self.client.client)
-        self.sensors[0].publish(self.client.client)
+        self.sensors[1].publish(self.client.client)
+
+        import utime
+        utime.sleep(2)
 
         logger.info('')
         logger.info('*' * 20)
@@ -138,7 +141,7 @@ class Application(object):
         logger.debug('Destroying {} sensors...'.format(len(self.sensors)))
         #for sensor in self.sensors:
         #    sensor.destroy()
-        self.sensors[0].destroy()
+        self.sensors[1].destroy()
 
         logger.info('Destroy: OK')
         logger.info('')
