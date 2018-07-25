@@ -64,7 +64,7 @@ class Application(object):
         self.client.connect()
 
         # call manually for umqtt
-        self.client.connected()
+        self.connected()
 
     def connected(self, task=None):
         """
