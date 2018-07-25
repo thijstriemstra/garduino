@@ -72,7 +72,7 @@ class MQTTClient(object):
             )
 
         else:
-            from umqtt.robust import MQTTClient as Robust
+            from umqtt.simple import MQTTClient as Robust
 
             self.client = Robust(
                 client_id=self.client_id,
@@ -80,6 +80,7 @@ class MQTTClient(object):
                 user=self.user,
                 password=self.password
             )
+            self.client.DEBUG = True
 
     def connect(self):
         if self.ctype == LOBO_C:
