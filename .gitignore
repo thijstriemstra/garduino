@@ -64,8 +64,9 @@ target/
 # OSX
 .DS_Store
 
-# Firmware
+# Firmware / 3rd-party
 MicroPython_ESP32_psRAM_LoBo
+micropython-mqtt
 
 # app
 settings.conf
