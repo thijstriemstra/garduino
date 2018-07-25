@@ -1,5 +1,4 @@
 from pygarden.lib import logging
-from pygarden.lib import mqtt_as
 
 
 ASYNC = 'async'
@@ -11,9 +10,10 @@ logger = logging.getLogger(__name__)
 
 class MQTTClient(object):
     """
+    MQTT client that publishes messages.
     """
     def __init__(self, client_id, server, connected_cb, disconnected_cb,
-                 published_cb, user=None, password=None, ctype=ASYNC,
+                 published_cb, user=None, password=None, ctype=LOBO_C,
                  ssid=None, wifi_pw=None):
         self.client_id = client_id
         self.server = server
@@ -69,19 +69,8 @@ class MQTTClient(object):
                 user=self.user,
                 password=self.password
             )
-    """
-    async def main(client):
-        
-        n = 0
-        while True:
-            await asyncio.sleep(5)
-            print('publish', n)
-            # If WiFi is down the following will pause for the duration.
-            await client.publish('result', '{} repubs: {} outages: {}'.format(n,
-                client.REPUB_COUNT, outages), qos = 1)
-            n += 1
-    """
-    async def connect(self):
+
+    def connect(self):
         if self.ctype == ASYNC:
             try:
                 await self.client.connect()

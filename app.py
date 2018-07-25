@@ -1,3 +1,5 @@
+import uasyncio as asyncio
+
 from machine import deepsleep
 from network import STA_IF, WLAN
 
@@ -28,9 +30,6 @@ class Application(object):
         self.password = password
         self.interval = interval
         self.main_topic = self.cfg.get('general', 'base_topic') + '/' + self.client_id + '/'
-
-        import uasyncio as asyncio
-        self.loop = asyncio.get_event_loop()
 
         # create sensors
         self.sensors = self.create_sensors()
@@ -63,11 +62,6 @@ class Application(object):
             ssid=self.cfg.get('network', 'ssid'),
             wifi_pw=self.cfg.get('network', 'password')
         )
-        try:
-            self.loop.run_until_complete(self.client.connect())
-        finally:
-            # prevent LmacRxBlk:1 errors.
-            self.client.close()
 
     def connected(self, task):
         """
@@ -162,6 +156,7 @@ class Application(object):
 
     def create_sensors(self):
         """
+        Setup sensors.
         """
         sensors = []
 
