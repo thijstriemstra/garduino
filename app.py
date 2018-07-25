@@ -4,6 +4,7 @@ from machine import deepsleep
 from network import STA_IF, WLAN
 
 from pygarden.lib import logging
+from pygarden.mqtt import MQTTClient
 
 
 __all__ = ['run']
@@ -45,8 +46,6 @@ class Application(object):
         """
         Start publishing data and go into deep sleep afterwards.
         """
-        from pygarden.mqtt import MQTTClient
-
         logger.info('-' * 40)
         logger.info('Connecting to broker: {}'.format(self.server))
 
