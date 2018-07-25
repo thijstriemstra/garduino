@@ -145,7 +145,6 @@ class Application(object):
         logger.debug('Destroying {} sensors...'.format(len(self.sensors)))
         for sensor in self.sensors:
             sensor.destroy()
-            utime.sleep(2)
 
         logger.info('Destroy: OK')
         logger.info('')
