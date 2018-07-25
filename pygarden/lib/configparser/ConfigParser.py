@@ -75,10 +75,14 @@ class ConfigParser:
                 self.config_dict[section][option] = values
 
     def get(self, section, option):
-        """Get value of a givenoption in a given section."""
-        if not self.has_section(section) \
-                or not self.has_option(section,option):
-                    raise
+        """Get value of a given option in a given section."""
+        if not self.has_section(section):
+            raise Exception('Missing section: {}'.format(section))
+
+        if not self.has_option(section, option):
+            raise Exception('Missing option {} for section {}'.format(option,
+                section))
+
         return self.config_dict[section][option]
 
     def has_option(self, section, option):

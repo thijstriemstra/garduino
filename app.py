@@ -1,3 +1,5 @@
+import utime
+
 from machine import deepsleep
 from network import STA_IF, WLAN
 
@@ -21,6 +23,8 @@ class Application(object):
         :param cfg:
         :param interval: How often to publish data
         :type interval: int
+        :param user:
+        :param password:
         """
         self.client_id = client_id
         self.server = server
@@ -55,17 +59,24 @@ class Application(object):
             password=self.password,
             connected_cb=self.connected,
             disconnected_cb=self.disconnected,
-            published_cb=self.published
+            published_cb=self.published,
+            ssid=self.cfg.get('network', 'ssid'),
+            wifi_pw=self.cfg.get('network', 'password')
         )
         self.client.connect()
 
-    def connected(self, task):
+        # call manually for umqtt
+        self.connected()
+
+    def connected(self, task=None):
         """
         Connected to MQTT broker.
         """
         logger.info('Connection: OK')
         logger.info('-' * 40)
         logger.info('')
+
+        utime.sleep(1)
 
         # publish
         self.publish()
@@ -96,9 +107,35 @@ class Application(object):
         Disconnect from MQTT broker.
         """
         # close connection
-        # self.client.disconnect()
+        self.client.disconnect()
 
         self.destroy()
+
+    def publish(self):
+        """
+        Start publishing sensor data.
+        """
+        logger.info('*' * 20)
+        logger.info('Publishing data...')
+        logger.info('*' * 20)
+        logger.info('')
+
+        # publish
+        for sensor in self.sensors:
+            sensor.publish(self.client.client)
+            utime.sleep(3)
+
+        logger.info('')
+        logger.info('*' * 20)
+        logger.info('Published data: OK')
+        logger.info('*' * 20)
+        logger.info('')
+
+    def published(self, pub):
+        """
+        Called when a message has been published.
+        """
+        logger.info('[{}] Published: {}'.format(pub[0], pub[1]))
 
     def destroy(self):
         """
@@ -115,31 +152,6 @@ class Application(object):
         # go to sleep
         self.sleep()
 
-    def publish(self):
-        """
-        Start publishing sensor data.
-        """
-        logger.info('*' * 20)
-        logger.info('Publishing data...')
-        logger.info('*' * 20)
-        logger.info('')
-
-        # publish
-        for sensor in self.sensors:
-            sensor.publish(self.client.client)
-
-        logger.info('')
-        logger.info('*' * 20)
-        logger.info('Published data: OK')
-        logger.info('*' * 20)
-        logger.info('')
-
-    def published(self, pub):
-        """
-        Called when a message has been published.
-        """
-        logger.info('[{}] Published: {}'.format(pub[0], pub[1]))
-
     def isEnabled(self, section):
         """
         Check if ``section`` is present and enabled in configuration file.
@@ -152,6 +164,7 @@ class Application(object):
 
     def create_sensors(self):
         """
+        Setup sensors.
         """
         sensors = []
 

@@ -9,9 +9,10 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     DELAY=0.5
 fi
 
-echo "-------------------------------------"
-echo "Using "$PORT "(baudrate: "$BAUD")"
-echo "-------------------------------------"
+echo 
+echo "--------------------------------------------------------"
+echo "Connecting to" $CHIP "using" $PORT "(baudrate: "$BAUD")"
+echo "--------------------------------------------------------"
 echo
 
 start_time=`date +%s`

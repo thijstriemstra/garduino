@@ -61,8 +61,10 @@ def setup_rtc(i2c_id, scl_pin, sda_pin, timezone='Europe/Amsterdam'):
     logger.info('Timezone: {}'.format(timezone))
 
     # sync
+    pool_url = 'pool.ntp.org'
+    logger.info('Syncing date with {}'.format(pool_url))
     rtc = RTC()
-    rtc.ntp_sync('pool.ntp.org', 3600, timezone)
+    rtc.ntp_sync(pool_url, 3600, timezone)
     # wait for it
     while rtc.synced() is False:
         time.sleep(1)
