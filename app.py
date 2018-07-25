@@ -117,7 +117,7 @@ class Application(object):
         logger.info('')
 
         # go to sleep
-        self.sleep()
+        #self.sleep()
 
     def publish(self):
         """

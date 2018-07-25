@@ -65,7 +65,8 @@ class MQTTClient(object):
                 password=self.password,
                 connected_cb=self.connected,
                 disconnected_cb=self.disconnected,
-                published_cb=self.published
+                published_cb=self.published,
+                keepalive=120
             )
 
         else:
