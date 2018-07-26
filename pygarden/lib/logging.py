@@ -51,12 +51,11 @@ class Logger:
                 d = msg % args
 
             print(d, file=_stream)
-            # also write to file
-            if _file is not None:
-                f = open(_file, 'a')
-                # include timestamp and newline
-                f.write(timestamp + d + '\n')
-                f.close()
+            # also write warnings or higher to file
+            if _file is not None and level >= WARNING:
+                with open(_file, 'a') as f:
+                    # include timestamp and newline
+                    f.write(timestamp + d + '\n')
 
     def debug(self, msg, *args):
         self.log(DEBUG, msg, *args)

@@ -84,6 +84,7 @@ def setup_rtc(i2c_id, scl_pin, sda_pin, timezone='Europe/Amsterdam'):
 
 def setupLogging(level=logging.DEBUG, logfile=None):
     """
+    Setup logging.
     """
     logging.basicConfig(
         level=level,

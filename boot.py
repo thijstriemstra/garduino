@@ -38,21 +38,24 @@ print()
 print('Loading application...')
 print()
 
-# create application
-application = Application(
-    interval=int(cfg.get('general', 'interval')),
-    user=cfg.get('broker', 'user'),
-    password=cfg.get('broker', 'password'),
-    server=cfg.get('broker', 'server'),
-    device_id=cfg.get('broker', 'device_id'),
-    cfg=cfg
-)
+try:
+    # create application
+    application = Application(
+        interval=int(cfg.get('general', 'interval')),
+        user=cfg.get('broker', 'user'),
+        password=cfg.get('broker', 'password'),
+        server=cfg.get('broker', 'server'),
+        device_id=cfg.get('broker', 'device_id'),
+        cfg=cfg
+    )
 
-# free memory
-gc.collect()
-mem_info()
-del mem_info, gc, util, Application
+    # free memory
+    gc.collect()
+    mem_info()
+    del mem_info, gc, util, Application
 
-# start app
-if cfg.get('general', 'auto_start').lower() != 'false':
-    application.start()
+    # start app
+    if cfg.get('general', 'auto_start').lower() != 'false':
+        application.start()
+except Exception as e:
+    logger.exception(e)
