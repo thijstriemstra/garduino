@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import gc
+import logging
 
 from micropython import mem_info
 
@@ -16,6 +17,7 @@ cfg = util.get_config()
 util.setupLogging(
     logfile=cfg.get('log', 'logfile')
 )
+logger = logging.getLogger(__name__)
 
 # create network connection
 util.setup_network(
