@@ -42,6 +42,7 @@ class LightSensor(object):
 
         try:
             self.sensor = BH1750(bus=self.i2c)
+            self.sensor.on()
         except OSError as e:
             logger.warning('Addresses found: {}'.format(self.addrs))
             raise LightSensorError(str(e))
