@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import gc
+import sys
 import logging
 
 from micropython import mem_info
@@ -9,6 +10,15 @@ from pygarden import util
 
 from app import run as Application
 
+
+print('*' * 40)
+print('== System info ==')
+print('MicroPython: {}'.format('.'.join(str(x) for x in sys.implementation.version)))
+print('ESP-IDF: {} ({})'.format(sys.espidf_info()[0], sys.espidf_info()[2]))
+print('Python: {} ({})'.format(sys.version, sys.platform))
+print('mpycore: {} ({})'.format(sys.mpycore()[0], sys.mpycore()[1]))
+print('*' * 40)
+print('')
 
 # load configuration file
 cfg = util.get_config()
@@ -55,10 +65,10 @@ try:
     # free memory
     gc.collect()
     mem_info()
-    del mem_info, gc, util, Application
+    del mem_info, sys, gc, util, Application
 
     # start app
     if cfg.get('general', 'auto_start').lower() != 'false':
         application.start()
 except Exception as e:
-    logger.exception(e)
+    logger.exc(e, str(e))
