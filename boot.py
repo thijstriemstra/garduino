@@ -31,7 +31,8 @@ if cfg.get('rtc', 'enabled').lower() != 'false':
         i2c_id=1,
         scl_pin=int(cfg.get('rtc', 'scl_pin')),
         sda_pin=int(cfg.get('rtc', 'sda_pin')),
-        timezone=cfg.get('rtc', 'timezone')
+        timezone=cfg.get('rtc', 'timezone'),
+        hardware=cfg.get('rtc', 'hardware').lower() != 'false'
     )
 else:
     print('Realtime clock disabled.')

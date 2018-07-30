@@ -49,6 +49,7 @@ device_id = my_garden1
 
 [rtc]
 enabled = True
+hardware = True
 scl_pin = 4
 sda_pin = 0
 timezone = Europe/Amsterdam

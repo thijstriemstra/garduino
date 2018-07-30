@@ -49,18 +49,17 @@ def setup_network(ssid, password):
     logger.info('')
 
 
-def setup_rtc(i2c_id, scl_pin, sda_pin, timezone='Europe/Amsterdam'):
+def setup_rtc(i2c_id=0, scl_pin=22, sda_pin=21, timezone='Europe/Amsterdam',
+              hardware=True):
     """
     Pull time from RTC at startup.
     """
     from pygarden.lib.ds3231 import DS3231
 
     logger.info('#' * 30)
-    logger.info('Realtime clock: bus {} with SDA pin {} and SCL pin {}'.format(
-        i2c_id, sda_pin, scl_pin))
     logger.info('Timezone: {}'.format(timezone))
 
-    # sync
+    # sync time from server
     pool_url = 'pool.ntp.org'
     logger.info('Syncing date with {}'.format(pool_url))
     rtc = RTC()
@@ -69,13 +68,16 @@ def setup_rtc(i2c_id, scl_pin, sda_pin, timezone='Europe/Amsterdam'):
     while rtc.synced() is False:
         time.sleep(1)
 
-    # setup
-    i2c = I2C(id=i2c_id, scl=scl_pin, sda=sda_pin, mode=I2C.MASTER)
-    d = DS3231(i2c)
-    d.save_time()
+    if hardware is True:
+        # setup hardware clock
+        logger.info('Realtime clock: bus {} with SDA pin {} and SCL pin {}'.format(
+            i2c_id, sda_pin, scl_pin))
+        i2c = I2C(id=i2c_id, scl=scl_pin, sda=sda_pin, mode=I2C.MASTER)
+        d = DS3231(i2c)
+        d.save_time()
 
-    # cleanup
-    i2c.deinit()
+        # cleanup
+        i2c.deinit()
 
     local_time = utime.strftime(time_fmt, utime.localtime())
     logger.info('Local time: {}'.format(local_time))
