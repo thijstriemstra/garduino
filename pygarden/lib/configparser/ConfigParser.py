@@ -1,3 +1,5 @@
+# Copied from https://github.com/micropython/micropython-lib/pull/265
+
 """
 Minimal and functional version of CPython's ConfigParser module.
 """

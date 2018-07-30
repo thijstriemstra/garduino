@@ -1,3 +1,5 @@
+# Modified version of https://github.com/micropython/micropython-lib/blob/master/logging/logging.py 
+
 import sys
 from utime import strftime, localtime
 

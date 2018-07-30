@@ -1,3 +1,5 @@
+# Copied from https://github.com/PinkInk/upylib
+
 """
 Micropython BH1750 ambient light sensor driver.
 """
