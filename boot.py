@@ -12,7 +12,6 @@ from app import run as Application
 
 
 print('*' * 40)
-print('== System info ==')
 print('MicroPython: {}'.format('.'.join(str(x) for x in sys.implementation.version)))
 print('ESP-IDF: {} ({})'.format(sys.espidf_info()[0], sys.espidf_info()[2]))
 print('Python: {} ({})'.format(sys.version, sys.platform))
