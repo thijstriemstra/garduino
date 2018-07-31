@@ -4,7 +4,6 @@ Utilities.
 
 import time
 import utime
-from machine import I2C, RTC
 from network import WLAN, STA_IF
 
 from pygarden.lib import logging
@@ -54,7 +53,7 @@ def setup_rtc(i2c_id=0, scl_pin=22, sda_pin=21, timezone='Europe/Amsterdam',
     """
     Pull time from RTC at startup.
     """
-    from pygarden.lib.ds3231 import DS3231
+    from machine import RTC
 
     logger.info('#' * 30)
     logger.info('Timezone: {}'.format(timezone))
@@ -69,6 +68,9 @@ def setup_rtc(i2c_id=0, scl_pin=22, sda_pin=21, timezone='Europe/Amsterdam',
         time.sleep(1)
 
     if hardware is True:
+        from machine import I2C
+        from pygarden.lib.ds3231 import DS3231
+
         # setup hardware clock
         logger.info('Realtime clock: bus {} with SDA pin {} and SCL pin {}'.format(
             i2c_id, sda_pin, scl_pin))
@@ -84,7 +86,20 @@ def setup_rtc(i2c_id=0, scl_pin=22, sda_pin=21, timezone='Europe/Amsterdam',
     logger.info('#' * 30)
 
 
-def setupLogging(level=logging.DEBUG, logfile=None):
+def setup_tm1637(clk_pin, dio_pin):
+    """
+    :type clk_pin: int
+    :type dio_pin: int
+    """
+    from machine import Pin
+    from pygarden.lib.tm1637 import TM1637
+
+    display = TM1637(clk=Pin(clk_pin), dio=Pin(dio_pin))
+
+    return display
+
+
+def setup_logging(level=logging.DEBUG, logfile=None):
     """
     Setup logging.
     """

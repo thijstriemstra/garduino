@@ -74,4 +74,10 @@ pin_nrs = 32,33
 [rain]
 enabled = False
 pin_nrs = 35
+
+[display]
+enabled = True
+type = tm1637
+dio_pin = 19
+clk_pin = 23
 ```
