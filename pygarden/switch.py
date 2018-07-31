@@ -1,4 +1,9 @@
+import logging
+
 from machine import Pin
+
+
+logger = logging.getLogger(__name__)
 
 
 class ThreeWaySwitch(object):
