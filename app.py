@@ -232,7 +232,7 @@ class Application(object):
         return sensors
 
 
-def run(interval, user, password, server, device_id, cfg):
+def run(interval, user, password, server, device_id, cfg, display):
     """
     Create and return application.
     """
@@ -260,6 +260,7 @@ def run(interval, user, password, server, device_id, cfg):
         client_id=device_id,
         server=server,
         cfg=cfg,
+        display=display,
         interval=interval,
         user=user,
         password=password

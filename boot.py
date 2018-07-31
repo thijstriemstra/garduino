@@ -51,8 +51,8 @@ display = None
 if cfg.get('display', 'enabled').lower() != 'false':
     if cfg.get('display', 'type').lower() == 'tm1637':
         display = util.setup_tm1637(
-            clk=int(cfg.get('display', 'clk_pin')),
-            dio=int(cfg.get('display', 'dio_pin'))
+            clk_pin=int(cfg.get('display', 'clk_pin')),
+            dio_pin=int(cfg.get('display', 'dio_pin'))
         )
 
 print()
