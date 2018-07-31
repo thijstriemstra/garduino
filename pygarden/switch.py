@@ -11,12 +11,12 @@ class ThreeWaySwitch(object):
         self.left = Pin(
             self.left_pin,
             handler=self.left_handler,
-            debounce=0
+            debounce=100
         )
         self.right = Pin(
             self.right_pin,
             handler=self.right_handler,
-            debounce=0
+            debounce=100
         )
 
     def left_handler(self):
