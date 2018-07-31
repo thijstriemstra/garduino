@@ -8,8 +8,16 @@ class ThreeWaySwitch(object):
         self.left_pin = left_pin
         self.right_pin = right_pin
 
-        self.left = Pin(self.left_pin, handler=self.left_handler)
-        self.right = Pin(self.right_pin, handler=self.right_handler)
+        self.left = Pin(
+            self.left_pin,
+            handler=self.left_handler,
+            debounce=0
+        )
+        self.right = Pin(
+            self.right_pin,
+            handler=self.right_handler,
+            debounce=0
+        )
 
     def left_handler(self):
         logger.debug('Pressed left!')
