@@ -54,6 +54,12 @@ if cfg.get('display', 'enabled').lower() != 'false':
             clk_pin=int(cfg.get('display', 'clk_pin')),
             dio_pin=int(cfg.get('display', 'dio_pin'))
         )
+    # switch
+    if cfg.get('switch', 'enabled').lower() != 'false':
+        switch = util.setup_switch(
+            left_pin=int(cfg.get('switch', 'left_pin')),
+            right_pin=int(cfg.get('switch', 'right_pin'))
+        )
 
 print()
 print('Loading application...')

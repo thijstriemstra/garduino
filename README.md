@@ -80,4 +80,9 @@ enabled = True
 type = tm1637
 dio_pin = 19
 clk_pin = 23
+
+[switch]
+enabled = True
+left_pin = 34
+right_pin = 35
 ```
