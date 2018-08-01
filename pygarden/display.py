@@ -45,7 +45,7 @@ class TM1637Display(object):
         """
         Scroll a message.
         """
-        self.display.scroll(message)
+        self.display.scroll(msg)
 
     def all_chars(self):
         """
