@@ -16,9 +16,17 @@ class TM1637Display(object):
         self.clear()
 
     def show(self, msg):
+        """
+        Display message.
+        """
         self.display.show(msg)
 
     def temperature(self, temp):
+        """
+        Display temperature in celcius.
+
+        :type temp: int
+        """
         self.display.temperature(temp)
 
     def clear(self):
@@ -28,10 +36,19 @@ class TM1637Display(object):
         self.display.write([0, 0, 0, 0])
 
     def brightness(self, level):
+        """
+        Set the display brightness 0-7.
+        """
         self.display.brightness(level)
+
+    def scroll(self, msg):
+        """
+        Scroll a message.
+        """
+        self.display.scroll(message)
 
     def all_chars(self):
         """
         Scroll all available characters.
         """
-        self.display.scroll(list(tm1637._SEGMENTS))
+        self.scroll(list(tm1637._SEGMENTS))
