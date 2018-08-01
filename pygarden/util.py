@@ -93,9 +93,7 @@ def setup_tm1637(clk_pin, dio_pin):
     """
     from pygarden.display import TM1637Display
 
-    display = TM1637Display(clk_pin=clk_pin, dio_pin=dio_pin)
-
-    return display
+    return TM1637Display(clk_pin=clk_pin, dio_pin=dio_pin)
 
 
 def setup_switch(left_pin=34, right_pin=35):
@@ -103,9 +101,7 @@ def setup_switch(left_pin=34, right_pin=35):
     """
     from pygarden.switch import ThreeWaySwitch
 
-    switch = ThreeWaySwitch(left_pin=left_pin, right_pin=right_pin)
-
-    return switch
+    return ThreeWaySwitch(left_pin=left_pin, right_pin=right_pin)
 
 
 def setup_logging(level=logging.DEBUG, logfile=None):

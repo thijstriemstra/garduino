@@ -9,6 +9,7 @@ logger = logging.getLogger(__name__)
 
 class TM1637Display(object):
     """
+    Quad 7-segment LED module.
     """
     def __init__(self, clk_pin, dio_pin):
         self.display = TM1637(clk=Pin(clk_pin), dio=Pin(dio_pin))
