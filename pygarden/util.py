@@ -93,7 +93,7 @@ def setup_tm1637(clk_pin, dio_pin):
     """
     from pygarden.display import TM1637Display
 
-    display = TM1637Display(clk=clk_pin, dio=dio_pin)
+    display = TM1637Display(clk_pin=clk_pin, dio_pin=dio_pin)
 
     return display
 
