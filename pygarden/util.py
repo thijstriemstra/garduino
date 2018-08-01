@@ -91,10 +91,9 @@ def setup_tm1637(clk_pin, dio_pin):
     :type clk_pin: int
     :type dio_pin: int
     """
-    from machine import Pin
-    from pygarden.lib.tm1637 import TM1637
+    from pygarden.display import TM1637Display
 
-    display = TM1637(clk=Pin(clk_pin), dio=Pin(dio_pin))
+    display = TM1637Display(clk=clk_pin, dio=dio_pin)
 
     return display
 
