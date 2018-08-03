@@ -38,8 +38,8 @@ def setup_network(ssid, password):
         while not sta_if.isconnected():
             pass
     ncfg = sta_if.ifconfig()
-    logger.info('Network config')
     logger.info('--------------')
+    logger.info('Network')
     logger.info('SSID: {}'.format(ssid))
     logger.info('IP: {}'.format(ncfg[0]))
     logger.info('Router: {}'.format(ncfg[2]))
