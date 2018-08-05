@@ -76,13 +76,13 @@ enabled = False
 pin_nrs = 35
 
 [display]
-enabled = True
+enabled = False
 type = tm1637
 dio_pin = 19
 clk_pin = 23
 
 [switch]
-enabled = True
+enabled = False
 left_pin = 34
 right_pin = 35
 ```
