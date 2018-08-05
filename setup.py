@@ -11,7 +11,7 @@ setup(
     author_email="info@collab.nl",
     description="Python scripts for garden monitoring using ESP32",
     license="MIT",
-    keywords="esp32 micropython DS18B20 BH1750 raindrops soil detection rain sensor temperature moisture",
+    keywords="esp32 micropython DS18B20 BH1750 TM1637 raindrops soil detection rain sensor temperature moisture",
     url="https://github.com/thijstriemstra/py-garden",
     packages=["pygarden"],
     install_requires=[
