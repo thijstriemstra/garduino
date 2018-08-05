@@ -32,6 +32,9 @@ def get_config(fname='settings.conf'):
 def setup_network(ssid, password):
     """
     Create WIFI network connection.
+
+    :type ssid: str
+    :type password: str
     """
     sta_if = WLAN(STA_IF)
     if not sta_if.isconnected():

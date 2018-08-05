@@ -14,7 +14,16 @@ class TM1637Display(object):
     """
     Quad 7-segment LED module.
     """
-    def __init__(self, clk_pin, dio_pin):
+    def __init__(self, clk_pin, dio_pin, brightness=7):
+        """
+        :param clk_pin:
+        :type clk_pin: int
+        :param dio_pin:
+        :type dio_pin: int
+        :param brightness: Display brightness level.
+        :type brightness: int
+        """
+        self.brightness = brightness
         self.display = tm1637.TM1637(
             clk=Pin(clk_pin),
             dio=Pin(dio_pin)
@@ -24,6 +33,8 @@ class TM1637Display(object):
     def show(self, msg):
         """
         Display message.
+
+        :type msg: str
         """
         self.display.show(msg)
 
@@ -33,6 +44,8 @@ class TM1637Display(object):
 
         :param temp: Temperature (in degrees celsius).
         :type temp: int
+        :param delay:
+        :type delay: int
         """
         if (temp > 99) or (temp < -9):
             # out of screen bounds so scroll
@@ -58,13 +71,18 @@ class TM1637Display(object):
         """
         Scroll a message.
 
-        :param msg: Messages to scroll.
+        :param msg: Message to scroll.
         :type msg: str
+        :param delay:
+        :type delay: int
         """
         self.display.scroll(msg, delay=delay)
 
-    def all_chars(self):
+    def all_chars(self, delay=250):
         """
         Scroll through all available characters.
+
+        :param delay:
+        :type delay: int
         """
-        self.scroll(list(tm1637._SEGMENTS))
+        self.scroll(list(tm1637._SEGMENTS), delay=delay)
