@@ -1,10 +1,12 @@
+# Copyright (c) 2018 Collab
+# See LICENSE for details.
+
 """
 Utilities.
 """
 
 import time
 import utime
-from machine import I2C, RTC
 from network import WLAN, STA_IF
 
 from pygarden.lib import logging
@@ -30,6 +32,9 @@ def get_config(fname='settings.conf'):
 def setup_network(ssid, password):
     """
     Create WIFI network connection.
+
+    :type ssid: str
+    :type password: str
     """
     sta_if = WLAN(STA_IF)
     if not sta_if.isconnected():
@@ -39,8 +44,8 @@ def setup_network(ssid, password):
         while not sta_if.isconnected():
             pass
     ncfg = sta_if.ifconfig()
-    logger.info('Network config')
     logger.info('--------------')
+    logger.info('Network')
     logger.info('SSID: {}'.format(ssid))
     logger.info('IP: {}'.format(ncfg[0]))
     logger.info('Router: {}'.format(ncfg[2]))
@@ -54,7 +59,7 @@ def setup_rtc(i2c_id=0, scl_pin=22, sda_pin=21, timezone='Europe/Amsterdam',
     """
     Pull time from RTC at startup.
     """
-    from pygarden.lib.ds3231 import DS3231
+    from machine import RTC
 
     logger.info('#' * 30)
     logger.info('Timezone: {}'.format(timezone))
@@ -69,6 +74,9 @@ def setup_rtc(i2c_id=0, scl_pin=22, sda_pin=21, timezone='Europe/Amsterdam',
         time.sleep(1)
 
     if hardware is True:
+        from machine import I2C
+        from pygarden.lib.ds3231 import DS3231
+
         # setup hardware clock
         logger.info('Realtime clock: bus {} with SDA pin {} and SCL pin {}'.format(
             i2c_id, sda_pin, scl_pin))
@@ -84,7 +92,25 @@ def setup_rtc(i2c_id=0, scl_pin=22, sda_pin=21, timezone='Europe/Amsterdam',
     logger.info('#' * 30)
 
 
-def setupLogging(level=logging.DEBUG, logfile=None):
+def setup_tm1637(clk_pin, dio_pin):
+    """
+    :type clk_pin: int
+    :type dio_pin: int
+    """
+    from pygarden.display import TM1637Display
+
+    return TM1637Display(clk_pin=clk_pin, dio_pin=dio_pin)
+
+
+def setup_switch(left_pin=34, right_pin=35):
+    """
+    """
+    from pygarden.switch import ThreeWaySwitch
+
+    return ThreeWaySwitch(left_pin=left_pin, right_pin=right_pin)
+
+
+def setup_logging(level=logging.DEBUG, logfile=None):
     """
     Setup logging.
     """

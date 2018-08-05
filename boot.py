@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# Copyright (c) 2018 Collab
+# See LICENSE for details.
 
 import gc
 import sys
@@ -23,7 +25,7 @@ print('')
 cfg = util.get_config()
 
 # setup logging
-util.setupLogging(
+util.setup_logging(
     logfile=cfg.get('log', 'logfile')
 )
 logger = logging.getLogger(__name__)
@@ -46,6 +48,21 @@ if cfg.get('rtc', 'enabled').lower() != 'false':
 else:
     print('Realtime clock disabled.')
 
+# setup display
+display = None
+if cfg.get('display', 'enabled').lower() != 'false':
+    if cfg.get('display', 'type').lower() == 'tm1637':
+        display = util.setup_tm1637(
+            clk_pin=int(cfg.get('display', 'clk_pin')),
+            dio_pin=int(cfg.get('display', 'dio_pin'))
+        )
+    # switch
+    if cfg.get('switch', 'enabled').lower() != 'false':
+        switch = util.setup_switch(
+            left_pin=int(cfg.get('switch', 'left_pin')),
+            right_pin=int(cfg.get('switch', 'right_pin'))
+        )
+
 print()
 print('Loading application...')
 print()
@@ -58,6 +75,7 @@ try:
         password=cfg.get('broker', 'password'),
         server=cfg.get('broker', 'server'),
         device_id=cfg.get('broker', 'device_id'),
+        display=display,
         cfg=cfg
     )
 

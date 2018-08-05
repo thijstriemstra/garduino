@@ -1,3 +1,6 @@
+# Copyright (c) 2018 Collab
+# See LICENSE for details.
+
 from machine import Onewire, internal_temp
 
 from pygarden.lib import logging

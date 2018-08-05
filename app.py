@@ -1,3 +1,6 @@
+# Copyright (c) 2018 Collab
+# See LICENSE for details.
+
 import utime
 
 from machine import deepsleep
@@ -13,7 +16,10 @@ logger = logging.getLogger(__name__)
 
 
 class Application(object):
-    def __init__(self, client_id, server, cfg, interval=60,
+    """
+    Main application.
+    """
+    def __init__(self, client_id, server, cfg, display=None, interval=60,
                  user=None, password=None):
         """
         :param client_id: Unique MQTT client ID
@@ -21,14 +27,19 @@ class Application(object):
         :param server: MQTT broker IP/hostname
         :type server: str
         :param cfg:
+        :type cfg: dict
+        :param display:
         :param interval: How often to publish data
         :type interval: int
         :param user:
+        :type user: str
         :param password:
+        :type password: str
         """
         self.client_id = client_id
         self.server = server
         self.cfg = cfg
+        self.display = display
         self.user = user
         self.password = password
         self.interval = interval
@@ -224,7 +235,7 @@ class Application(object):
         return sensors
 
 
-def run(interval, user, password, server, device_id, cfg):
+def run(interval, user, password, server, device_id, cfg, display):
     """
     Create and return application.
     """
@@ -252,6 +263,7 @@ def run(interval, user, password, server, device_id, cfg):
         client_id=device_id,
         server=server,
         cfg=cfg,
+        display=display,
         interval=interval,
         user=user,
         password=password

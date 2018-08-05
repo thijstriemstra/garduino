@@ -1,3 +1,6 @@
+# Copyright (c) 2018 Collab
+# See LICENSE for details.
+
 import time
 
 from machine import Pin, ADC

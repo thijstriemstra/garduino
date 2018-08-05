@@ -6,12 +6,12 @@ from setuptools import setup
 
 setup(
     name="py.garden",
-    version='0.0.1',
+    version='0.1.0',
     author="Thijs Triemstra",
     author_email="info@collab.nl",
     description="Python scripts for garden monitoring using ESP32",
     license="MIT",
-    keywords="esp32 micropython DS18B20 BH1750 raindrops soil detection rain sensor temperature moisture",
+    keywords="esp32 micropython DS18B20 BH1750 TM1637 raindrops soil detection rain sensor temperature moisture",
     url="https://github.com/thijstriemstra/py-garden",
     packages=["pygarden"],
     install_requires=[
