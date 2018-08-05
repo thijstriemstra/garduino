@@ -1,3 +1,6 @@
+# Copyright (c) 2018 Collab
+# See LICENSE for details.
+
 from machine import I2C
 
 from pygarden.lib import logging
