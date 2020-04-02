@@ -1,13 +1,12 @@
 MicroPython scripts for garden monitoring using ESP32.
 
-Installation
-------------
+## Installation
 
 Checkout code:
 
 ```console
 git clone https://github.com/thijstriemstra/py-garden.git
-cd py-garden
+cd py-garden/micropython
 ```
 
 Create a virtual environment (using Python 3.4 or newer):
@@ -22,7 +21,7 @@ Install library and dependencies in the virtual environment:
 pip install -e .
 ```
 
-Development
+## Development
 -----------
 
 Use the Thonny IDE for development. Start it from the Python virtual
@@ -32,15 +31,13 @@ environment:
 thonny
 ```
 
-Firmware
---------
+### Firmware
 
 This project uses a fork of [MicroPython for ESP32 with psRAM support](https://github.com/loboris/MicroPython_ESP32_psRAM_LoBo).
 
 Check their wiki for the [build instructions](https://github.com/loboris/MicroPython_ESP32_psRAM_LoBo/wiki/build).
 
-Configuration file
-------------------
+### Configuration file
 
 Example of configuration file:
 
