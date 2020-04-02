@@ -5,15 +5,31 @@ Installation
 
 Checkout code:
 
-```
+```console
 git clone https://github.com/thijstriemstra/py-garden.git
 cd py-garden
 ```
 
-Install library and dependencies:
+Create a virtual environment (using Python 3.4 or newer):
 
+```console
+mkvirtualenv pygarden
 ```
+
+Install library and dependencies in the virtual environment:
+
+```console
 pip install -e .
+```
+
+Development
+-----------
+
+Use the Thonny IDE for development. Start it from the Python virtual
+environment:
+
+```console
+thonny
 ```
 
 Firmware
@@ -28,7 +44,7 @@ Configuration file
 
 Example of configuration file:
 
-```
+```ini
 [general]
 auto_start = True
 interval = 500
