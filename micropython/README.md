@@ -22,7 +22,6 @@ pip install -e .
 ```
 
 ## Development
------------
 
 Use the Thonny IDE for development. Start it from the Python virtual
 environment:

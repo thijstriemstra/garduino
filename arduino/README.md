@@ -11,4 +11,4 @@ cd py-garden/arduino
 
 ## Development
 
-Open project in VSCode with PlatformIO IDE extension.
+Open `pygarden` project in VSCode with PlatformIO IDE extension.
