@@ -1,9 +1,15 @@
-#include <Arduino.h>
+/*
+* Copyright (c) 2020 Collab
+* All rights reserved
+*/
+
+#include "PyGarden.h"
+PyGarden *app = new PyGarden();
 
 void setup() {
-  // put your setup code here, to run once:
+  app->begin();
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  app->loop();
 }
