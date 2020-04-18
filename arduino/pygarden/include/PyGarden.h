@@ -9,6 +9,7 @@
 #include <FC28_SoilSensor.h>
 #include <BH1750_LightSensor.h>
 #include <DS18B20_TemperatureSensors.h>
+#include <SingleChannel_Relay.h>
 
 #define VERSION "1.0.0"
 
@@ -24,6 +25,7 @@ class PyGarden
     FC28_SoilSensor* _soil1;
     FC28_SoilSensor* _soil2;
     BH1750_LightSensor* _light;
+    SingleChannel_Relay* _water;
     DS18B20_TemperatureSensors* _temperature;
 };
 
