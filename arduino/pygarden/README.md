@@ -26,4 +26,5 @@ Open `pygarden` project in VSCode with PlatformIO IDE extension.
 | --- | --- |
 | BH1750 SDA | 23 |
 | BH1750 SCL | 19 |
-| Water Valve + LED | |
+| Water Valve + LED | 22 |
+| Temperature | 15 |
