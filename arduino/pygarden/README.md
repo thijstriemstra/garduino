@@ -18,6 +18,8 @@ This project was created using a Lolin32 Lite v1.0.0.
 | YL-83 Rain Sensor | 1 |
 | FC-38 Soil Sensor 1 | 2 |
 | FC-38 Soil Sensor 2 | 3 |
+| SR04 Ultrasonic Sensor TRG | 4 |
+| SR04 Ultrasonic Sensor ECH | 5 |
 
 ## Installation
 

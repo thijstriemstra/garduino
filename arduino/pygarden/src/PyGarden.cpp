@@ -9,6 +9,7 @@ PyGarden::PyGarden() {
   /*_rain = new YL83_RainSensor(RainSensorPin);
   _soil1 = new FC28_SoilSensor(SoilSensor1Pin, SoilSensor1Dry, SoilSensor1Wet);
   _soil2 = new FC28_SoilSensor(SoilSensor2Pin, SoilSensor2Dry, SoilSensor2Wet);*/
+  _distance = new HCSR04_DistanceSensor(WaterTankTriggerPin, WaterTankEchoPin);
   _temperature = new DS18B20_TemperatureSensors(TemperatureSensorsPin);
   _light = new BH1750_LightSensor(LightSensorSCLPin, LightSensorSDAPin);
   _water = new SingleChannel_Relay(WaterValvePin);

@@ -8,8 +8,10 @@
 #include <YL83_RainSensor.h>
 #include <FC28_SoilSensor.h>
 #include <BH1750_LightSensor.h>
-#include <DS18B20_TemperatureSensors.h>
 #include <SingleChannel_Relay.h>
+#include <HCSR04_DistanceSensor.h>
+#include <DS18B20_TemperatureSensors.h>
+
 
 #define VERSION "1.0.0"
 
@@ -27,6 +29,7 @@ class PyGarden
     BH1750_LightSensor* _light;
     SingleChannel_Relay* _water;
     DS18B20_TemperatureSensors* _temperature;
+    HCSR04_DistanceSensor* _distance;
 };
 
 #endif
