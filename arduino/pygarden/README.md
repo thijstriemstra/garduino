@@ -15,11 +15,11 @@ This project was created using a Lolin32 Lite v1.0.0.
 | BH1750 Light Sensor SCL | 19 |
 | Single Channel Relay | 22 |
 | Dual DS18B20 Temperature Sensors | 15 |
-| YL-83 Rain Sensor | 1 |
-| FC-38 Soil Sensor 1 | 2 |
-| FC-38 Soil Sensor 2 | 3 |
-| SR04 Ultrasonic Sensor TRG | 4 |
-| SR04 Ultrasonic Sensor ECH | 5 |
+| YL-83 Rain Sensor | 34 |
+| FC-38 Soil Sensor 1 | 35 |
+| FC-38 Soil Sensor 2 | 32 |
+| SR04 Ultrasonic Sensor TRG | 33 |
+| SR04 Ultrasonic Sensor ECH | 25 |
 
 ## Installation
 

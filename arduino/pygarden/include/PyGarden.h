@@ -28,8 +28,8 @@ class PyGarden
     FC28_SoilSensor* _soil2;
     BH1750_LightSensor* _light;
     SingleChannel_Relay* _water;
-    DS18B20_TemperatureSensors* _temperature;
     HCSR04_DistanceSensor* _distance;
+    DS18B20_TemperatureSensors* _temperature;
 };
 
 #endif
