@@ -13,11 +13,11 @@ PyGarden::PyGarden() {
   _temperature = new DS18B20_TemperatureSensors(TemperatureSensorsPin);
   _light = new BH1750_LightSensor(LightSensorSCLPin, LightSensorSDAPin);
   _water = new SingleChannel_Relay(WaterValvePin);
+  _iot = new IOT();
 }
 
 void PyGarden::begin() {
-  // start serial connection
-  Serial.begin(115200);
+  _iot->Init();
 
   _rain->begin();
   _soil1->begin();
@@ -29,6 +29,8 @@ void PyGarden::begin() {
 }
 
 void PyGarden::loop() {
+  _iot->Run();
+
   // rain
   int rainSensorValue = _rain->measure();
   Serial.print("Rain sensor value: ");
@@ -52,12 +54,15 @@ void PyGarden::loop() {
   Serial.print("Temperature 2: ");
   Serial.print(temperature2);
   Serial.println("ºC");
+  delay(2000);
 
   // distance
+  /*
   float distance = _distance->measure(temperature1);
   Serial.print("Distance: ");
   Serial.print(distance);
   Serial.println(" cm");
+  */
 
   // light
   float lux = _light->read();
@@ -66,13 +71,13 @@ void PyGarden::loop() {
   Serial.println(" lx");
 
   // water
-  _water->start();
-  Serial.println("Current: flowing");
-  delay(4000);
+  //_water->start();
+  //Serial.println("Current: flowing");
+  //delay(4000);
 
-  _water->stop();
-  Serial.println("Current: idle");
-  delay(4000);
+  //_water->stop();
+  //Serial.println("Current: idle");
+  //delay(4000);
 
   Serial.println("-----------------------");
 }
