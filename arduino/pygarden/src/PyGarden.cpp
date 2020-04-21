@@ -32,6 +32,7 @@ void PyGarden::loop() {
   _iot->Run();
 
   // rain
+  /*
   int rainSensorValue = _rain->measure();
   Serial.print("Rain sensor value: ");
   Serial.println(rainSensorValue);
@@ -45,31 +46,29 @@ void PyGarden::loop() {
   Serial.print("Soil-2 moisture: ");
   Serial.println(moisture2);
 
-  // temperature
-  float temperature1 = _temperature->getTemperatureByIndex(0);
-  Serial.print("Temperature 1: ");
-  Serial.print(temperature1);
-  Serial.println("ºC");
-  delay(2000);
-  float temperature2 = _temperature->getTemperatureByIndex(1);
-  Serial.print("Temperature 2: ");
-  Serial.print(temperature2);
-  Serial.println("ºC");
-  delay(2000);
-
-  // distance
-  /*
-  float distance = _distance->measure(temperature1);
-  Serial.print("Distance: ");
-  Serial.print(distance);
-  Serial.println(" cm");
-  */
-
   // light
   float lux = _light->read();
   Serial.print("Light: ");
   Serial.print(lux);
   Serial.println(" lx");
+
+  // temperature
+  float temperature1 = _temperature->getTemperatureByIndex(0);
+  Serial.print("Temperature 1: ");
+  Serial.print(temperature1);
+  Serial.println("ºC");
+  float temperature2 = _temperature->getTemperatureByIndex(1);
+  Serial.print("Temperature 2: ");
+  Serial.print(temperature2);
+  Serial.println("ºC");
+
+  // distance
+  //
+  float distance = _distance->measure(temperature1);
+  Serial.print("Distance: ");
+  Serial.print(distance);
+  Serial.println(" cm");
+  //
 
   // water
   //_water->start();
@@ -81,4 +80,5 @@ void PyGarden::loop() {
   //delay(4000);
 
   Serial.println("-----------------------");
+  */
 }

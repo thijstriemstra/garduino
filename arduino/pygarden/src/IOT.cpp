@@ -1,4 +1,3 @@
-
 #include "IOT.h"
 #include <sys/time.h>
 #include <EEPROM.h>
@@ -64,6 +63,8 @@ void publishDiscovery()
 void onMqttConnect(bool sessionPresent)
 {
 	logd("Connected to MQTT. Session present: %d", sessionPresent);
+
+    /*
 	char mqttCmndTopic[STR_LEN];
 	sprintf(mqttCmndTopic, "%s/cmnd/Mode", _mqttRootTopic);
 	uint16_t packetIdSub = _mqttClient.subscribe(mqttCmndTopic, 1);
@@ -72,6 +73,7 @@ void onMqttConnect(bool sessionPresent)
 	logd("MQTT subscribe, QoS 1, packetId: %d", packetIdSub);
 	publishDiscovery();
 	_mqttClient.publish(_willTopic, 0, false, "Online");
+    */
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason)
@@ -107,6 +109,15 @@ void WiFiEvent(WiFiEvent_t event)
 		printLocalTime();
 		xTimerStart(mqttReconnectTimer, 0);
 		break;
+
+    case SYSTEM_EVENT_AP_STACONNECTED:
+       logd("Client connected to ESP32 access point");
+       break;
+    
+    case SYSTEM_EVENT_AP_STAIPASSIGNED:
+       logd("Assigned an IP to connected client");
+       break;
+
 	case SYSTEM_EVENT_STA_DISCONNECTED:
 		logw("WiFi lost connection");
         // ensure we don't reconnect to MQTT while reconnecting to Wi-Fi
@@ -200,7 +211,7 @@ void IOT::Init()
     logd("Connecting IOT...");
 
 	_iotWebConf.setStatusPin(WIFI_STATUS_PIN);
-	_iotWebConf.setConfigPin(WIFI_AP_PIN);
+	//_iotWebConf.setConfigPin(WIFI_AP_PIN);
 	mqttReconnectTimer = xTimerCreate("mqttTimer", pdMS_TO_TICKS(5000), pdFALSE, (void *)0, reinterpret_cast<TimerCallbackFunction_t>(connectToMqtt));
 	WiFi.onEvent(WiFiEvent);
 	_iotWebConf.setupUpdateServer(&_httpUpdater);
@@ -240,6 +251,7 @@ void IOT::Init()
 				_mqttClient.setServer(ip, port);
 				_mqttClient.setCredentials(_mqttUserName, _mqttUserPassword);
 				sprintf(_willTopic, "%s/tele/LWT", _mqttRootTopic);
+                logd("Setting will");
 				_mqttClient.setWill(_willTopic, 0, false, "Offline");
 			}
 		}
@@ -253,6 +265,7 @@ void IOT::Init()
 void IOT::Run()
 {
 	_iotWebConf.doLoop();
+
 	if (_clientsConfigured && WiFi.isConnected())
 	{
 		// ToDo MQTT monitoring
@@ -275,6 +288,9 @@ void IOT::Run()
 	}
 	else
 	{
+        //Serial.println("Connecting to Wi-Fi...");
+        //WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+        /*
 		if (Serial.peek() == '{')
 		{
 			String s = Serial.readStringUntil('}');
@@ -310,6 +326,7 @@ void IOT::Run()
 		{
 			Serial.read(); // discard data
 		}
+        */
 	}
 }
 
