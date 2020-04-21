@@ -35,7 +35,7 @@ void PyGarden::loop() {
   int rainSensorValue = _rain->measure();
   Serial.print("Rain sensor value: ");
   Serial.println(rainSensorValue);
-  _iot->publish("mode", "foo", false);
+  _iot->publish("rain_0", "4095");
 
   // soil
   int moisture1 = _soil1->measure();

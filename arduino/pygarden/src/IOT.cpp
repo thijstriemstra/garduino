@@ -318,7 +318,7 @@ void IOT::publish(const char *subtopic, const char *value, boolean retained)
 	if (_mqttClient.connected())
 	{
 		char buf[64];
-		sprintf(buf, "%s/stat/%s", _mqttRootTopic, subtopic);
+		sprintf(buf, "%s/%s", _mqttRootTopic, subtopic);
 		_mqttClient.publish(buf, 0, retained, value);
 	}
 }
