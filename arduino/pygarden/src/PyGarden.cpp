@@ -17,7 +17,9 @@ PyGarden::PyGarden() {
 }
 
 void PyGarden::begin() {
-  _iot->Init();
+  //_iot->Init();
+
+  pinMode(4, OUTPUT);
 
   _rain->begin();
   _soil1->begin();
@@ -29,7 +31,7 @@ void PyGarden::begin() {
 }
 
 void PyGarden::loop() {
-  _iot->Run();
+  //_iot->Run();
 
   // rain
   /*
@@ -45,6 +47,7 @@ void PyGarden::loop() {
   int moisture2 = _soil2->measure();
   Serial.print("Soil-2 moisture: ");
   Serial.println(moisture2);
+  */
 
   // light
   float lux = _light->read();
@@ -63,13 +66,21 @@ void PyGarden::loop() {
   Serial.println("ºC");
 
   // distance
-  //
   float distance = _distance->measure(temperature1);
   Serial.print("Distance: ");
   Serial.print(distance);
   Serial.println(" cm");
-  //
 
+  delay(3000);
+
+  if (distance > -1) {
+    digitalWrite(4, HIGH);
+    delay(3000);
+  } else {
+    digitalWrite(4, LOW);
+  }
+
+  /*
   // water
   //_water->start();
   //Serial.println("Current: flowing");
@@ -78,7 +89,7 @@ void PyGarden::loop() {
   //_water->stop();
   //Serial.println("Current: idle");
   //delay(4000);
+  */
 
   Serial.println("-----------------------");
-  */
 }
