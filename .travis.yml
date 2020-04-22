@@ -1,6 +1,0 @@
-sudo: false
-language: python
-cache: pip
-
-install: pip install -U pip tox coveralls
-script: tox -v
