@@ -4,9 +4,6 @@
 #include "time.h"
 #include "Log.h"
 
-#define WIFI_SSID "InternetBuiten_Low"
-#define WIFI_PASSWORD "artsmeirt"
-
 AsyncMqttClient _mqttClient;
 TimerHandle_t mqttReconnectTimer;
 DNSServer _dnsServer;

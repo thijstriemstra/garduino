@@ -19,6 +19,10 @@ class PyGarden
     PyGarden();
     void begin();
     void loop();
+    void startRelay();
+    void measureDistance(float temperature);
+    void measureLight();
+    void measureRain();
 
   private:
     IOT* _iot;
