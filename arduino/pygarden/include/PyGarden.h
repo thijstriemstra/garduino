@@ -11,6 +11,7 @@
 #include <BH1750_LightSensor.h>
 #include <SingleChannel_Relay.h>
 #include <HCSR04_DistanceSensor.h>
+#include <BMP280_BarometerSensor.h>
 #include <DS18B20_TemperatureSensors.h>
 
 class PyGarden
@@ -22,6 +23,7 @@ class PyGarden
     void startRelay();
     void measureLight();
     void measureRain();
+    void readBarometer();
 
   private:
     IOT* _iot;
@@ -30,6 +32,7 @@ class PyGarden
     FC28_SoilSensor* _soil2;
     BH1750_LightSensor* _light;
     SingleChannel_Relay* _water;
+    BMP280_BarometerSensor* _barometer;
     DS18B20_TemperatureSensors* _temperature;
 };
 
