@@ -21,10 +21,8 @@ This project was created using a Lolin32 Lite v1.0.0.
 | YL-83 Rain Sensor | 34 |
 | FC-38 Soil Sensor 1 | 35 |
 | FC-38 Soil Sensor 2 | 32 |
-| SR04 Ultrasonic Sensor TRG | 25 (TODO: -> 27) |
-| SR04 Ultrasonic Sensor ECH | 33 (TODO: -> 16) |
-
-TODO: test with uncut cable
+| BME280 Barometer SDA | 12 |
+| BME280 Barometer SCL | 27 |
 
 ## Installation
 
