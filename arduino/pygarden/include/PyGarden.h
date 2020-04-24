@@ -20,7 +20,6 @@ class PyGarden
     void begin();
     void loop();
     void startRelay();
-    void measureDistance(float temperature);
     void measureLight();
     void measureRain();
 
@@ -31,7 +30,6 @@ class PyGarden
     FC28_SoilSensor* _soil2;
     BH1750_LightSensor* _light;
     SingleChannel_Relay* _water;
-    HCSR04_DistanceSensor* _distance;
     DS18B20_TemperatureSensors* _temperature;
 };
 

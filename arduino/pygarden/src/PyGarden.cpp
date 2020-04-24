@@ -12,7 +12,6 @@ PyGarden::PyGarden() {
   _rain = new YL83_RainSensor(RainSensorPin);
   _soil1 = new FC28_SoilSensor(SoilSensor1Pin, SoilSensor1Dry, SoilSensor1Wet);
   _soil2 = new FC28_SoilSensor(SoilSensor2Pin, SoilSensor2Dry, SoilSensor2Wet);
-  _distance = new HCSR04_DistanceSensor(WaterTankTriggerPin, WaterTankEchoPin);
   _temperature = new DS18B20_TemperatureSensors(TemperatureSensorsPin);
   _light = new BH1750_LightSensor(LightSensorSCLPin, LightSensorSDAPin);
   _water = new SingleChannel_Relay(WaterValvePin);
@@ -28,7 +27,6 @@ void PyGarden::begin() {
   _soil1->begin();
   _soil2->begin();
   _temperature->begin();
-  _distance->begin();
   _light->begin();
   _water->begin();
 }
@@ -60,11 +58,8 @@ void PyGarden::loop() {
   Serial.print(temperature2);
   Serial.println("ºC");
 
-  // distance
-  measureDistance(temperature1);
-
   // water
-  //startRelay();
+  startRelay();
 
   Serial.println("-----------------------");
 }
@@ -86,29 +81,9 @@ void PyGarden::measureRain() {
 void PyGarden::startRelay() {
   _water->start();
   Serial.println("Water: flowing");
-  delay(4000);
+  delay(5000);
 
   _water->stop();
   Serial.println("Water: idle");
-  delay(4000);
-}
-
-void PyGarden::measureDistance(float temperature) {
-  float distance = _distance->measure(temperature);
-  Serial.print("Distance: ");
-  Serial.print(distance);
-  Serial.println(" cm");
-
-  delay(3000);
-
-  if (distance > -1 && distance < 100) {
-    digitalWrite(4, HIGH);
-    delay(500);
-    digitalWrite(4, LOW);
-    delay(500);
-    digitalWrite(4, HIGH);
-    delay(1500);
-  } else {
-    digitalWrite(4, LOW);
-  }
+  delay(5000);
 }
