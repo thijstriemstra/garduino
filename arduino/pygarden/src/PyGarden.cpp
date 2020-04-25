@@ -15,14 +15,11 @@ PyGarden::PyGarden() {
   _temperature = new DS18B20_TemperatureSensors(TemperatureSensorsPin);
   _light = new BH1750_LightSensor(LightSensorSCLPin, LightSensorSDAPin);
   _water = new SingleChannel_Relay(WaterValvePin);
-  _barometer = new BMP280_BarometerSensor(BarometerSCLPin, BarometerSDAPin);
+  _barometer = new BME280_BarometerSensor(BarometerSCLPin, BarometerSDAPin);
 }
 
 void PyGarden::begin() {
   //_iot->Init();
-
-  // test led
-  pinMode(4, OUTPUT);
 
   _barometer->begin();
   _rain->begin();
@@ -30,7 +27,7 @@ void PyGarden::begin() {
   _soil2->begin();
   _temperature->begin();
   _light->begin();
-  _water->begin();
+  //_water->begin();
 }
 
 void PyGarden::loop() {
@@ -64,9 +61,11 @@ void PyGarden::loop() {
   Serial.println("ºC");
 
   // water
-  startRelay();
+  //startRelay();
 
   Serial.println("-----------------------");
+
+  delay(2000);
 }
 
 void PyGarden::measureLight() {
@@ -93,6 +92,11 @@ void PyGarden::readBarometer() {
   Serial.print(F("Pressure: "));
   Serial.print(pressure);
   Serial.println(" hPa");
+
+  float humidity = _barometer->getHumidity();
+  Serial.print("Humidity = ");
+  Serial.print(humidity);
+  Serial.println(" %");
 
   float altitude = _barometer->getAltitude();
   Serial.print("Altitude: ");
