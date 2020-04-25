@@ -40,32 +40,20 @@ void PyGarden::loop() {
   measureRain();
 
   // soil
-  int moisture1 = _soil1->measure();
-  Serial.print("Soil-1 moisture: ");
-  Serial.println(moisture1);
-  int moisture2 = _soil2->measure();
-  Serial.print("Soil-2 moisture: ");
-  Serial.println(moisture2);
+  readSoilMoisture();
 
   // light
   measureLight();
 
   // temperature
-  float temperature1 = _temperature->getTemperatureByIndex(0);
-  Serial.print("Temperature 1: ");
-  Serial.print(temperature1);
-  Serial.println("ºC");
-  float temperature2 = _temperature->getTemperatureByIndex(1);
-  Serial.print("Temperature 2: ");
-  Serial.print(temperature2);
-  Serial.println("ºC");
+  readTemperature();
 
   // water
   //startRelay();
 
   Serial.println("-----------------------");
 
-  delay(2000);
+  delay(4000);
 }
 
 void PyGarden::measureLight() {
@@ -76,9 +64,10 @@ void PyGarden::measureLight() {
 }
 
 void PyGarden::measureRain() {
-  int rainSensorValue = _rain->measure();
-  Serial.print("Rain sensor value: ");
-  Serial.println(rainSensorValue);
+  int rainSensorValue = _rain->measurePercentage();
+  Serial.print("Rain sensor: ");
+  Serial.print(rainSensorValue);
+  Serial.println(" % dry");
   //_iot->publish("rain_0", "4095");
 }
 
@@ -98,12 +87,29 @@ void PyGarden::readBarometer() {
   Serial.print(humidity);
   Serial.println(" %");
 
-  float altitude = _barometer->getAltitude();
-  Serial.print("Altitude: ");
-  Serial.print(altitude);
-  Serial.println(" m");
-
   delay(1000);
+}
+
+void PyGarden::readTemperature() {
+  float temperature1 = _temperature->getTemperatureByIndex(0);
+  Serial.print("Temperature 1: ");
+  Serial.print(temperature1);
+  Serial.println("ºC");
+  float temperature2 = _temperature->getTemperatureByIndex(1);
+  Serial.print("Temperature 2: ");
+  Serial.print(temperature2);
+  Serial.println("ºC");
+}
+
+void PyGarden::readSoilMoisture() {
+  int moisture1 = _soil1->measurePercentage();
+  Serial.print("Soil-1 moisture: ");
+  Serial.print(moisture1);
+  Serial.println(" % dry");
+  int moisture2 = _soil2->measurePercentage();
+  Serial.print("Soil-2 moisture: ");
+  Serial.print(moisture2);
+  Serial.println(" % dry");
 }
 
 void PyGarden::startRelay() {

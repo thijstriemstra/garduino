@@ -23,6 +23,8 @@ class PyGarden
     void measureLight();
     void measureRain();
     void readBarometer();
+    void readTemperature();
+    void readSoilMoisture();
 
   private:
     IOT* _iot;
