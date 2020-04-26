@@ -22,6 +22,9 @@ PyGarden::PyGarden() {
 }
 
 void PyGarden::begin() {
+  // wifi and mqtt
+  _iot->begin();
+
   // callbacks
   Method manualBtnCallback;
   manualBtnCallback.attachCallback(
@@ -29,8 +32,6 @@ void PyGarden::begin() {
   Method resetBtnCallback;
   resetBtnCallback.attachCallback(
     makeFunctor((Functor0 *)0, *this, &PyGarden::onResetButtonPush));
-
-  //_iot->begin();
 
   // initialize the LED pin as an output:
   pinMode(WIFI_STATUS_PIN, OUTPUT);

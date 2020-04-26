@@ -1,9 +1,6 @@
 #include "IOT.h"
 #include "Log.h"
 
-namespace PyGarden
-{
-
 AsyncMqttClient _mqttClient;
 TimerHandle_t mqttReconnectTimer;
 TimerHandle_t wifiReconnectTimer;
@@ -120,5 +117,4 @@ void IOT::begin() {
     _mqttClient.setCredentials(MQTT_USER, MQTT_PASSWORD);
 
     connectToWifi();
-}
 }
