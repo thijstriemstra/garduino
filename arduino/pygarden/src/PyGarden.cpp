@@ -5,7 +5,7 @@
 #include <PyGarden.h>
 
 PyGarden::PyGarden() {
-  //_iot = new IOT();
+  _iot = new IOT();
 
   // controls
   _manualBtn = new Button(ManualRunPin, INPUT_PULLUP);
