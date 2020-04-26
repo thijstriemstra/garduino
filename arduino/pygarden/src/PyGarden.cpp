@@ -2,11 +2,14 @@
   PyGarden.cpp - Library for monitoring a garden.
 */
 
-#include "Arduino.h"
-#include "PyGarden.h"
+#include <PyGarden.h>
 
 PyGarden::PyGarden() {
-  _iot = new IOT();
+  //_iot = new IOT();
+
+  // controls
+  _manualBtn = new Button(ManualRunPin, INPUT_PULLUP);
+  _resetBtn = new Button(WIFI_AP_PIN, INPUT_PULLUP);
 
   // sensors
   _rain = new YL83_RainSensor(RainSensorPin);
@@ -14,46 +17,44 @@ PyGarden::PyGarden() {
   _soil2 = new FC28_SoilSensor(SoilSensor2Pin, SoilSensor2Dry, SoilSensor2Wet);
   _temperature = new DS18B20_TemperatureSensors(TemperatureSensorsPin);
   _light = new BH1750_LightSensor(LightSensorSCLPin, LightSensorSDAPin);
-  _water = new SingleChannel_Relay(WaterValvePin);
+  _water = new SingleChannel_Relay(WaterValvePin, false);
   _barometer = new BME280_BarometerSensor(BarometerSCLPin, BarometerSDAPin);
 }
 
 void PyGarden::begin() {
-  //_iot->Init();
+  // callbacks
+  Method manualBtnCallback;
+  manualBtnCallback.attachCallback(
+    makeFunctor((Functor0 *)0, *this, &PyGarden::onManualButtonPush));
+  Method resetBtnCallback;
+  resetBtnCallback.attachCallback(
+    makeFunctor((Functor0 *)0, *this, &PyGarden::onResetButtonPush));
 
+  //_iot->begin();
+
+  // initialize the LED pin as an output:
+  pinMode(WIFI_STATUS_PIN, OUTPUT);
+
+  // controls
+  _manualBtn->begin(manualBtnCallback);
+  _resetBtn->begin(resetBtnCallback);
+
+  // sensors
   _barometer->begin();
   _rain->begin();
   _soil1->begin();
   _soil2->begin();
   _temperature->begin();
   _light->begin();
-  //_water->begin();
+  _water->begin();
 }
 
 void PyGarden::loop() {
   //_iot->Run();
 
-  // barometer
-  readBarometer();
-
-  // rain
-  measureRain();
-
-  // soil
-  readSoilMoisture();
-
-  // light
-  measureLight();
-
-  // temperature
-  readTemperature();
-
-  // water
-  //startRelay();
-
-  Serial.println("-----------------------");
-
-  delay(4000);
+  // controls
+  _manualBtn->loop();
+  _resetBtn->loop();
 }
 
 void PyGarden::measureLight() {
@@ -115,9 +116,49 @@ void PyGarden::readSoilMoisture() {
 void PyGarden::startRelay() {
   _water->start();
   Serial.println("Water: flowing");
-  delay(5000);
+}
 
+void PyGarden::stopRelay() {
   _water->stop();
   Serial.println("Water: idle");
-  delay(5000);
+}
+
+void PyGarden::onManualButtonPush() {
+  Serial.println(millis());
+
+  if (started == false) {
+    started = true;
+
+    digitalWrite(WIFI_STATUS_PIN, HIGH);
+
+    // water
+    startRelay();
+
+    // barometer
+    readBarometer();
+
+    // rain
+    measureRain();
+
+    // soil
+    readSoilMoisture();
+
+    // light
+    measureLight();
+
+    // temperature
+    readTemperature();
+  } else {
+    started = false;
+
+    digitalWrite(WIFI_STATUS_PIN, LOW);
+
+    // water
+    stopRelay();
+  }
+  Serial.println("-----------------------");
+}
+
+void PyGarden::onResetButtonPush() {
+  Serial.println("Reset button pushed.");
 }

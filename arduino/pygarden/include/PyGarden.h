@@ -4,8 +4,12 @@
 #ifndef PyGarden_h
 #define PyGarden_h
 
-#include "Arduino.h"
-#include "IOT.h"
+#include <Arduino.h>
+#include <Functor.h>
+
+#include <IOT.h>
+#include <Button.h>
+#include <Method.h>
 #include <YL83_RainSensor.h>
 #include <FC28_SoilSensor.h>
 #include <BH1750_LightSensor.h>
@@ -20,14 +24,21 @@ class PyGarden
     void begin();
     void loop();
     void startRelay();
+    void stopRelay();
     void measureLight();
     void measureRain();
     void readBarometer();
     void readTemperature();
     void readSoilMoisture();
 
+    // callbacks
+    void onManualButtonPush();
+    void onResetButtonPush();
+
   private:
     IOT* _iot;
+    Button* _manualBtn;
+    Button* _resetBtn;
     YL83_RainSensor* _rain;
     FC28_SoilSensor* _soil1;
     FC28_SoilSensor* _soil2;
@@ -35,6 +46,8 @@ class PyGarden
     SingleChannel_Relay* _water;
     BME280_BarometerSensor* _barometer;
     DS18B20_TemperatureSensors* _temperature;
+
+    bool started = false;
 };
 
 #endif
