@@ -55,6 +55,7 @@ void PyGarden::begin() {
   setupDeepsleep();
 
   // wifi/mqtt
+  _networkLED->blink();
   _iot->begin(connectionReadyCallback);
 }
 
@@ -62,6 +63,8 @@ void PyGarden::loop() {
   // controls
   _manualBtn->loop();
   _powerBtn->loop();
+  _powerLED->loop();
+  _networkLED->loop();
 }
 
 void PyGarden::measureLight() {
@@ -141,13 +144,14 @@ void PyGarden::readSoilMoisture() {
 void PyGarden::startRelay() {
   _water->start();
 
-  Serial.println("Water: flowing");
+  Serial.println("-----------------------");
+  Serial.println("Water: valve open");
 }
 
 void PyGarden::stopRelay() {
   _water->stop();
 
-  Serial.println("Water: idle");
+  Serial.println("Water: valve closed");
 }
 
 void PyGarden::onManualButtonPush() {
@@ -171,6 +175,8 @@ void PyGarden::toggleState() {
 
 void PyGarden::onConnectionReady() {
   // network status LED
+  // stop blinking
+  _networkLED->blink();
   _networkLED->enable();
 
   // time
@@ -198,8 +204,9 @@ void PyGarden::onConnectionReady() {
 }
 
 void PyGarden::onPowerButtonPush() {
-  Serial.println("Power button pushed.");
+  Serial.println("******************************");
   Serial.println("Going to sleep... Bye.");
+  Serial.println("******************************");
 
   // disable power led
   _powerLED->disable();
