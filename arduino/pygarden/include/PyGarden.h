@@ -8,6 +8,7 @@
 #include <Functor.h>
 
 #include <IOT.h>
+#include <LED.h>
 #include <Button.h>
 #include <Method.h>
 #include <YL83_RainSensor.h>
@@ -39,6 +40,8 @@ class PyGarden
     IOT* _iot;
     Button* _manualBtn;
     Button* _resetBtn;
+    LED* _manualLED;
+    LED* _wifiLED;
     YL83_RainSensor* _rain;
     FC28_SoilSensor* _soil1;
     FC28_SoilSensor* _soil2;

@@ -5,11 +5,11 @@
 #include <PyGarden.h>
 
 PyGarden::PyGarden() {
-  _iot = new IOT();
-
   // controls
   _manualBtn = new Button(ManualRunButtonPin, INPUT);
+  _manualLED = new LED(ManualRunLEDPin);
   _resetBtn = new Button(WIFI_AP_PIN, INPUT);
+  _wifiLED = new LED(WIFI_STATUS_PIN);
 
   // sensors
   _rain = new YL83_RainSensor(RainSensorPin);
@@ -19,12 +19,12 @@ PyGarden::PyGarden() {
   _light = new BH1750_LightSensor(LightSensorSCLPin, LightSensorSDAPin);
   _water = new SingleChannel_Relay(WaterValvePin, false);
   _barometer = new BME280_BarometerSensor(BarometerSCLPin, BarometerSDAPin);
+
+  // wifi + mqtt
+  _iot = new IOT();
 }
 
 void PyGarden::begin() {
-  // wifi and mqtt
-  //_iot->begin();
-
   // callbacks
   Method manualBtnCallback;
   manualBtnCallback.attachCallback(
@@ -33,12 +33,11 @@ void PyGarden::begin() {
   resetBtnCallback.attachCallback(
     makeFunctor((Functor0 *)0, *this, &PyGarden::onResetButtonPush));
 
-  // manual run LED
-  pinMode(ManualRunLEDPin, OUTPUT);
-
   // controls
   _manualBtn->begin(manualBtnCallback);
   _resetBtn->begin(resetBtnCallback);
+  _wifiLED->begin();
+  _manualLED->begin();
 
   // sensors
   _barometer->begin();
@@ -48,6 +47,9 @@ void PyGarden::begin() {
   _temperature->begin();
   _light->begin();
   _water->begin();
+
+  // wifi and mqtt
+  //_iot->begin();
 }
 
 void PyGarden::loop() {
@@ -86,8 +88,6 @@ void PyGarden::readBarometer() {
   Serial.print("Humidity = ");
   Serial.print(humidity);
   Serial.println(" %");
-
-  delay(1000);
 }
 
 void PyGarden::readTemperature() {
@@ -114,21 +114,23 @@ void PyGarden::readSoilMoisture() {
 
 void PyGarden::startRelay() {
   _water->start();
+
+  _manualLED->enable();
+
   Serial.println("Water: flowing");
 }
 
 void PyGarden::stopRelay() {
   _water->stop();
+
+  _manualLED->disable();
+
   Serial.println("Water: idle");
 }
 
 void PyGarden::onManualButtonPush() {
-  Serial.println(millis());
-
   if (started == false) {
     started = true;
-
-    digitalWrite(ManualRunLEDPin, HIGH);
 
     // water
     startRelay();
@@ -149,8 +151,6 @@ void PyGarden::onManualButtonPush() {
     readTemperature();
   } else {
     started = false;
-
-    digitalWrite(ManualRunLEDPin, LOW);
 
     // water
     stopRelay();

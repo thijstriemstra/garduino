@@ -102,19 +102,29 @@ IOT::IOT() {
 }
 
 void IOT::begin() {
-    mqttReconnectTimer = xTimerCreate("mqttTimer", pdMS_TO_TICKS(2000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToMqtt));
-    wifiReconnectTimer = xTimerCreate("wifiTimer", pdMS_TO_TICKS(2000), pdFALSE, (void*)0, reinterpret_cast<TimerCallbackFunction_t>(connectToWifi));
+  // setup timers
+  mqttReconnectTimer = xTimerCreate(
+    "mqttTimer", pdMS_TO_TICKS(2000), pdFALSE, (void*)0,
+    reinterpret_cast<TimerCallbackFunction_t>(connectToMqtt)
+  );
+  wifiReconnectTimer = xTimerCreate(
+    "wifiTimer", pdMS_TO_TICKS(2000), pdFALSE, (void*)0,
+    reinterpret_cast<TimerCallbackFunction_t>(connectToWifi)
+  );
 
-    WiFi.onEvent(WiFiEvent);
+  // setup wifi
+  WiFi.onEvent(WiFiEvent);
 
-    _mqttClient.onConnect(onMqttConnect);
-    _mqttClient.onDisconnect(onMqttDisconnect);
-    _mqttClient.onSubscribe(onMqttSubscribe);
-    _mqttClient.onUnsubscribe(onMqttUnsubscribe);
-    _mqttClient.onMessage(onMqttMessage);
-    _mqttClient.onPublish(onMqttPublish);
-    _mqttClient.setServer(MQTT_HOST, MQTT_PORT);
-    _mqttClient.setCredentials(MQTT_USER, MQTT_PASSWORD);
+  // setup mqtt
+  _mqttClient.onConnect(onMqttConnect);
+  _mqttClient.onDisconnect(onMqttDisconnect);
+  _mqttClient.onSubscribe(onMqttSubscribe);
+  _mqttClient.onUnsubscribe(onMqttUnsubscribe);
+  _mqttClient.onMessage(onMqttMessage);
+  _mqttClient.onPublish(onMqttPublish);
+  _mqttClient.setServer(MQTT_HOST, MQTT_PORT);
+  _mqttClient.setCredentials(MQTT_USER, MQTT_PASSWORD);
 
-    connectToWifi();
+  // start connection
+  connectToWifi();
 }
