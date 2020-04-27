@@ -8,8 +8,8 @@ PyGarden::PyGarden() {
   _iot = new IOT();
 
   // controls
-  _manualBtn = new Button(ManualRunPin, INPUT_PULLUP);
-  _resetBtn = new Button(WIFI_AP_PIN, INPUT_PULLUP);
+  _manualBtn = new Button(ManualRunButtonPin, INPUT);
+  _resetBtn = new Button(WIFI_AP_PIN, INPUT);
 
   // sensors
   _rain = new YL83_RainSensor(RainSensorPin);
@@ -23,7 +23,7 @@ PyGarden::PyGarden() {
 
 void PyGarden::begin() {
   // wifi and mqtt
-  _iot->begin();
+  //_iot->begin();
 
   // callbacks
   Method manualBtnCallback;
@@ -33,8 +33,8 @@ void PyGarden::begin() {
   resetBtnCallback.attachCallback(
     makeFunctor((Functor0 *)0, *this, &PyGarden::onResetButtonPush));
 
-  // initialize the LED pin as an output:
-  pinMode(WIFI_STATUS_PIN, OUTPUT);
+  // manual run LED
+  pinMode(ManualRunLEDPin, OUTPUT);
 
   // controls
   _manualBtn->begin(manualBtnCallback);
@@ -51,8 +51,6 @@ void PyGarden::begin() {
 }
 
 void PyGarden::loop() {
-  //_iot->Run();
-
   // controls
   _manualBtn->loop();
   _resetBtn->loop();
@@ -130,7 +128,7 @@ void PyGarden::onManualButtonPush() {
   if (started == false) {
     started = true;
 
-    digitalWrite(WIFI_STATUS_PIN, HIGH);
+    digitalWrite(ManualRunLEDPin, HIGH);
 
     // water
     startRelay();
@@ -152,7 +150,7 @@ void PyGarden::onManualButtonPush() {
   } else {
     started = false;
 
-    digitalWrite(WIFI_STATUS_PIN, LOW);
+    digitalWrite(ManualRunLEDPin, LOW);
 
     // water
     stopRelay();
