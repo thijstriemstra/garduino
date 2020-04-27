@@ -6,6 +6,7 @@
 
 #include <Arduino.h>
 #include <Functor.h>
+#include "time.h"
 
 #include <IOT.h>
 #include <LED.h>
@@ -28,6 +29,12 @@ class PyGarden
     void stopRelay();
     void toggleState();
 
+    // network
+    void onConnectionReady();
+
+    // time
+    void printLocalTime();
+
     // sensors
     void measureLight();
     void measureRain();
@@ -45,8 +52,8 @@ class PyGarden
 
   private:
     IOT* _iot;
-    LED* _manualLED;
     LED* _powerLED;
+    LED* _networkLED;
     Button* _manualBtn;
     Button* _powerBtn;
     YL83_RainSensor* _rain;
@@ -58,6 +65,9 @@ class PyGarden
     DS18B20_TemperatureSensors* _temperature;
 
     bool started = false;
+    const char* ntpServer = "pool.ntp.org";
+    const long gmtOffset_sec = 3600;
+    const int daylightOffset_sec = 3600;
 };
 
 #endif

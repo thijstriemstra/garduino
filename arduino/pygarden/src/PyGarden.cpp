@@ -7,7 +7,7 @@
 PyGarden::PyGarden() {
   // controls
   _manualBtn = new Button(ManualRunButtonPin, INPUT);
-  _manualLED = new LED(ManualRunLEDPin);
+  _networkLED = new LED(NetworkLEDPin);
   _powerBtn = new Button(PowerButtonPin, INPUT);
   _powerLED = new LED(PowerLEDPin);
 
@@ -32,12 +32,15 @@ void PyGarden::begin() {
   Method powerBtnCallback;
   powerBtnCallback.attachCallback(
     makeFunctor((Functor0 *)0, *this, &PyGarden::onPowerButtonPush));
+  Method connectionReadyCallback;
+  connectionReadyCallback.attachCallback(
+    makeFunctor((Functor0 *)0, *this, &PyGarden::onConnectionReady));
 
   // controls
   _manualBtn->begin(manualBtnCallback);
   _powerBtn->begin(powerBtnCallback);
   _powerLED->begin();
-  _manualLED->begin();
+  _networkLED->begin();
 
   // sensors
   _barometer->begin();
@@ -52,7 +55,7 @@ void PyGarden::begin() {
   setupDeepsleep();
 
   // wifi/mqtt
-  //_iot->begin();
+  _iot->begin(connectionReadyCallback);
 }
 
 void PyGarden::loop() {
@@ -66,6 +69,9 @@ void PyGarden::measureLight() {
   Serial.print("Light: ");
   Serial.print(lux);
   Serial.println(" lx");
+
+  // publish
+  _iot->publish("emon/kleine_kas/inside/light", lux);
 }
 
 void PyGarden::measureRain() {
@@ -73,7 +79,9 @@ void PyGarden::measureRain() {
   Serial.print("Rain sensor: ");
   Serial.print(rainSensorValue);
   Serial.println(" % dry");
-  //_iot->publish("rain_0", "4095");
+
+  // publish
+  _iot->publish("emon/kleine_kas/outside/rain", rainSensorValue);
 }
 
 void PyGarden::readBarometer() {
@@ -91,6 +99,11 @@ void PyGarden::readBarometer() {
   Serial.print("Humidity = ");
   Serial.print(humidity);
   Serial.println(" %");
+
+  // publish
+  _iot->publish("emon/kleine_kas/inside/temperature", temperature);
+  _iot->publish("emon/kleine_kas/inside/pressure", pressure);
+  _iot->publish("emon/kleine_kas/inside/humidity", humidity);
 }
 
 void PyGarden::readTemperature() {
@@ -98,10 +111,15 @@ void PyGarden::readTemperature() {
   Serial.print("Temperature 1: ");
   Serial.print(temperature1);
   Serial.println("ºC");
+
   float temperature2 = _temperature->getTemperatureByIndex(1);
   Serial.print("Temperature 2: ");
   Serial.print(temperature2);
   Serial.println("ºC");
+
+  // publish
+  _iot->publish("emon/kleine_kas/outside/temperature", temperature1);
+  _iot->publish("emon/kleine_kas/water/temperature", temperature2);
 }
 
 void PyGarden::readSoilMoisture() {
@@ -109,24 +127,25 @@ void PyGarden::readSoilMoisture() {
   Serial.print("Soil-1 moisture: ");
   Serial.print(moisture1);
   Serial.println(" % dry");
+
   int moisture2 = _soil2->measurePercentage();
   Serial.print("Soil-2 moisture: ");
   Serial.print(moisture2);
   Serial.println(" % dry");
+
+  // publish
+  _iot->publish("emon/kleine_kas/soil/left", moisture1);
+  _iot->publish("emon/kleine_kas/soil/right", moisture2);
 }
 
 void PyGarden::startRelay() {
   _water->start();
-
-  _manualLED->enable();
 
   Serial.println("Water: flowing");
 }
 
 void PyGarden::stopRelay() {
   _water->stop();
-
-  _manualLED->disable();
 
   Serial.println("Water: idle");
 }
@@ -141,21 +160,6 @@ void PyGarden::toggleState() {
 
     // water
     startRelay();
-
-    // barometer
-    readBarometer();
-
-    // rain
-    measureRain();
-
-    // soil
-    readSoilMoisture();
-
-    // light
-    measureLight();
-
-    // temperature
-    readTemperature();
   } else {
     started = false;
 
@@ -165,9 +169,37 @@ void PyGarden::toggleState() {
   Serial.println("-----------------------");
 }
 
+void PyGarden::onConnectionReady() {
+  // network status LED
+  _networkLED->enable();
+
+  // time
+  Serial.println("Syncing time...");
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  printLocalTime();
+
+  // log sensor data
+  Serial.println("Publishing sensor data...");
+
+  // barometer
+  readBarometer();
+
+  // rain
+  measureRain();
+
+  // soil
+  readSoilMoisture();
+
+  // light
+  measureLight();
+
+  // temperature
+  readTemperature();
+}
+
 void PyGarden::onPowerButtonPush() {
   Serial.println("Power button pushed.");
-  Serial.println("Going to sleep...");
+  Serial.println("Going to sleep... Bye.");
 
   // disable power led
   _powerLED->disable();
@@ -200,7 +232,7 @@ void PyGarden::print_wakeup_reason() {
       Serial.println("Wakeup caused by external signal using RTC_IO");
 
       // powered on using manual button, start manual mode right away
-      toggleState();
+      // toggleState();
       break;
 
     case ESP_SLEEP_WAKEUP_EXT1:
@@ -226,4 +258,14 @@ void PyGarden::print_wakeup_reason() {
 
   // enable power led
   _powerLED->enable();
+}
+
+void PyGarden::printLocalTime() {
+  struct tm timeinfo;
+  if (!getLocalTime(&timeinfo)) {
+    Serial.println("Failed to obtain time");
+    return;
+  }
+  Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+  Serial.println("==============================");
 }

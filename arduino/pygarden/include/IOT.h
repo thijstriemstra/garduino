@@ -11,13 +11,16 @@ extern "C" {
 	#include "freertos/timers.h"
 }
 #include <AsyncMqttClient.h>
+#include <Method.h>
 
 class IOT
 {
   public:
     IOT();
-    void begin();
-    void publish();
+    void begin(Method callback);
+    void publish(const char* topic, double value);
+    void connectToMqtt();
+    void disconnectMqtt();
 };
 
 #endif
