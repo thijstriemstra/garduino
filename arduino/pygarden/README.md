@@ -18,12 +18,6 @@ Sensors:
 
 Readings from the sensors are sent to a MQTT server over WiFi.
 
-## Hardware
-
-This project was created using a Lolin32 Lite v1.0.0.
-
-![Lolin32 Lite](../../doc/lolin32_lite_v1.0.0.jpg?raw=true "Lolin32 Lite")
-
 ## Wiring
 
 | Sensor | ESP32 Pin |
