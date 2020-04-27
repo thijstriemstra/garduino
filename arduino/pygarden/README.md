@@ -1,7 +1,24 @@
 py-garden
 =========
 
-Arduino code for garden monitoring using ESP32.
+Arduino code for greenhouse monitoring using ESP32.
+
+## Features
+
+Controls 12V water valve and 12V water pump and starts them once a day
+to water the plants.
+
+Sensors:
+
+ - Soil (2 FC-28 sensors)
+ - Temperature inside/outside/water (BME280 and 2 DS18B20 sensors)
+ - Humididity and pressure (BME280 sensor)
+ - Rain (YL-83 sensor)
+ - Light (BH1750 sensor)
+
+Readings from the sensors are sent to a MQTT server over WiFi.
+
+## Hardware
 
 This project was created using a Lolin32 Lite v1.0.0.
 
