@@ -28,10 +28,10 @@ This project was created using a Lolin32 Lite v1.0.0.
 
 | Sensor | ESP32 Pin |
 | --- | --- |
-| WIFI Status LED | 4 |
-| WIFI Reset Button | 13 |
-| Manual Run Button | 18 |
-| Manual Run LED | 14 |
+| Power LED | 14 |
+| Power Button | 18 |
+| Manual Run LED | 4 |
+| Manual Run Button | 13 |
 | BH1750 Light Sensor SDA | 23 |
 | BH1750 Light Sensor SCL | 19 |
 | Single Channel Relay | 22 |

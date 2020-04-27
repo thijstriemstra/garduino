@@ -8,8 +8,8 @@ PyGarden::PyGarden() {
   // controls
   _manualBtn = new Button(ManualRunButtonPin, INPUT);
   _manualLED = new LED(ManualRunLEDPin);
-  _resetBtn = new Button(WIFI_AP_PIN, INPUT);
-  _wifiLED = new LED(WIFI_STATUS_PIN);
+  _powerBtn = new Button(PowerButtonPin, INPUT);
+  _powerLED = new LED(PowerLEDPin);
 
   // sensors
   _rain = new YL83_RainSensor(RainSensorPin);
@@ -20,7 +20,7 @@ PyGarden::PyGarden() {
   _water = new SingleChannel_Relay(WaterValvePin, false);
   _barometer = new BME280_BarometerSensor(BarometerSCLPin, BarometerSDAPin);
 
-  // wifi + mqtt
+  // wifi/mqtt
   _iot = new IOT();
 }
 
@@ -29,14 +29,14 @@ void PyGarden::begin() {
   Method manualBtnCallback;
   manualBtnCallback.attachCallback(
     makeFunctor((Functor0 *)0, *this, &PyGarden::onManualButtonPush));
-  Method resetBtnCallback;
-  resetBtnCallback.attachCallback(
-    makeFunctor((Functor0 *)0, *this, &PyGarden::onResetButtonPush));
+  Method powerBtnCallback;
+  powerBtnCallback.attachCallback(
+    makeFunctor((Functor0 *)0, *this, &PyGarden::onPowerButtonPush));
 
   // controls
   _manualBtn->begin(manualBtnCallback);
-  _resetBtn->begin(resetBtnCallback);
-  _wifiLED->begin();
+  _powerBtn->begin(powerBtnCallback);
+  _powerLED->begin();
   _manualLED->begin();
 
   // sensors
@@ -48,14 +48,17 @@ void PyGarden::begin() {
   _light->begin();
   _water->begin();
 
-  // wifi and mqtt
+  // deepsleep
+  setupDeepsleep();
+
+  // wifi/mqtt
   //_iot->begin();
 }
 
 void PyGarden::loop() {
   // controls
   _manualBtn->loop();
-  _resetBtn->loop();
+  _powerBtn->loop();
 }
 
 void PyGarden::measureLight() {
@@ -129,6 +132,10 @@ void PyGarden::stopRelay() {
 }
 
 void PyGarden::onManualButtonPush() {
+  toggleState();
+}
+
+void PyGarden::toggleState() {
   if (started == false) {
     started = true;
 
@@ -158,6 +165,65 @@ void PyGarden::onManualButtonPush() {
   Serial.println("-----------------------");
 }
 
-void PyGarden::onResetButtonPush() {
-  Serial.println("Reset button pushed.");
+void PyGarden::onPowerButtonPush() {
+  Serial.println("Power button pushed.");
+  Serial.println("Going to sleep...");
+
+  // disable power led
+  _powerLED->disable();
+
+  // put esp32 to sleep
+  esp_deep_sleep_start();
+}
+
+void PyGarden::setupDeepsleep() {
+  // Print the wakeup reason for ESP32
+  print_wakeup_reason();
+
+  // configure the wake up source
+  // 1 = High, 0 = Low
+  esp_sleep_enable_ext0_wakeup((gpio_num_t) ManualRunButtonPin, 1);
+}
+
+/*
+Method to print the reason by which ESP32
+has been awaken from sleep
+*/
+void PyGarden::print_wakeup_reason() {
+  esp_sleep_wakeup_cause_t wakeup_reason;
+
+  wakeup_reason = esp_sleep_get_wakeup_cause();
+
+  switch (wakeup_reason)
+  {
+    case ESP_SLEEP_WAKEUP_EXT0:
+      Serial.println("Wakeup caused by external signal using RTC_IO");
+
+      // powered on using manual button, start manual mode right away
+      toggleState();
+      break;
+
+    case ESP_SLEEP_WAKEUP_EXT1:
+      Serial.println("Wakeup caused by external signal using RTC_CNTL");
+      break;
+
+    case ESP_SLEEP_WAKEUP_TIMER:
+      Serial.println("Wakeup caused by timer");
+      break;
+
+    case ESP_SLEEP_WAKEUP_TOUCHPAD:
+      Serial.println("Wakeup caused by touchpad");
+      break;
+
+    case ESP_SLEEP_WAKEUP_ULP:
+      Serial.println("Wakeup caused by ULP program");
+      break;
+
+    default:
+      Serial.printf("Wakeup was not caused by deep sleep: %d\n", wakeup_reason);
+      break;
+  }
+
+  // enable power led
+  _powerLED->enable();
 }

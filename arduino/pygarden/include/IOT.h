@@ -17,6 +17,7 @@ class IOT
   public:
     IOT();
     void begin();
+    void publish();
 };
 
 #endif

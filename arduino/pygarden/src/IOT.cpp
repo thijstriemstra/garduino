@@ -1,27 +1,34 @@
 #include "IOT.h"
-#include "Log.h"
 
 AsyncMqttClient _mqttClient;
 TimerHandle_t mqttReconnectTimer;
 TimerHandle_t wifiReconnectTimer;
 
 void connectToWifi() {
-  Serial.println("Connecting to Wi-Fi...");
+  Serial.print("WiFi - Connecting to SSID: ");
+  Serial.println(WIFI_SSID);
+
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 }
 
 void connectToMqtt() {
-  Serial.println("Connecting to MQTT...");
+  Serial.print("MQTT - Connecting to server: ");
+  Serial.println(MQTT_HOST);
+
   _mqttClient.connect();
 }
 
 void WiFiEvent(WiFiEvent_t event) {
   Serial.printf("[WiFi-event] event: %d\n", event);
+
   switch (event) {
     case SYSTEM_EVENT_STA_GOT_IP:
-      Serial.println("WiFi connected");
-      Serial.println("IP address: ");
+      Serial.println("==============================");
+      Serial.println("WiFi connected.");
+      Serial.print("IP address: ");
       Serial.println(WiFi.localIP());
+      Serial.println("==============================");
+
       connectToMqtt();
       break;
 
@@ -39,14 +46,18 @@ void onMqttConnect(bool sessionPresent) {
   Serial.println("Connected to MQTT.");
   Serial.print("Session present: ");
   Serial.println(sessionPresent);
+
   uint16_t packetIdSub = _mqttClient.subscribe("test/lol", 2);
   Serial.print("Subscribing at QoS 2, packetId: ");
   Serial.println(packetIdSub);
+
   _mqttClient.publish("test/lol", 0, true, "test 1");
   Serial.println("Publishing at QoS 0");
+
   uint16_t packetIdPub1 = _mqttClient.publish("test/lol", 1, true, "test 2");
   Serial.print("Publishing at QoS 1, packetId: ");
   Serial.println(packetIdPub1);
+
   uint16_t packetIdPub2 = _mqttClient.publish("test/lol", 2, true, "test 3");
   Serial.print("Publishing at QoS 2, packetId: ");
   Serial.println(packetIdPub2);
@@ -74,7 +85,14 @@ void onMqttUnsubscribe(uint16_t packetId) {
   Serial.println(packetId);
 }
 
-void onMqttMessage(char* topic, char* payload, AsyncMqttClientMessageProperties properties, size_t len, size_t index, size_t total) {
+void onMqttMessage(
+  char* topic,
+  char* payload,
+  AsyncMqttClientMessageProperties properties,
+  size_t len,
+  size_t index,
+  size_t total
+) {
   Serial.println("Publish received.");
   Serial.print("  topic: ");
   Serial.println(topic);
@@ -127,4 +145,14 @@ void IOT::begin() {
 
   // start connection
   connectToWifi();
+}
+
+void IOT::publish() {
+  // Publish an MQTT message on topic esp32/ds18b20/temperature
+  float temp = 20.2;
+  const char* MQTT_PUB_TEMP = "foo/bar";
+  uint16_t packetIdPub1 = _mqttClient.publish(MQTT_PUB_TEMP, 1, true, String(temp).c_str());
+  Serial.printf("Publishing on topic %s at QoS 1, packetId: ", MQTT_PUB_TEMP);
+  Serial.println(packetIdPub1);
+  Serial.printf("Message: %.2f /n", temp);
 }

@@ -26,6 +26,9 @@ class PyGarden
     void loop();
     void startRelay();
     void stopRelay();
+    void toggleState();
+
+    // sensors
     void measureLight();
     void measureRain();
     void readBarometer();
@@ -34,14 +37,18 @@ class PyGarden
 
     // callbacks
     void onManualButtonPush();
-    void onResetButtonPush();
+    void onPowerButtonPush();
+
+    // deepsleep
+    void print_wakeup_reason();
+    void setupDeepsleep();
 
   private:
     IOT* _iot;
-    Button* _manualBtn;
-    Button* _resetBtn;
     LED* _manualLED;
-    LED* _wifiLED;
+    LED* _powerLED;
+    Button* _manualBtn;
+    Button* _powerBtn;
     YL83_RainSensor* _rain;
     FC28_SoilSensor* _soil1;
     FC28_SoilSensor* _soil2;
