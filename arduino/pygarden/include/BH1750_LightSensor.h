@@ -1,1 +1,1 @@
-/Users/thijstriemstra/projects/pingpong-led/arduino/libraries/boatlife/BH1750_LightSensor.h
+../../../../pingpong-led/arduino/libraries/boatlife/BH1750_LightSensor.h

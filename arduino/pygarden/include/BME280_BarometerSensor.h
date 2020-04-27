@@ -1,1 +1,1 @@
-/Users/thijstriemstra/projects/pingpong-led/arduino/libraries/boatlife/BME280_BarometerSensor.h
+../../../../pingpong-led/arduino/libraries/boatlife/BME280_BarometerSensor.h

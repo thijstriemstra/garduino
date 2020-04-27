@@ -1,1 +1,1 @@
-/Users/thijstriemstra/projects/pingpong-led/arduino/libraries/boatlife/DS18B20_TemperatureSensors.cpp
+../../../../pingpong-led/arduino/libraries/boatlife/DS18B20_TemperatureSensors.cpp

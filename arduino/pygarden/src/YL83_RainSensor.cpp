@@ -1,1 +1,1 @@
-/Users/thijstriemstra/projects/pingpong-led/arduino/libraries/boatlife/YL83_RainSensor.cpp
+../../../../pingpong-led/arduino/libraries/boatlife/YL83_RainSensor.cpp
