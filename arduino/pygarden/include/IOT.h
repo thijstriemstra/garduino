@@ -17,10 +17,15 @@ class IOT
 {
   public:
     IOT();
-    void begin(int totalReadings, Method connected_callback, Method publishReady_callback);
+    void begin(
+      int totalReadings,
+      Method connected_callback,
+      Method disconnected_callback,
+      Method publishReady_callback
+    );
     void publish(const char* topic, double value);
     void connectToMqtt();
-    void disconnectMqtt();
+    void disconnect();
 
   private:
     uint16_t _lastPacketIdPubSent;

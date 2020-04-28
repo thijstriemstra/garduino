@@ -47,6 +47,7 @@ class PyGarden
     void onPowerButtonPush();
     void onManualButtonPush();
     void onConnectionReady();
+    void onConnectionClosed();
     void onPublishReady();
 };
 

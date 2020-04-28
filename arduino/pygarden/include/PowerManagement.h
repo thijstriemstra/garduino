@@ -17,6 +17,7 @@ class PowerManagement
     void init(Method wakeup_callback);
     void sleep();
     void wokeup();
+    esp_sleep_wakeup_cause_t wakeup_reason;
 
   private:
     Method _wakeupCallback;

@@ -60,11 +60,10 @@ void onMqttConnect(bool sessionPresent) {
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
-  Serial.println("Disconnected from MQTT.");
+  //Serial.println("Disconnected from MQTT.");
 
-  if (WiFi.isConnected()) {
-    xTimerStart(_mqttReconnectTimer, 0);
-  }
+  // notify others
+  _disconnectedCb.callback();
 }
 
 void onMqttSubscribe(uint16_t packetId, uint8_t qos) {
@@ -127,8 +126,14 @@ void onMqttPublish(uint16_t packetId) {
 IOT::IOT() {
 }
 
-void IOT::begin(int totalReadings, Method connected_callback, Method publishReady_callback) {
+void IOT::begin(
+  int totalReadings,
+  Method connected_callback,
+  Method disconnected_callback,
+  Method publishReady_callback
+) {
   _totalReadings = totalReadings;
+  _disconnectedCb = disconnected_callback;
   _connectedCb = connected_callback;
   _publishReadyCb = publishReady_callback;
 
@@ -159,9 +164,10 @@ void IOT::begin(int totalReadings, Method connected_callback, Method publishRead
   connectToWifi();
 }
 
-void IOT::disconnectMqtt() {
-  // stop timer
+void IOT::disconnect() {
   xTimerStop(_mqttReconnectTimer, 0);
+
+  _mqttClient.disconnect();
 }
 
 void IOT::publish(const char* topic, double value) {

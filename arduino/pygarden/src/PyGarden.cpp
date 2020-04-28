@@ -39,6 +39,9 @@ void PyGarden::begin() {
   Method connectionReadyCallback;
   connectionReadyCallback.attachCallback(
     makeFunctor((Functor0 *)0, *this, &PyGarden::onConnectionReady));
+  Method disconnectedCallback;
+  disconnectedCallback.attachCallback(
+    makeFunctor((Functor0 *)0, *this, &PyGarden::onConnectionClosed));
   Method publishReadyCallback;
   publishReadyCallback.attachCallback(
     makeFunctor((Functor0 *)0, *this, &PyGarden::onPublishReady));
@@ -64,7 +67,12 @@ void PyGarden::begin() {
 
   // wifi/mqtt
   _networkLED->blink();
-  _iot->begin(TotalReadings, connectionReadyCallback, publishReadyCallback);
+  _iot->begin(
+    TotalReadings,
+    connectionReadyCallback,
+    disconnectedCallback,
+    publishReadyCallback
+  );
 }
 
 void PyGarden::loop() {
@@ -103,6 +111,7 @@ void PyGarden::closeValve() {
 
   _manualLED->disable();
 
+  Serial.println("-----------------------");
   Serial.println("Water: valve closed");
 }
 
@@ -116,7 +125,32 @@ void PyGarden::toggleValve() {
 
     closeValve();
   }
-  Serial.println("-----------------------");
+}
+
+void PyGarden::onConnectionClosed() {
+  if (_manualMode) {
+    Serial.println();
+    Serial.println("===================");
+    Serial.println("==  Manual mode  ==");
+    Serial.println("===================");
+    Serial.println();
+
+    // open valve
+    toggleValve();
+
+    // now wait till user presses the manual button again to control the valve,
+    // and then eventually presses power button to put device back into deepsleep
+
+  } else {
+    // XXX: check if water valve needs to be opened before going into
+    // deepsleep
+
+    // wait a while
+    delay(2000);
+
+    // done, go into deepsleep and wait till woken up by user or timer
+    sleep();
+  }
 }
 
 void PyGarden::onConnectionReady() {
@@ -137,20 +171,23 @@ void PyGarden::onPublishReady() {
   Serial.println("Published sensor data.");
   Serial.println("----------------------");
 
-  if (_manualMode) {
-    // do nothing and wait till user presses power button
-  } else {
-    // XXX: check if water valve needs to be opened
-
-    // done, go to sleep and wait till it's woken up by user
-    // or timer
-    //sleep();
-  }
+  // disconnnect iot
+  _iot->disconnect();
 }
 
 void PyGarden::onSystemWakeup() {
   // enable power led
   _powerLED->enable();
+
+  if (_power->wakeup_reason == ESP_SLEEP_WAKEUP_EXT0) {
+    // manual button pressed
+    _manualMode = true;
+  } else {
+    _manualMode = false;
+  }
+
+  Serial.print("Manual mode: ");
+  Serial.println(_manualMode);
 }
 
 void PyGarden::onManualButtonPush() {
