@@ -6,18 +6,14 @@
 
 #include <Arduino.h>
 #include <Functor.h>
+#include <Method.h>
 #include "time.h"
 
 #include <IOT.h>
 #include <LED.h>
 #include <Button.h>
-#include <Method.h>
-#include <YL83_RainSensor.h>
-#include <FC28_SoilSensor.h>
-#include <BH1750_LightSensor.h>
+#include <Sensors.h>
 #include <SingleChannel_Relay.h>
-#include <BME280_BarometerSensor.h>
-#include <DS18B20_TemperatureSensors.h>
 
 class PyGarden
 {
@@ -35,13 +31,6 @@ class PyGarden
     // time
     void printLocalTime();
 
-    // sensors
-    void measureLight();
-    void measureRain();
-    void readBarometer();
-    void readTemperature();
-    void readSoilMoisture();
-
     // callbacks
     void onManualButtonPush();
     void onPowerButtonPush();
@@ -57,13 +46,8 @@ class PyGarden
     LED* _networkLED;
     Button* _manualBtn;
     Button* _powerBtn;
-    YL83_RainSensor* _rain;
-    FC28_SoilSensor* _soil1;
-    FC28_SoilSensor* _soil2;
-    BH1750_LightSensor* _light;
+    Sensors* _sensors;
     SingleChannel_Relay* _water;
-    BME280_BarometerSensor* _barometer;
-    DS18B20_TemperatureSensors* _temperature;
 
     bool started = false;
     const char* ntpServer = "pool.ntp.org";

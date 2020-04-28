@@ -13,13 +13,10 @@ PyGarden::PyGarden() {
   _powerLED = new LED(PowerLEDPin);
 
   // sensors
-  _rain = new YL83_RainSensor(RainSensorPin);
-  _soil1 = new FC28_SoilSensor(SoilSensor1Pin, SoilSensor1Dry, SoilSensor1Wet);
-  _soil2 = new FC28_SoilSensor(SoilSensor2Pin, SoilSensor2Dry, SoilSensor2Wet);
-  _temperature = new DS18B20_TemperatureSensors(TemperatureSensorsPin);
-  _light = new BH1750_LightSensor(LightSensorSCLPin, LightSensorSDAPin);
+  _sensors = new Sensors();
+
+  // water
   _water = new SingleChannel_Relay(WaterValvePin, false);
-  _barometer = new BME280_BarometerSensor(BarometerSCLPin, BarometerSDAPin);
 
   // wifi/mqtt
   _iot = new IOT();
@@ -45,12 +42,9 @@ void PyGarden::begin() {
   _networkLED->begin();
 
   // sensors
-  _barometer->begin();
-  _rain->begin();
-  _soil1->begin();
-  _soil2->begin();
-  _temperature->begin();
-  _light->begin();
+  _sensors->begin();
+
+  // water
   _water->begin();
 
   // deepsleep
@@ -68,80 +62,6 @@ void PyGarden::loop() {
   _powerBtn->loop();
   _powerLED->loop();
   _networkLED->loop();
-}
-
-void PyGarden::measureLight() {
-  float lux = _light->read();
-  Serial.print("Light: ");
-  Serial.print(lux);
-  Serial.println(" lx");
-
-  // publish
-  _iot->publish("emon/kleine_kas/inside/light", lux);
-}
-
-void PyGarden::measureRain() {
-  int rainSensorValue = _rain->measurePercentage();
-  Serial.print("Rain sensor: ");
-  Serial.print(rainSensorValue);
-  Serial.println(" % dry");
-
-  // publish
-  _iot->publish("emon/kleine_kas/outside/rain", rainSensorValue);
-}
-
-void PyGarden::readBarometer() {
-  float temperature = _barometer->getTemperature();
-  Serial.print(F("Temperature: "));
-  Serial.print(temperature);
-  Serial.println(" ºC");
-
-  float pressure = _barometer->getPressure();
-  Serial.print(F("Pressure: "));
-  Serial.print(pressure);
-  Serial.println(" hPa");
-
-  float humidity = _barometer->getHumidity();
-  Serial.print("Humidity = ");
-  Serial.print(humidity);
-  Serial.println(" %");
-
-  // publish
-  _iot->publish("emon/kleine_kas/inside/temperature", temperature);
-  _iot->publish("emon/kleine_kas/inside/pressure", pressure);
-  _iot->publish("emon/kleine_kas/inside/humidity", humidity);
-}
-
-void PyGarden::readTemperature() {
-  float temperature1 = _temperature->getTemperatureByIndex(0);
-  Serial.print("Temperature 1: ");
-  Serial.print(temperature1);
-  Serial.println("ºC");
-
-  float temperature2 = _temperature->getTemperatureByIndex(1);
-  Serial.print("Temperature 2: ");
-  Serial.print(temperature2);
-  Serial.println("ºC");
-
-  // publish
-  _iot->publish("emon/kleine_kas/outside/temperature", temperature1);
-  _iot->publish("emon/kleine_kas/water/temperature", temperature2);
-}
-
-void PyGarden::readSoilMoisture() {
-  int moisture1 = _soil1->measurePercentage();
-  Serial.print("Soil-1 moisture: ");
-  Serial.print(moisture1);
-  Serial.println(" % dry");
-
-  int moisture2 = _soil2->measurePercentage();
-  Serial.print("Soil-2 moisture: ");
-  Serial.print(moisture2);
-  Serial.println(" % dry");
-
-  // publish
-  _iot->publish("emon/kleine_kas/soil/left", moisture1);
-  _iot->publish("emon/kleine_kas/soil/right", moisture2);
 }
 
 void PyGarden::startRelay() {
@@ -194,25 +114,13 @@ void PyGarden::onConnectionReady() {
   // log sensor data
   Serial.println("Publishing sensor data...");
 
-  // barometer
-  readBarometer();
-
-  // rain
-  measureRain();
-
-  // soil
-  readSoilMoisture();
-
-  // light
-  measureLight();
-
-  // temperature
-  readTemperature();
+  // sensors
+  _sensors->publish(MQTT_BASE_TOPIC, _iot);
 }
 
 void PyGarden::onPowerButtonPush() {
   Serial.println("******************************");
-  Serial.println("Going to sleep... Bye.");
+  Serial.println("** Going to sleep... Bye.   **");
   Serial.println("******************************");
 
   // disable power led
