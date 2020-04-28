@@ -22,6 +22,7 @@ class Sensors
     Sensors(bool debug = true);
     void begin();
     void publish(const char *base_topic, IOT* iot);
+
     float measureLight();
     int measureRain();
     BME280_Result readBarometer();

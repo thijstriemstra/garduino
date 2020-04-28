@@ -1,9 +1,14 @@
 #include "IOT.h"
 
 AsyncMqttClient _mqttClient;
-TimerHandle_t mqttReconnectTimer;
-TimerHandle_t wifiReconnectTimer;
+TimerHandle_t _mqttReconnectTimer;
+TimerHandle_t _wifiReconnectTimer;
+uint16_t _lastPacketIdPubAck;
+int _totalReadings;
+// callbacks
 Method _connectedCb;
+Method _disconnectedCb;
+Method _publishReadyCb;
 
 void connectToWifi() {
   Serial.print("WiFi - Connecting to SSID: ");
@@ -38,8 +43,8 @@ void WiFiEvent(WiFiEvent_t event) {
       Serial.println("WiFi lost connection");
 
       // ensure we don't reconnect to MQTT while reconnecting to Wi-Fi
-      xTimerStop(mqttReconnectTimer, 0);
-      xTimerStart(wifiReconnectTimer, 0);
+      xTimerStop(_mqttReconnectTimer, 0);
+      xTimerStart(_wifiReconnectTimer, 0);
       break;
     }
 }
@@ -58,7 +63,7 @@ void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
   Serial.println("Disconnected from MQTT.");
 
   if (WiFi.isConnected()) {
-    xTimerStart(mqttReconnectTimer, 0);
+    xTimerStart(_mqttReconnectTimer, 0);
   }
 }
 
@@ -108,25 +113,31 @@ void onMqttMessage(
 }
 
 void onMqttPublish(uint16_t packetId) {
-  /*
-  Serial.println("Publish acknowledged.");
-  Serial.print("  packetId: ");
-  Serial.println(packetId);
-  */
+  _lastPacketIdPubAck = packetId;
+
+  //Serial.print("Publish acknowledged: ");
+  //Serial.println(_lastPacketIdPubAck);
+
+  if (_lastPacketIdPubAck == _totalReadings) {
+    // notify others
+    _publishReadyCb.callback();
+  }
 }
 
 IOT::IOT() {
 }
 
-void IOT::begin(Method callback) {
-  _connectedCb = callback;
+void IOT::begin(int totalReadings, Method connected_callback, Method publishReady_callback) {
+  _totalReadings = totalReadings;
+  _connectedCb = connected_callback;
+  _publishReadyCb = publishReady_callback;
 
   // setup timers
-  mqttReconnectTimer = xTimerCreate(
+  _mqttReconnectTimer = xTimerCreate(
     "mqttTimer", pdMS_TO_TICKS(2000), pdFALSE, (void*)0,
     reinterpret_cast<TimerCallbackFunction_t>(mqttConnect)
   );
-  wifiReconnectTimer = xTimerCreate(
+  _wifiReconnectTimer = xTimerCreate(
     "wifiTimer", pdMS_TO_TICKS(2000), pdFALSE, (void*)0,
     reinterpret_cast<TimerCallbackFunction_t>(connectToWifi)
   );
@@ -150,16 +161,16 @@ void IOT::begin(Method callback) {
 
 void IOT::disconnectMqtt() {
   // stop timer
-  xTimerStop(mqttReconnectTimer, 0);
+  xTimerStop(_mqttReconnectTimer, 0);
 }
 
 void IOT::publish(const char* topic, double value) {
-  uint16_t packetIdPub1 = _mqttClient.publish(topic, 1, true, String(value).c_str());
+  _lastPacketIdPubSent = _mqttClient.publish(topic, 1, true, String(value).c_str());
 
   bool debug = false;
   if (debug) {
     Serial.printf("Publishing on topic %s at QoS 1, packetId: ", topic);
-    Serial.println(packetIdPub1);
+    Serial.println(_lastPacketIdPubSent);
     Serial.printf("Message: %.2f \n", value);
   }
 }

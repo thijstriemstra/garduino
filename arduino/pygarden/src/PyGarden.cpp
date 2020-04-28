@@ -39,6 +39,9 @@ void PyGarden::begin() {
   Method connectionReadyCallback;
   connectionReadyCallback.attachCallback(
     makeFunctor((Functor0 *)0, *this, &PyGarden::onConnectionReady));
+  Method publishReadyCallback;
+  publishReadyCallback.attachCallback(
+    makeFunctor((Functor0 *)0, *this, &PyGarden::onPublishReady));
   Method systemWakeupCallback;
   systemWakeupCallback.attachCallback(
     makeFunctor((Functor0 *)0, *this, &PyGarden::onSystemWakeup));
@@ -61,7 +64,7 @@ void PyGarden::begin() {
 
   // wifi/mqtt
   _networkLED->blink();
-  _iot->begin(connectionReadyCallback);
+  _iot->begin(TotalReadings, connectionReadyCallback, publishReadyCallback);
 }
 
 void PyGarden::loop() {
@@ -71,6 +74,19 @@ void PyGarden::loop() {
   _powerBtn->loop();
   _powerLED->loop();
   _networkLED->loop();
+}
+
+void PyGarden::sleep() {
+  Serial.println();
+  Serial.println("******************************");
+  Serial.println("**  Going to sleep... Bye.  **");
+  Serial.println("******************************");
+
+  // disable power led
+  _powerLED->disable();
+
+  // put device to sleep
+  _power->sleep();
 }
 
 void PyGarden::openValve() {
@@ -116,6 +132,22 @@ void PyGarden::onConnectionReady() {
   _sensors->publish(MQTT_BASE_TOPIC, _iot);
 }
 
+void PyGarden::onPublishReady() {
+  Serial.println("----------------------");
+  Serial.println("Published sensor data.");
+  Serial.println("----------------------");
+
+  if (_manualMode) {
+    // do nothing and wait till user presses power button
+  } else {
+    // XXX: check if water valve needs to be opened
+
+    // done, go to sleep and wait till it's woken up by user
+    // or timer
+    //sleep();
+  }
+}
+
 void PyGarden::onSystemWakeup() {
   // enable power led
   _powerLED->enable();
@@ -126,14 +158,5 @@ void PyGarden::onManualButtonPush() {
 }
 
 void PyGarden::onPowerButtonPush() {
-  Serial.println();
-  Serial.println("******************************");
-  Serial.println("**  Going to sleep... Bye.  **");
-  Serial.println("******************************");
-
-  // disable power led
-  _powerLED->disable();
-
-  // put device to sleep
-  _power->sleep();
+  sleep();
 }

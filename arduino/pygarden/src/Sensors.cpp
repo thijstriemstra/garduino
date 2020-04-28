@@ -72,6 +72,8 @@ void Sensors::publish(const char *base_topic, IOT* iot) {
   float waterTemp = outside.array[1];
   sprintf(subTopic, "%s%s", base_topic, "/water/temperature");
   iot->publish(subTopic, waterTemp);
+
+  Serial.println();
 }
 
 float Sensors::measureLight() {
@@ -91,7 +93,7 @@ int Sensors::measureRain() {
   if (_debug) {
     Serial.print("Rain sensor: ");
     Serial.print(rainSensorValue);
-    Serial.println(" % dry");
+    Serial.println("% dry");
   }
   return rainSensorValue;
 }
@@ -112,7 +114,7 @@ BME280_Result Sensors::readBarometer() {
 
     Serial.print("Humidity: ");
     Serial.print(humidity);
-    Serial.println(" %");
+    Serial.println("%");
   }
   return result;
 }
@@ -148,11 +150,11 @@ SoilMoistureResult Sensors::readSoilMoisture() {
   if (_debug) {
     Serial.print("Soil-1 moisture: ");
     Serial.print(moisture1);
-    Serial.println(" % dry");
+    Serial.println("% dry");
 
     Serial.print("Soil-2 moisture: ");
     Serial.print(moisture2);
-    Serial.println(" % dry");
+    Serial.println("% dry");
   }
   return result;
 }

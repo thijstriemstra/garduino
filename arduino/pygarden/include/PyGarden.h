@@ -22,6 +22,7 @@ class PyGarden
     PyGarden();
     void begin();
     void loop();
+    void sleep();
     void openValve();
     void closeValve();
     void toggleValve();
@@ -39,12 +40,14 @@ class PyGarden
     SolenoidValve* _waterValve;
 
     bool started = false;
+    bool _manualMode = false;
 
     // callbacks
     void onSystemWakeup();
     void onPowerButtonPush();
     void onManualButtonPush();
     void onConnectionReady();
+    void onPublishReady();
 };
 
 #endif
