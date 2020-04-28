@@ -39,7 +39,7 @@ Readings from the sensors are sent to a MQTT server over WiFi.
 
 ## Development
 
-Checkout code and pen `pygarden` project in VSCode with PlatformIO IDE extension.
+Checkout code and open the `pygarden` project in VSCode with the PlatformIO IDE extension.
 
 ## Local NTP Server
 
