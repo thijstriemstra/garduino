@@ -11,14 +11,14 @@ Method _disconnectedCb;
 Method _publishReadyCb;
 
 void connectToWifi() {
-  Serial.print("WiFi - Connecting to SSID: ");
+  Serial.print("WiFi - Connecting to ");
   Serial.println(WIFI_SSID);
 
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 }
 
 void mqttConnect() {
-  Serial.print("MQTT - Connecting to server: ");
+  Serial.print("MQTT - Connecting to ");
   Serial.println(MQTT_HOST);
 
   _mqttClient.connect();

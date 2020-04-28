@@ -40,3 +40,42 @@ Readings from the sensors are sent to a MQTT server over WiFi.
 ## Development
 
 Checkout code and pen `pygarden` project in VSCode with PlatformIO IDE extension.
+
+## Local NTP Server
+
+Setup a local NTP server instead of fetching this information online every time.
+
+```console
+sudo apt-get install ntp
+```
+
+Verify installation:
+
+```console
+sntp --version
+```
+
+Switch the server pool to the ones closest to your location. Go to
+https://support.ntp.org/bin/view/Servers/NTPPoolServers and find the
+nearest pool, e.g. Europe. Update `/etc/ntp.conf` accordingly:
+
+```
+	   server 0.europe.pool.ntp.org
+	   server 1.europe.pool.ntp.org
+	   server 2.europe.pool.ntp.org
+	   server 3.europe.pool.ntp.org
+```
+
+Restart the server:
+
+```console
+sudo service ntp restart
+```
+
+Check the status:
+
+```console
+ sudo service ntp status
+ ```
+
+You can now use this machine for NTP time synchronization on the ESP32.

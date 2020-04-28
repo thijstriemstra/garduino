@@ -19,7 +19,7 @@ PyGarden::PyGarden() {
   _waterValve = new SolenoidValve(WaterValvePin);
 
   // system time
-  _clock = new SystemClock();
+  _clock = new SystemClock(NTP_HOST);
 
   // power management
   _power = new PowerManagement(WakeupSchedule);
