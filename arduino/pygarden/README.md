@@ -22,9 +22,10 @@ Readings from the sensors are sent to a MQTT server over WiFi.
 
 | Sensor | ESP32 Pin |
 | --- | --- |
+| Network LED | 4 |
 | Power LED | 14 |
 | Power Button | 18 |
-| Manual Run LED | 4 |
+| Manual Run LED | 2 |
 | Manual Run Button | 13 |
 | BH1750 Light Sensor SDA | 23 |
 | BH1750 Light Sensor SCL | 19 |

@@ -6,9 +6,10 @@
 
 PyGarden::PyGarden() {
   // controls
-  _manualBtn = new Button(ManualRunButtonPin, INPUT);
+  _manualBtn = new Button(ManualRunButtonPin);
+  _manualLED = new LED(ManualRunLEDPin);
   _networkLED = new LED(NetworkLEDPin);
-  _powerBtn = new Button(PowerButtonPin, INPUT);
+  _powerBtn = new Button(PowerButtonPin);
   _powerLED = new LED(PowerLEDPin);
 
   // sensors
@@ -38,6 +39,7 @@ void PyGarden::begin() {
 
   // controls
   _manualBtn->begin(manualBtnCallback);
+  _manualLED->begin();
   _powerBtn->begin(powerBtnCallback);
   _powerLED->begin();
   _networkLED->begin();
@@ -62,6 +64,7 @@ void PyGarden::begin() {
 void PyGarden::loop() {
   // controls
   _manualBtn->loop();
+  _manualLED->loop();
   _powerBtn->loop();
   _powerLED->loop();
   _networkLED->loop();
@@ -144,12 +147,16 @@ void PyGarden::readSoilMoisture() {
 void PyGarden::startRelay() {
   _water->start();
 
+  _manualLED->enable();
+
   Serial.println("-----------------------");
   Serial.println("Water: valve open");
 }
 
 void PyGarden::stopRelay() {
   _water->stop();
+
+  _manualLED->disable();
 
   Serial.println("Water: valve closed");
 }

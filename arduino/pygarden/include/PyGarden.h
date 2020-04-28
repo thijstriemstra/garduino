@@ -53,6 +53,7 @@ class PyGarden
   private:
     IOT* _iot;
     LED* _powerLED;
+    LED* _manualLED;
     LED* _networkLED;
     Button* _manualBtn;
     Button* _powerBtn;
