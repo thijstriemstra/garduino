@@ -4,11 +4,11 @@ Sensors::Sensors(bool debug) {
   _debug = debug;
 
   _rain = new YL83_RainSensor(RainSensorPin);
+  _soil1 = new FC28_SoilSensor(SoilSensor1Pin);
+  _soil2 = new FC28_SoilSensor(SoilSensor2Pin);
   _temperature = new DS18B20_TemperatureSensors(TemperatureSensorsPin);
   _light = new BH1750_LightSensor(LightSensorSCLPin, LightSensorSDAPin);
   _barometer = new BME280_BarometerSensor(BarometerSCLPin, BarometerSDAPin);
-  _soil1 = new FC28_SoilSensor(SoilSensor1Pin);
-  _soil2 = new FC28_SoilSensor(SoilSensor2Pin);
 }
 
 void Sensors::begin() {
@@ -23,12 +23,12 @@ void Sensors::begin() {
 void Sensors::publish(const char *base_topic, IOT* iot) {
   char subTopic[80];
 
-  // light
+  // LIGHT
   float lux = measureLight();
   sprintf(subTopic, "%s%s", base_topic, "/inside/light");
   iot->publish(subTopic, lux);
 
-  // barometer
+  // BAROMETER
   BME280_Result barometer = readBarometer();
 
   float temperature = barometer.array[0];
@@ -43,12 +43,12 @@ void Sensors::publish(const char *base_topic, IOT* iot) {
   sprintf(subTopic, "%s%s", base_topic, "/inside/humidity");
   iot->publish(subTopic, humidity);
 
-  // rain
+  // RAIN
   int rain = measureRain();
   sprintf(subTopic, "%s%s", base_topic, "/outside/rain");
   iot->publish(subTopic, rain);
 
-  // soil
+  // SOIL
   SoilMoistureResult soil = readSoilMoisture();
 
   int moisture1 = soil.array[0];
@@ -59,7 +59,7 @@ void Sensors::publish(const char *base_topic, IOT* iot) {
   sprintf(subTopic, "%s%s", base_topic, "/inside/soil_right");
   iot->publish(subTopic, moisture2);
 
-  // temperature
+  // TEMPERATURE
   OutsideTemperatureResult outside = readTemperature();
   
   float outsideTemp = outside.array[0];
@@ -102,7 +102,7 @@ BME280_Result Sensors::readBarometer() {
   if (_debug) {
     Serial.print(F("Temperature: "));
     Serial.print(temperature);
-    Serial.println(" ºC");
+    Serial.println(" °C");
 
     Serial.print(F("Pressure: "));
     Serial.print(pressure);
@@ -125,11 +125,11 @@ OutsideTemperatureResult Sensors::readTemperature() {
   if (_debug) {
     Serial.print("Temperature 1: ");
     Serial.print(temperature1);
-    Serial.println("ºC");
+    Serial.println(" °C");
   
     Serial.print("Temperature 2: ");
     Serial.print(temperature2);
-    Serial.println("ºC");
+    Serial.println(" °C");
   }
   return result;
 }

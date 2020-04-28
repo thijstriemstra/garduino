@@ -7,13 +7,13 @@
 #include <Arduino.h>
 #include <Functor.h>
 #include <Method.h>
-#include "time.h"
 
 #include <IOT.h>
 #include <LED.h>
 #include <Button.h>
 #include <Sensors.h>
-#include <SingleChannel_Relay.h>
+#include <SolenoidValve.h>
+#include <SystemClock.h>
 
 class PyGarden
 {
@@ -27,9 +27,6 @@ class PyGarden
 
     // network
     void onConnectionReady();
-
-    // time
-    void printLocalTime();
 
     // callbacks
     void onManualButtonPush();
@@ -47,12 +44,10 @@ class PyGarden
     Button* _manualBtn;
     Button* _powerBtn;
     Sensors* _sensors;
-    SingleChannel_Relay* _water;
+    SystemClock* _clock;
+    SolenoidValve* _waterValve;
 
     bool started = false;
-    const char* ntpServer = "pool.ntp.org";
-    const long gmtOffset_sec = 3600;
-    const int daylightOffset_sec = 3600;
 };
 
 #endif

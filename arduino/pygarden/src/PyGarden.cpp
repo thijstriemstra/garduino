@@ -15,8 +15,11 @@ PyGarden::PyGarden() {
   // sensors
   _sensors = new Sensors();
 
-  // water
-  _water = new SingleChannel_Relay(WaterValvePin, false);
+  // water valve
+  _waterValve = new SolenoidValve(WaterValvePin);
+
+  // system time
+  _clock = new SystemClock();
 
   // wifi/mqtt
   _iot = new IOT();
@@ -44,8 +47,8 @@ void PyGarden::begin() {
   // sensors
   _sensors->begin();
 
-  // water
-  _water->begin();
+  // water valve
+  _waterValve->begin();
 
   // deepsleep
   setupDeepsleep();
@@ -65,7 +68,7 @@ void PyGarden::loop() {
 }
 
 void PyGarden::startRelay() {
-  _water->start();
+  _waterValve->start();
 
   _manualLED->enable();
 
@@ -74,7 +77,7 @@ void PyGarden::startRelay() {
 }
 
 void PyGarden::stopRelay() {
-  _water->stop();
+  _waterValve->stop();
 
   _manualLED->disable();
 
@@ -106,15 +109,12 @@ void PyGarden::onConnectionReady() {
   _networkLED->blink();
   _networkLED->enable();
 
-  // time
+  // sync time
   Serial.println("Syncing time...");
-  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-  printLocalTime();
+  _clock->sync();
 
-  // log sensor data
+  // publish sensor data
   Serial.println("Publishing sensor data...");
-
-  // sensors
   _sensors->publish(MQTT_BASE_TOPIC, _iot);
 }
 
@@ -180,14 +180,4 @@ void PyGarden::print_wakeup_reason() {
 
   // enable power led
   _powerLED->enable();
-}
-
-void PyGarden::printLocalTime() {
-  struct tm timeinfo;
-  if (!getLocalTime(&timeinfo)) {
-    Serial.println("Failed to obtain time");
-    return;
-  }
-  Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
-  Serial.println("==============================");
 }
