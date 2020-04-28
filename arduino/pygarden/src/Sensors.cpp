@@ -23,6 +23,9 @@ void Sensors::begin() {
 void Sensors::publish(const char *base_topic, IOT* iot) {
   char subTopic[80];
 
+  Serial.println("Publishing sensor data...");
+  Serial.println();
+
   // LIGHT
   float lux = measureLight();
   sprintf(subTopic, "%s%s", base_topic, "/inside/light");
@@ -105,9 +108,9 @@ BME280_Result Sensors::readBarometer() {
     Serial.println(" °C");
 
     Serial.print(F("Pressure: "));
-    Serial.print(pressure);
+    Serial.println(pressure);
 
-    Serial.print("Humidity = ");
+    Serial.print("Humidity: ");
     Serial.print(humidity);
     Serial.println(" %");
   }

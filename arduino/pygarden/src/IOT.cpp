@@ -63,17 +63,21 @@ void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
 }
 
 void onMqttSubscribe(uint16_t packetId, uint8_t qos) {
+  /*
   Serial.println("Subscribe acknowledged.");
   Serial.print("  packetId: ");
   Serial.println(packetId);
   Serial.print("  qos: ");
   Serial.println(qos);
+  */
 }
 
 void onMqttUnsubscribe(uint16_t packetId) {
+  /*
   Serial.println("Unsubscribe acknowledged.");
   Serial.print("  packetId: ");
   Serial.println(packetId);
+  */
 }
 
 void onMqttMessage(
@@ -84,6 +88,7 @@ void onMqttMessage(
   size_t index,
   size_t total
 ) {
+  /*
   Serial.println("Publish received.");
   Serial.print("  topic: ");
   Serial.println(topic);
@@ -99,12 +104,15 @@ void onMqttMessage(
   Serial.println(index);
   Serial.print("  total: ");
   Serial.println(total);
+  */
 }
 
 void onMqttPublish(uint16_t packetId) {
+  /*
   Serial.println("Publish acknowledged.");
   Serial.print("  packetId: ");
   Serial.println(packetId);
+  */
 }
 
 IOT::IOT() {
@@ -147,7 +155,11 @@ void IOT::disconnectMqtt() {
 
 void IOT::publish(const char* topic, double value) {
   uint16_t packetIdPub1 = _mqttClient.publish(topic, 1, true, String(value).c_str());
-  Serial.printf("Publishing on topic %s at QoS 1, packetId: ", topic);
-  Serial.println(packetIdPub1);
-  Serial.printf("Message: %.2f \n", value);
+
+  bool debug = false;
+  if (debug) {
+    Serial.printf("Publishing on topic %s at QoS 1, packetId: ", topic);
+    Serial.println(packetIdPub1);
+    Serial.printf("Message: %.2f \n", value);
+  }
 }

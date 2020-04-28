@@ -12,8 +12,9 @@
 #include <LED.h>
 #include <Button.h>
 #include <Sensors.h>
-#include <SolenoidValve.h>
 #include <SystemClock.h>
+#include <SolenoidValve.h>
+#include <PowerManagement.h>
 
 class PyGarden
 {
@@ -21,20 +22,9 @@ class PyGarden
     PyGarden();
     void begin();
     void loop();
-    void startRelay();
-    void stopRelay();
-    void toggleState();
-
-    // network
-    void onConnectionReady();
-
-    // callbacks
-    void onManualButtonPush();
-    void onPowerButtonPush();
-
-    // deepsleep
-    void print_wakeup_reason();
-    void setupDeepsleep();
+    void openValve();
+    void closeValve();
+    void toggleValve();
 
   private:
     IOT* _iot;
@@ -45,9 +35,16 @@ class PyGarden
     Button* _powerBtn;
     Sensors* _sensors;
     SystemClock* _clock;
+    PowerManagement* _power;
     SolenoidValve* _waterValve;
 
     bool started = false;
+
+    // callbacks
+    void onSystemWakeup();
+    void onPowerButtonPush();
+    void onManualButtonPush();
+    void onConnectionReady();
 };
 
 #endif

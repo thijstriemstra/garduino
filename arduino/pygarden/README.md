@@ -37,15 +37,6 @@ Readings from the sensors are sent to a MQTT server over WiFi.
 | BME280 Barometer SDA | 0 |
 | BME280 Barometer SCL | 27 |
 
-## Installation
-
-Checkout code:
-
-```console
-git clone https://github.com/thijstriemstra/py-garden.git
-cd py-garden/arduino
-```
-
 ## Development
 
-Open `pygarden` project in VSCode with PlatformIO IDE extension.
+Checkout code and pen `pygarden` project in VSCode with PlatformIO IDE extension.
