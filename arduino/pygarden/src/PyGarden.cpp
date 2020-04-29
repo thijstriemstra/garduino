@@ -22,6 +22,16 @@ String getValue(String data, char separator, int index)
     return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
 
+void onWateringReady() {
+  Serial.println();
+  Serial.println("**************************************");
+  Serial.println("**  Watering ready! Back to sleep.  **");
+  Serial.println("**************************************");
+
+  // put esp32 into deepsleep
+  esp_deep_sleep_start();
+}
+
 PyGarden::PyGarden() {
   // controls
   _manualBtn = new Button(ManualRunButtonPin);
@@ -35,6 +45,11 @@ PyGarden::PyGarden() {
 
   // water valve
   _waterValve = new SolenoidValve(WaterValvePin);
+
+  // watering task
+  int duration = WateringDuration * 1000;
+  _wateringTask = new Thread(onWateringReady, duration);
+  _wateringTask->enabled = false;
 
   // system time
   _clock = new SystemClock(NTP_HOST);
@@ -100,6 +115,10 @@ void PyGarden::loop() {
   _powerBtn->loop();
   _powerLED->loop();
   _networkLED->loop();
+
+  if (_wateringTask->shouldRun()) {
+		_wateringTask->run();
+  }
 }
 
 void PyGarden::sleep() {
@@ -130,7 +149,7 @@ bool PyGarden::needsWatering(String timestamp) {
   if (wateredToday == false) {
     if (hour() == targetHour.toInt()) {
       // set flag to prevent watering multiple times this hour
-      //wateredToday = true;
+      wateredToday = true;
       return true;
     }
   }
@@ -138,8 +157,10 @@ bool PyGarden::needsWatering(String timestamp) {
 }
 
 void PyGarden::openValve() {
+  // open valve
   _waterValve->start();
 
+  // enable led
   _manualLED->enable();
 
   Serial.println("-----------------------");
@@ -147,8 +168,10 @@ void PyGarden::openValve() {
 }
 
 void PyGarden::closeValve() {
+  // close valve
   _waterValve->stop();
 
+  // disable led
   _manualLED->disable();
 
   Serial.println("-----------------------");
@@ -182,18 +205,40 @@ void PyGarden::onConnectionClosed() {
     // and then eventually presses power button to put device back into deepsleep
 
   } else {
-    // XXX: check if water valve needs to be opened before going into
-    // deepsleep
+    // check if garden needs watering right now
     bool enableValve = needsWatering(WateringTime);
-    Serial.print("enableValve: ");
-    Serial.println(enableValve);
+    Serial.println();
+    Serial.println("****************************");
+    Serial.print("** Time for watering: ");
+    if (enableValve) {
+      Serial.println("Yes **");
+    } else {
+      Serial.println("No **");
+    }
+    Serial.println("****************************");
 
-    // disable LEDS
-    _networkLED->disable();
-    _powerLED->disable();
+    if (enableValve) {
+      Serial.println();
+      Serial.print("Started watering period of ");
+      Serial.print(WateringDuration);
+      Serial.println(" seconds.");
+      Serial.println("---------------------------------------");
+      Serial.println();
 
-    // done, go into deepsleep and wait till woken up by user or timer
-    sleep();
+      // enable timeout
+      _wateringTask->enabled = true;
+
+      // open valve for x seconds
+      openValve();
+
+    } else {
+      // disable LEDS
+      _networkLED->disable();
+      _powerLED->disable();
+
+      // done, go into deepsleep and wait till woken up by user or timer
+      sleep();
+    }
   }
 }
 

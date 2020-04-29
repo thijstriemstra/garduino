@@ -6,6 +6,7 @@
 
 #include <Arduino.h>
 
+#include <Thread.h>
 #include <Functor.h>
 #include <Method.h>
 #include <TimeLib.h>
@@ -40,6 +41,7 @@ class PyGarden
     SystemClock* _clock;
     PowerManagement* _power;
     SolenoidValve* _waterValve;
+    Thread* _wateringTask;
 
     bool started = false;
     bool _manualMode = false;

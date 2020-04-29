@@ -23,7 +23,7 @@ void PowerManagement::init(Method wakeup_callback) {
 
   // increment boot number and print it every reboot
   ++deviceBootCount;
-  Serial.println("Boot number: " + String(deviceBootCount));
+  Serial.println("Total number of reboots: " + String(deviceBootCount));
 
   // configure the wake up sources
   esp_sleep_enable_ext0_wakeup((gpio_num_t) ManualRunButtonPin, 1);

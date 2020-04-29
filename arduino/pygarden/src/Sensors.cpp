@@ -26,6 +26,10 @@ void Sensors::publish(const char *base_topic, IOT* iot) {
   Serial.println("Publishing sensor data...");
   Serial.println();
 
+  Serial.println("Inside");
+  Serial.println("------");
+  Serial.println();
+
   // LIGHT
   float lux = measureLight();
   sprintf(subTopic, "%s%s", base_topic, "/inside/light");
@@ -46,11 +50,6 @@ void Sensors::publish(const char *base_topic, IOT* iot) {
   sprintf(subTopic, "%s%s", base_topic, "/inside/humidity");
   iot->publish(subTopic, humidity);
 
-  // RAIN
-  int rain = measureRain();
-  sprintf(subTopic, "%s%s", base_topic, "/outside/rain");
-  iot->publish(subTopic, rain);
-
   // SOIL
   SoilMoistureResult soil = readSoilMoisture();
 
@@ -61,6 +60,16 @@ void Sensors::publish(const char *base_topic, IOT* iot) {
   int moisture2 = soil.array[1];
   sprintf(subTopic, "%s%s", base_topic, "/inside/soil_right");
   iot->publish(subTopic, moisture2);
+
+  Serial.println();
+  Serial.println("Outside");
+  Serial.println("-------");
+  Serial.println();
+
+  // RAIN
+  int rain = measureRain();
+  sprintf(subTopic, "%s%s", base_topic, "/outside/rain");
+  iot->publish(subTopic, rain);
 
   // TEMPERATURE
   OutsideTemperatureResult outside = readTemperature();
@@ -80,7 +89,7 @@ float Sensors::measureLight() {
   float lux = _light->read();
 
   if (_debug) {
-    Serial.print("Light inside: ");
+    Serial.print("Light inside:\t\t");
     Serial.print(lux);
     Serial.println(" lx");
   }
@@ -91,7 +100,7 @@ int Sensors::measureRain() {
   int rainSensorValue = _rain->measurePercentage();
 
   if (_debug) {
-    Serial.print("Rain outside: ");
+    Serial.print("Rain outside:\t\t");
     Serial.print(rainSensorValue);
     Serial.println("% dry");
   }
@@ -105,14 +114,14 @@ BME280_Result Sensors::readBarometer() {
   float humidity = result.array[2];
 
   if (_debug) {
-    Serial.print(F("Temperature inside: "));
+    Serial.print(F("Temperature inside:\t"));
     Serial.print(temperature);
     Serial.println(" °C");
 
-    Serial.print(F("Pressure inside: "));
+    Serial.print(F("Pressure inside:\t"));
     Serial.println(pressure);
 
-    Serial.print("Humidity inside: ");
+    Serial.print("Humidity inside:\t");
     Serial.print(humidity);
     Serial.println("%");
   }
@@ -128,11 +137,11 @@ OutsideTemperatureResult Sensors::readTemperature() {
   result.array[1] = temperature2;
 
   if (_debug) {
-    Serial.print("Temperature outside: ");
+    Serial.print("Temperature outside:\t");
     Serial.print(temperature1);
     Serial.println(" °C");
   
-    Serial.print("Temperature water: ");
+    Serial.print("Temperature water:\t");
     Serial.print(temperature2);
     Serial.println(" °C");
   }
@@ -148,11 +157,11 @@ SoilMoistureResult Sensors::readSoilMoisture() {
   result.array[1] = moisture2;
 
   if (_debug) {
-    Serial.print("Soil-1 moisture: ");
+    Serial.print("Soil-1 moisture:\t");
     Serial.print(moisture1);
     Serial.println("% dry");
 
-    Serial.print("Soil-2 moisture: ");
+    Serial.print("Soil-2 moisture:\t");
     Serial.print(moisture2);
     Serial.println("% dry");
   }
