@@ -145,8 +145,12 @@ void PyGarden::onConnectionClosed() {
     // XXX: check if water valve needs to be opened before going into
     // deepsleep
 
-    // wait a while
-    delay(2000);
+    // disable LEDS
+    delay(500);
+    _networkLED->disable();
+    delay(400);
+    _powerLED->disable();
+    delay(400);
 
     // done, go into deepsleep and wait till woken up by user or timer
     sleep();

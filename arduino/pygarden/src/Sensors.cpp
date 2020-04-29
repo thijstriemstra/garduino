@@ -80,7 +80,7 @@ float Sensors::measureLight() {
   float lux = _light->read();
 
   if (_debug) {
-    Serial.print("Light: ");
+    Serial.print("Light inside: ");
     Serial.print(lux);
     Serial.println(" lx");
   }
@@ -91,7 +91,7 @@ int Sensors::measureRain() {
   int rainSensorValue = _rain->measurePercentage();
 
   if (_debug) {
-    Serial.print("Rain sensor: ");
+    Serial.print("Rain outside: ");
     Serial.print(rainSensorValue);
     Serial.println("% dry");
   }
@@ -105,14 +105,14 @@ BME280_Result Sensors::readBarometer() {
   float humidity = result.array[2];
 
   if (_debug) {
-    Serial.print(F("Temperature: "));
+    Serial.print(F("Temperature inside: "));
     Serial.print(temperature);
     Serial.println(" °C");
 
-    Serial.print(F("Pressure: "));
+    Serial.print(F("Pressure inside: "));
     Serial.println(pressure);
 
-    Serial.print("Humidity: ");
+    Serial.print("Humidity inside: ");
     Serial.print(humidity);
     Serial.println("%");
   }
@@ -128,11 +128,11 @@ OutsideTemperatureResult Sensors::readTemperature() {
   result.array[1] = temperature2;
 
   if (_debug) {
-    Serial.print("Temperature 1: ");
+    Serial.print("Temperature outside: ");
     Serial.print(temperature1);
     Serial.println(" °C");
   
-    Serial.print("Temperature 2: ");
+    Serial.print("Temperature water: ");
     Serial.print(temperature2);
     Serial.println(" °C");
   }
