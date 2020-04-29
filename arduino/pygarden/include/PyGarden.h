@@ -5,8 +5,10 @@
 #define PyGarden_h
 
 #include <Arduino.h>
+
 #include <Functor.h>
 #include <Method.h>
+#include <TimeLib.h>
 
 #include <IOT.h>
 #include <LED.h>
@@ -41,6 +43,7 @@ class PyGarden
 
     bool started = false;
     bool _manualMode = false;
+    bool needsWatering(String timestamp);
 
     // callbacks
     void onSystemWakeup();

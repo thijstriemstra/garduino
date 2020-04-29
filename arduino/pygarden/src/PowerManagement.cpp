@@ -49,8 +49,6 @@ void PowerManagement::wokeup() {
   {
     case ESP_SLEEP_WAKEUP_EXT0:
       Serial.println("external signal using RTC_IO");
-
-      // XXX: powered on using manual button, start manual mode right away
       break;
 
     case ESP_SLEEP_WAKEUP_EXT1:

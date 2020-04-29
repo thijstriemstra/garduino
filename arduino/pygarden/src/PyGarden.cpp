@@ -4,6 +4,24 @@
 
 #include <PyGarden.h>
 
+RTC_DATA_ATTR bool wateredToday = false;
+
+String getValue(String data, char separator, int index)
+{
+    int found = 0;
+    int strIndex[] = { 0, -1 };
+    int maxIndex = data.length() - 1;
+
+    for (int i = 0; i <= maxIndex && found <= index; i++) {
+        if (data.charAt(i) == separator || i == maxIndex) {
+            found++;
+            strIndex[0] = strIndex[1] + 1;
+            strIndex[1] = (i == maxIndex) ? i+1 : i;
+        }
+    }
+    return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
+}
+
 PyGarden::PyGarden() {
   // controls
   _manualBtn = new Button(ManualRunButtonPin);
@@ -97,6 +115,28 @@ void PyGarden::sleep() {
   _power->sleep();
 }
 
+bool PyGarden::needsWatering(String timestamp) {
+  String targetHour = getValue(timestamp, ':', 0);
+  String targetMinute = getValue(timestamp, ':', 1);
+
+  // reset flag at midnight
+  if (hour() == 0) {
+    if (wateredToday == true) {
+      wateredToday = false;
+    }
+  }
+
+  // needs watering today
+  if (wateredToday == false) {
+    if (hour() == targetHour.toInt()) {
+      // set flag to prevent watering multiple times this hour
+      //wateredToday = true;
+      return true;
+    }
+  }
+  return false;
+}
+
 void PyGarden::openValve() {
   _waterValve->start();
 
@@ -144,13 +184,13 @@ void PyGarden::onConnectionClosed() {
   } else {
     // XXX: check if water valve needs to be opened before going into
     // deepsleep
+    bool enableValve = needsWatering(WateringTime);
+    Serial.print("enableValve: ");
+    Serial.println(enableValve);
 
     // disable LEDS
-    delay(500);
     _networkLED->disable();
-    delay(400);
     _powerLED->disable();
-    delay(400);
 
     // done, go into deepsleep and wait till woken up by user or timer
     sleep();
