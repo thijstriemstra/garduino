@@ -4,34 +4,6 @@
 
 #include <PyGarden.h>
 
-RTC_DATA_ATTR bool wateredToday = false;
-
-String getValue(String data, char separator, int index)
-{
-    int found = 0;
-    int strIndex[] = { 0, -1 };
-    int maxIndex = data.length() - 1;
-
-    for (int i = 0; i <= maxIndex && found <= index; i++) {
-        if (data.charAt(i) == separator || i == maxIndex) {
-            found++;
-            strIndex[0] = strIndex[1] + 1;
-            strIndex[1] = (i == maxIndex) ? i+1 : i;
-        }
-    }
-    return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
-}
-
-void onWateringReady() {
-  Serial.println();
-  Serial.println("**************************************");
-  Serial.println("**  Watering ready! Back to sleep.  **");
-  Serial.println("**************************************");
-
-  // put esp32 into deepsleep
-  esp_deep_sleep_start();
-}
-
 PyGarden::PyGarden() {
   // controls
   _manualBtn = new Button(ManualRunButtonPin);
@@ -40,16 +12,20 @@ PyGarden::PyGarden() {
   _powerBtn = new Button(PowerButtonPin);
   _powerLED = new LED(PowerLEDPin);
 
-  // sensors
-  _sensors = new Sensors();
-
-  // water valve
-  _waterValve = new SolenoidValve(WaterValvePin);
+  // scheduler
+  _scheduler = new ThreadController();
 
   // watering task
+  Method wateringReadyCallback;
+  wateringReadyCallback.attachCallback(
+    makeFunctor((Functor0 *)0, *this, &PyGarden::onWateringReady));
   int duration = WateringDuration * 1000;
-  _wateringTask = new Thread(onWateringReady, duration);
-  _wateringTask->enabled = false;
+  _wateringTask = new WateringTask(
+    duration,
+    WaterValvePin,
+    WateringSchedule,
+    wateringReadyCallback
+  );
 
   // system time
   _clock = new SystemClock(NTP_HOST);
@@ -58,7 +34,11 @@ PyGarden::PyGarden() {
   _power = new PowerManagement(WakeupSchedule);
 
   // wifi/mqtt
-  _iot = new IOT();
+  _iot = new IOT(MQTT_BASE_TOPIC);
+
+  // sensors
+  int publishSchedule = SensorPublishSchedule * 1000;
+  _sensors = new Sensors(publishSchedule);
 }
 
 void PyGarden::begin() {
@@ -75,9 +55,6 @@ void PyGarden::begin() {
   Method disconnectedCallback;
   disconnectedCallback.attachCallback(
     makeFunctor((Functor0 *)0, *this, &PyGarden::onConnectionClosed));
-  Method publishReadyCallback;
-  publishReadyCallback.attachCallback(
-    makeFunctor((Functor0 *)0, *this, &PyGarden::onPublishReady));
   Method systemWakeupCallback;
   systemWakeupCallback.attachCallback(
     makeFunctor((Functor0 *)0, *this, &PyGarden::onSystemWakeup));
@@ -89,22 +66,22 @@ void PyGarden::begin() {
   _powerLED->begin();
   _networkLED->begin();
 
-  // sensors
-  _sensors->begin();
+  // watering task
+  _wateringTask->begin();
+  _scheduler->add(_wateringTask);
 
-  // water valve
-  _waterValve->begin();
+  // sensors
+  _scheduler->add(_sensors);
+  _sensors->begin();
 
   // power management
   _power->init(systemWakeupCallback);
 
-  // wifi/mqtt
+  // connect to wifi/mqtt
   _networkLED->blink();
   _iot->begin(
-    TotalReadings,
     connectionReadyCallback,
-    disconnectedCallback,
-    publishReadyCallback
+    disconnectedCallback
   );
 }
 
@@ -116,9 +93,8 @@ void PyGarden::loop() {
   _powerLED->loop();
   _networkLED->loop();
 
-  if (_wateringTask->shouldRun()) {
-		_wateringTask->run();
-  }
+  // scheduler
+  _scheduler->run();
 }
 
 void PyGarden::sleep() {
@@ -134,31 +110,11 @@ void PyGarden::sleep() {
   _power->sleep();
 }
 
-bool PyGarden::needsWatering(String timestamp) {
-  String targetHour = getValue(timestamp, ':', 0);
-  String targetMinute = getValue(timestamp, ':', 1);
-
-  // reset flag at midnight
-  if (hour() == 0) {
-    if (wateredToday == true) {
-      wateredToday = false;
-    }
-  }
-
-  // needs watering today
-  if (wateredToday == false) {
-    if (hour() == targetHour.toInt()) {
-      // set flag to prevent watering multiple times this hour
-      wateredToday = true;
-      return true;
-    }
-  }
-  return false;
-}
-
 void PyGarden::openValve() {
+  started = true;
+
   // open valve
-  _waterValve->start();
+  _wateringTask->open();
 
   // enable led
   _manualLED->enable();
@@ -168,8 +124,10 @@ void PyGarden::openValve() {
 }
 
 void PyGarden::closeValve() {
+  started = false;
+
   // close valve
-  _waterValve->stop();
+  _wateringTask->close();
 
   // disable led
   _manualLED->disable();
@@ -180,66 +138,15 @@ void PyGarden::closeValve() {
 
 void PyGarden::toggleValve() {
   if (started == false) {
-    started = true;
-
     openValve();
   } else {
-    started = false;
-
     closeValve();
   }
 }
 
 void PyGarden::onConnectionClosed() {
-  if (_manualMode) {
-    Serial.println();
-    Serial.println("===================");
-    Serial.println("==  Manual mode  ==");
-    Serial.println("===================");
-    Serial.println();
-
-    // open valve
-    toggleValve();
-
-    // now wait till user presses the manual button again to control the valve,
-    // and then eventually presses power button to put device back into deepsleep
-
-  } else {
-    // check if garden needs watering right now
-    bool enableValve = needsWatering(WateringTime);
-    Serial.println();
-    Serial.println("****************************");
-    Serial.print("** Time for watering: ");
-    if (enableValve) {
-      Serial.println("Yes **");
-    } else {
-      Serial.println("No **");
-    }
-    Serial.println("****************************");
-
-    if (enableValve) {
-      Serial.println();
-      Serial.print("Started watering period of ");
-      Serial.print(WateringDuration);
-      Serial.println(" seconds.");
-      Serial.println("---------------------------------------");
-      Serial.println();
-
-      // enable timeout
-      _wateringTask->enabled = true;
-
-      // open valve for x seconds
-      openValve();
-
-    } else {
-      // disable LEDS
-      _networkLED->disable();
-      _powerLED->disable();
-
-      // done, go into deepsleep and wait till woken up by user or timer
-      sleep();
-    }
-  }
+  // network connection closed
+  _networkLED->disable();
 }
 
 void PyGarden::onConnectionReady() {
@@ -251,17 +158,61 @@ void PyGarden::onConnectionReady() {
   // sync time
   _clock->sync();
 
-  // publish sensor data
-  _sensors->publish(MQTT_BASE_TOPIC, _iot);
+  // start publishing sensor data
+  _sensors->startPublish(_iot);
+
+  if (_manualMode) {
+    Serial.println();
+    Serial.println("===================");
+    Serial.println("==  Manual mode  ==");
+    Serial.println("===================");
+    Serial.println();
+
+    // open valve
+    openValve();
+
+    // now wait till user presses the manual button again to control the valve,
+    // and then eventually presses power button to put device back into deepsleep
+
+  } else {
+    // check if garden needs watering right now
+    bool enableValve = _wateringTask->needsWatering();
+    Serial.println();
+    Serial.println("****************************");
+    Serial.print("   Time for watering: ");
+    if (enableValve) {
+      Serial.println("Yes");
+    } else {
+      Serial.println("No");
+    }
+    Serial.print("      Schedule: ");
+    Serial.println(WateringSchedule);
+    Serial.print("        Period: ");
+    Serial.print(WateringDuration);
+    Serial.println(" sec");
+    Serial.println("****************************");
+    Serial.println();
+
+    if (enableValve) {
+      // start watering
+      _wateringTask->start();
+    } else {
+      // disable LEDS
+      _powerLED->disable();
+
+      // XXX: done, go into deepsleep and wait till woken up by button or timer
+      //sleep();
+    }
+  }
 }
 
-void PyGarden::onPublishReady() {
-  Serial.println("----------------------");
-  Serial.println("Published sensor data.");
-  Serial.println("----------------------");
+void PyGarden::onWateringReady() {
+  Serial.println();
+  Serial.println("**************************************");
+  Serial.println("* Watering finished! Back to sleep.  *");
+  Serial.println("**************************************");
 
-  // disconnnect iot
-  _iot->disconnect();
+  sleep();
 }
 
 void PyGarden::onSystemWakeup() {

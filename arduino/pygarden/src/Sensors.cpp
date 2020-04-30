@@ -1,7 +1,11 @@
 #include "Sensors.h"
 
-Sensors::Sensors(bool debug) {
+Sensors::Sensors(long interval, bool debug): Thread() {
+  _interval = interval;
   _debug = debug;
+  _lastPublish = 0;
+
+  enabled = true;
 
   _rain = new YL83_RainSensor(RainSensorPin);
   _soil1 = new FC28_SoilSensor(SoilSensor1Pin);
@@ -20,10 +24,42 @@ void Sensors::begin() {
   _light->begin();
 }
 
-void Sensors::publish(const char *base_topic, IOT* iot) {
-  char subTopic[80];
+void Sensors::startPublish(IOT* iot) {
+  _iot = iot;
+  _startPublishing = true;
+}
 
-  Serial.println("Publishing sensor data...");
+bool Sensors::shouldRun(unsigned long time) {
+  if (_startPublishing) {
+
+    _startPublishing = false;
+
+    // save the current time
+    _lastPublish = (time ? time : millis());
+
+    // continuously publish data
+    publish();
+  }
+
+  // let default method check for it
+  return Thread::shouldRun(time);
+}
+
+void Sensors::run() {
+  // check if time elapsed since last publish
+  if (millis() > _lastPublish + _interval){
+    // exceeded time, disable it
+    _startPublishing = true;
+  }
+
+  // run the thread
+  Thread::run();
+}
+
+void Sensors::publish() {
+  Serial.print("Publishing sensor data every ");
+  Serial.print(_interval / 1000);
+  Serial.println(" seconds...");
   Serial.println();
 
   Serial.println("Inside");
@@ -32,34 +68,26 @@ void Sensors::publish(const char *base_topic, IOT* iot) {
 
   // LIGHT
   float lux = measureLight();
-  sprintf(subTopic, "%s%s", base_topic, "/inside/light");
-  iot->publish(subTopic, lux);
+  _iot->publish("/inside/light", lux);
 
-  // BAROMETER
+  // BME280
   BME280_Result barometer = readBarometer();
+  float temperature_inside = barometer.array[0];
+  _iot->publish("/inside/temperature", temperature_inside);
 
-  float temperature = barometer.array[0];
-  sprintf(subTopic, "%s%s", base_topic, "/inside/temperature");
-  iot->publish(subTopic, temperature);
+  float pressure_inside = barometer.array[1];
+  _iot->publish("/inside/pressure", pressure_inside);
 
-  float pressure = barometer.array[1];
-  sprintf(subTopic, "%s%s", base_topic, "/inside/pressure");
-  iot->publish(subTopic, pressure);
-
-  float humidity = barometer.array[2];
-  sprintf(subTopic, "%s%s", base_topic, "/inside/humidity");
-  iot->publish(subTopic, humidity);
+  float humidity_inside = barometer.array[2];
+  _iot->publish("/inside/humidity", humidity_inside);
 
   // SOIL
   SoilMoistureResult soil = readSoilMoisture();
-
   int moisture1 = soil.array[0];
-  sprintf(subTopic, "%s%s", base_topic, "/inside/soil_left");
-  iot->publish(subTopic, moisture1);
+  _iot->publish("/inside/soil_left", moisture1);
 
   int moisture2 = soil.array[1];
-  sprintf(subTopic, "%s%s", base_topic, "/inside/soil_right");
-  iot->publish(subTopic, moisture2);
+  _iot->publish("/inside/soil_right", moisture2);
 
   Serial.println();
   Serial.println("Outside");
@@ -68,20 +96,19 @@ void Sensors::publish(const char *base_topic, IOT* iot) {
 
   // RAIN
   int rain = measureRain();
-  sprintf(subTopic, "%s%s", base_topic, "/outside/rain");
-  iot->publish(subTopic, rain);
+  _iot->publish("/outside/rain", rain);
 
   // TEMPERATURE
   OutsideTemperatureResult outside = readTemperature();
   
   float outsideTemp = outside.array[0];
-  sprintf(subTopic, "%s%s", base_topic, "/outside/temperature");
-  iot->publish(subTopic, outsideTemp);
+  _iot->publish("/outside/temperature", outsideTemp);
 
   float waterTemp = outside.array[1];
-  sprintf(subTopic, "%s%s", base_topic, "/water/temperature");
-  iot->publish(subTopic, waterTemp);
+  _iot->publish("/water/temperature", waterTemp);
 
+  Serial.println();
+  Serial.println("**********************************************");
   Serial.println();
 }
 
@@ -89,7 +116,7 @@ float Sensors::measureLight() {
   float lux = _light->read();
 
   if (_debug) {
-    Serial.print("Light inside:\t\t");
+    Serial.print("Light:\t\t\t");
     Serial.print(lux);
     Serial.println(" lx");
   }
@@ -100,7 +127,7 @@ int Sensors::measureRain() {
   int rainSensorValue = _rain->measurePercentage();
 
   if (_debug) {
-    Serial.print("Rain outside:\t\t");
+    Serial.print("Rain:\t\t\t");
     Serial.print(rainSensorValue);
     Serial.println("% dry");
   }

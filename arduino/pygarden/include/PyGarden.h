@@ -6,17 +6,17 @@
 
 #include <Arduino.h>
 
-#include <Thread.h>
 #include <Functor.h>
 #include <Method.h>
-#include <TimeLib.h>
+#include <Thread.h>
+#include <ThreadController.h>
 
 #include <IOT.h>
 #include <LED.h>
 #include <Button.h>
 #include <Sensors.h>
 #include <SystemClock.h>
-#include <SolenoidValve.h>
+#include <WateringTask.h>
 #include <PowerManagement.h>
 
 class PyGarden
@@ -40,12 +40,11 @@ class PyGarden
     Sensors* _sensors;
     SystemClock* _clock;
     PowerManagement* _power;
-    SolenoidValve* _waterValve;
-    Thread* _wateringTask;
+    WateringTask* _wateringTask;
+    ThreadController* _scheduler;
 
     bool started = false;
     bool _manualMode = false;
-    bool needsWatering(String timestamp);
 
     // callbacks
     void onSystemWakeup();
@@ -53,7 +52,7 @@ class PyGarden
     void onManualButtonPush();
     void onConnectionReady();
     void onConnectionClosed();
-    void onPublishReady();
+    void onWateringReady();
 };
 
 #endif

@@ -16,18 +16,15 @@ extern "C" {
 class IOT
 {
   public:
-    IOT();
-    void begin(
-      int totalReadings,
-      Method connected_callback,
-      Method disconnected_callback,
-      Method publishReady_callback
-    );
-    void publish(const char* topic, double value);
-    void connectToMqtt();
+    IOT(const char *base_topic);
+    void begin(Method connected_callback, Method disconnected_callback);
+    void publish(const char* sub_topic, double value);
+    void connect();
     void disconnect();
+    void connectToMqtt();
 
   private:
+    const char* _baseTopic;
     uint16_t _lastPacketIdPubSent;
 };
 

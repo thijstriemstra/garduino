@@ -5,6 +5,8 @@
 #define Sensors_h
 
 #include <Arduino.h>
+#include <Thread.h>
+
 #include <IOT.h>
 #include <YL83_RainSensor.h>
 #include <FC28_SoilSensor.h>
@@ -16,13 +18,15 @@ struct OutsideTemperatureResult {
     float array[2];
 };
 
-class Sensors
-{
+class Sensors: public Thread {
   public:
-    Sensors(bool debug = true);
+    Sensors(long interval, bool debug = true);
     void begin();
-    void publish(const char *base_topic, IOT* iot);
 
+    void run();
+    void publish();
+    void startPublish(IOT* iot);
+    bool shouldRun(unsigned long time);
     float measureLight();
     int measureRain();
     BME280_Result readBarometer();
@@ -31,6 +35,11 @@ class Sensors
 
   private:
     bool _debug;
+    long _interval;
+    long _lastPublish;
+    bool _startPublishing = false;
+
+    IOT* _iot;
     YL83_RainSensor* _rain;
     FC28_SoilSensor* _soil1;
     FC28_SoilSensor* _soil2;
