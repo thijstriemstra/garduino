@@ -4,11 +4,13 @@ AsyncMqttClient _mqttClient;
 TimerHandle_t _mqttReconnectTimer;
 TimerHandle_t _wifiReconnectTimer;
 uint16_t _lastPacketIdPubAck;
-bool stopReconnect = false;
+bool _stopReconnect = false;
+int _totalReadings;
 
 // callbacks
 Method _connectedCb;
 Method _disconnectedCb;
+Method _publishReadyCb;
 
 void connectToWifi() {
   Serial.print("WiFi - Connecting to ");
@@ -42,7 +44,7 @@ void WiFiEvent(WiFiEvent_t event) {
     case SYSTEM_EVENT_STA_DISCONNECTED:
       Serial.println("WiFi lost connection");
 
-      if (!stopReconnect) {
+      if (!_stopReconnect) {
         xTimerStop(_mqttReconnectTimer, 0);
         xTimerStart(_wifiReconnectTimer, 0);
       }
@@ -115,15 +117,27 @@ void onMqttPublish(uint16_t packetId) {
 
   //Serial.print("Publish acknowledged: ");
   //Serial.println(_lastPacketIdPubAck);
+
+  if (_lastPacketIdPubAck == _totalReadings) {
+    // notify others
+    _publishReadyCb.callback();
+  }
 }
 
 IOT::IOT(const char *base_topic) {
   _baseTopic = base_topic;
 }
 
-void IOT::begin(Method connected_callback, Method disconnected_callback) {
+void IOT::begin(
+  int totalReadings,
+  Method connected_callback,
+  Method disconnected_callback,
+  Method publishReady_callback
+) {
+  _totalReadings = totalReadings;
   _disconnectedCb = disconnected_callback;
   _connectedCb = connected_callback;
+  _publishReadyCb = publishReady_callback;
 
   // setup timers
   _mqttReconnectTimer = xTimerCreate(
@@ -157,7 +171,7 @@ void IOT::connect() {
 }
 
 void IOT::disconnect() {
-  stopReconnect = true;
+  _stopReconnect = true;
   xTimerStop(_wifiReconnectTimer, 0);
   xTimerStop(_mqttReconnectTimer, 0);
 

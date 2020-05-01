@@ -55,6 +55,9 @@ void PyGarden::begin() {
   Method disconnectedCallback;
   disconnectedCallback.attachCallback(
     makeFunctor((Functor0 *)0, *this, &PyGarden::onConnectionClosed));
+  Method publishReadyCallback;
+  publishReadyCallback.attachCallback(
+    makeFunctor((Functor0 *)0, *this, &PyGarden::onPublishReady));
   Method systemWakeupCallback;
   systemWakeupCallback.attachCallback(
     makeFunctor((Functor0 *)0, *this, &PyGarden::onSystemWakeup));
@@ -70,6 +73,8 @@ void PyGarden::begin() {
   _wateringTask->begin();
   _scheduler->add(_wateringTask);
 
+  _clock->begin();
+
   // sensors
   _scheduler->add(_sensors);
   _sensors->begin();
@@ -80,8 +85,10 @@ void PyGarden::begin() {
   // connect to wifi/mqtt
   _networkLED->blink();
   _iot->begin(
+    _totalReadings,
     connectionReadyCallback,
-    disconnectedCallback
+    disconnectedCallback,
+    publishReadyCallback
   );
 }
 
@@ -144,6 +151,15 @@ void PyGarden::toggleValve() {
   }
 }
 
+void PyGarden::onPublishReady() {
+  // only shutdown when manual mode is not enabled and system is
+  // not watering at the moment
+  if (!_manualMode && !_wateringTask->isWatering()) {
+    // done, go into deepsleep and wait till woken up by button or timer
+    sleep();
+  }
+}
+
 void PyGarden::onConnectionClosed() {
   // network connection closed
   _networkLED->disable();
@@ -197,11 +213,9 @@ void PyGarden::onConnectionReady() {
       // start watering
       _wateringTask->start();
     } else {
-      // disable LEDS
-      _powerLED->disable();
-
-      // XXX: done, go into deepsleep and wait till woken up by button or timer
-      //sleep();
+      // wait till first sensor publish is done and
+      // sleep afterwards
+      // XXX: check if sensor publish is not already done
     }
   }
 }

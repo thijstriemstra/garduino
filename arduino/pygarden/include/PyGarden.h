@@ -45,6 +45,7 @@ class PyGarden
 
     bool started = false;
     bool _manualMode = false;
+    int _totalReadings = 9;
 
     // callbacks
     void onSystemWakeup();
@@ -52,6 +53,7 @@ class PyGarden
     void onManualButtonPush();
     void onConnectionReady();
     void onConnectionClosed();
+    void onPublishReady();
     void onWateringReady();
 };
 

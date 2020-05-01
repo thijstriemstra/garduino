@@ -21,6 +21,7 @@ class WateringTask: public Thread {
     void start();
     void open();
     void close();
+    bool isWatering();
     bool needsWatering();
     bool shouldRun(unsigned long time);
 

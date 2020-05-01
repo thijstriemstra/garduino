@@ -57,9 +57,7 @@ void Sensors::run() {
 }
 
 void Sensors::publish() {
-  Serial.print("Publishing sensor data every ");
-  Serial.print(_interval / 1000);
-  Serial.println(" seconds...");
+  Serial.println("Publishing sensor data...");
   Serial.println();
 
   Serial.println("Inside");

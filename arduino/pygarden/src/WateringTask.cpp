@@ -35,6 +35,10 @@ WateringTask::WateringTask(long interval, int valve_pin, String timestamp, Metho
   _waterValve = new SolenoidValve(valve_pin);
 }
 
+bool WateringTask::isWatering() {
+    return enabled;
+}
+
 void WateringTask::begin() {
   // water valve
   _waterValve->begin();
@@ -100,7 +104,7 @@ bool WateringTask::shouldRun(unsigned long time) {
 void WateringTask::run() {
   // check if time elapsed since last publish
   if (millis() > _lastRun + _interval){
-    // exceeded time, disable it
+    // done watering
     active = false;
     enabled = false;
 

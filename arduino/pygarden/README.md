@@ -36,6 +36,8 @@ Readings from the sensors are sent to a MQTT server over WiFi.
 | FC-38 Soil Sensor 2 | 32 |
 | BME280 Barometer SDA | 0 |
 | BME280 Barometer SCL | 27 |
+| DS3231 Clock SDA | 17 |
+| DS3231 Clock SCL | 5 |
 
 ## Development
 
