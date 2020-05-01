@@ -28,7 +28,7 @@ PyGarden::PyGarden() {
   );
 
   // system time
-  _clock = new SystemClock(NTP_HOST);
+  _clock = new SystemClock(ClockSCLPin, ClockSDAPin, NTP_HOST);
 
   // power management
   _power = new PowerManagement(WakeupSchedule);
@@ -172,7 +172,7 @@ void PyGarden::startManualMode() {
 
 void PyGarden::checkWatering() {
   // check if garden needs watering right now
-  bool enableValve = _wateringTask->needsWatering();
+  bool enableValve = _wateringTask->needsWatering(_clock->startupTime.Hour());
   Serial.println();
   Serial.println("****************************");
   Serial.print("   Time for watering: ");
@@ -186,6 +186,9 @@ void PyGarden::checkWatering() {
   Serial.print("        Period: ");
   Serial.print(WateringDuration);
   Serial.println(" sec");
+  Serial.print("  Current time: ");
+  Serial.println(_clock->getStartupTime());
+
   Serial.println("****************************");
   Serial.println();
 
@@ -243,14 +246,14 @@ void PyGarden::onConnectionReady() {
   _networkLED->blink();
   _networkLED->enable();
 
-  // sync time
-  _clock->sync();
-
   // start publishing sensor data
   _sensors->startPublish(_iot);
 
   // enter manual mode (if button was pressed) or check watering
   if (_manualMode) {
+    // sync time only in manual mode
+    _clock->sync();
+
     startManualMode();
   } else {
     checkWatering();

@@ -59,12 +59,12 @@ void WateringTask::close() {
   _waterValve->stop();
 }
 
-bool WateringTask::needsWatering() {
+bool WateringTask::needsWatering(int hour) {
   String targetHour = getValue(_timestamp, ':', 0);
   String targetMinute = getValue(_timestamp, ':', 1);
 
   // reset flag at midnight
-  if (hour() == 0) {
+  if (hour == 0) {
     if (wateredToday == true) {
       wateredToday = false;
     }
@@ -72,7 +72,7 @@ bool WateringTask::needsWatering() {
 
   // needs watering today
   if (wateredToday == false) {
-    if (hour() == targetHour.toInt()) {
+    if (hour == targetHour.toInt()) {
       // set flag to prevent watering multiple times this hour
       wateredToday = true;
       return true;

@@ -6,7 +6,6 @@
 
 #include <Arduino.h>
 #include <Thread.h>
-#include <TimeLib.h>
 #include <Method.h>
 
 #include <SolenoidValve.h>
@@ -22,7 +21,7 @@ class WateringTask: public Thread {
     void open();
     void close();
     bool isWatering();
-    bool needsWatering();
+    bool needsWatering(int hour);
     bool shouldRun(unsigned long time);
 
   private:
