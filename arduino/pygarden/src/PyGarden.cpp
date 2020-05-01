@@ -34,7 +34,7 @@ PyGarden::PyGarden() {
   _power = new PowerManagement(WakeupSchedule);
 
   // wifi/mqtt
-  _iot = new IOT(MQTT_BASE_TOPIC);
+  _iot = new IOT();
 
   // sensors
   int publishSchedule = SensorPublishSchedule * 1000;
@@ -55,6 +55,9 @@ void PyGarden::begin() {
   Method disconnectedCallback;
   disconnectedCallback.attachCallback(
     makeFunctor((Functor0 *)0, *this, &PyGarden::onConnectionClosed));
+  Method failedConnectionCallback;
+  failedConnectionCallback.attachCallback(
+    makeFunctor((Functor0 *)0, *this, &PyGarden::onConnectionFailed));
   Method publishReadyCallback;
   publishReadyCallback.attachCallback(
     makeFunctor((Functor0 *)0, *this, &PyGarden::onPublishReady));
@@ -73,6 +76,7 @@ void PyGarden::begin() {
   _wateringTask->begin();
   _scheduler->add(_wateringTask);
 
+  // system time
   _clock->begin();
 
   // sensors
@@ -88,7 +92,8 @@ void PyGarden::begin() {
     _totalReadings,
     connectionReadyCallback,
     disconnectedCallback,
-    publishReadyCallback
+    publishReadyCallback,
+    failedConnectionCallback
   );
 }
 
@@ -151,6 +156,52 @@ void PyGarden::toggleValve() {
   }
 }
 
+void PyGarden::startManualMode() {
+  Serial.println();
+  Serial.println("===================");
+  Serial.println("==  Manual mode  ==");
+  Serial.println("===================");
+  Serial.println();
+
+  // open valve
+  openValve();
+
+  // now wait till user presses the manual button again to control the valve,
+  // and then eventually presses power button to put device back into deepsleep
+}
+
+void PyGarden::checkWatering() {
+  // check if garden needs watering right now
+  bool enableValve = _wateringTask->needsWatering();
+  Serial.println();
+  Serial.println("****************************");
+  Serial.print("   Time for watering: ");
+  if (enableValve) {
+    Serial.println("Yes");
+  } else {
+    Serial.println("No");
+  }
+  Serial.print("      Schedule: ");
+  Serial.println(WateringSchedule);
+  Serial.print("        Period: ");
+  Serial.print(WateringDuration);
+  Serial.println(" sec");
+  Serial.println("****************************");
+  Serial.println();
+
+  if (enableValve) {
+    // start watering
+    // will put device back to sleep when done
+    _wateringTask->start();
+  } else {
+    // check if sensor publish is not already done
+    if (!connected) {
+      // go to sleep, everything is done
+      sleep();
+    }
+  }
+}
+
 void PyGarden::onPublishReady() {
   // only shutdown when manual mode is not enabled and system is
   // not watering at the moment
@@ -161,11 +212,32 @@ void PyGarden::onPublishReady() {
 }
 
 void PyGarden::onConnectionClosed() {
+  connected = false;
+
   // network connection closed
   _networkLED->disable();
 }
 
+void PyGarden::onConnectionFailed() {
+  connected = false;
+
+  Serial.println();
+  Serial.println("*** No WiFi connection available! ***");
+  Serial.println();
+
+  // no connection available to publish sensor data,
+  // only check for watering or enter manual mode if
+  // button was pressed at startup
+  if (_manualMode) {
+    startManualMode();
+  } else {
+    checkWatering();
+  }
+}
+
 void PyGarden::onConnectionReady() {
+  connected = true;
+
   // network status LED
   // stop blinking
   _networkLED->blink();
@@ -177,46 +249,11 @@ void PyGarden::onConnectionReady() {
   // start publishing sensor data
   _sensors->startPublish(_iot);
 
+  // enter manual mode (if button was pressed) or check watering
   if (_manualMode) {
-    Serial.println();
-    Serial.println("===================");
-    Serial.println("==  Manual mode  ==");
-    Serial.println("===================");
-    Serial.println();
-
-    // open valve
-    openValve();
-
-    // now wait till user presses the manual button again to control the valve,
-    // and then eventually presses power button to put device back into deepsleep
-
+    startManualMode();
   } else {
-    // check if garden needs watering right now
-    bool enableValve = _wateringTask->needsWatering();
-    Serial.println();
-    Serial.println("****************************");
-    Serial.print("   Time for watering: ");
-    if (enableValve) {
-      Serial.println("Yes");
-    } else {
-      Serial.println("No");
-    }
-    Serial.print("      Schedule: ");
-    Serial.println(WateringSchedule);
-    Serial.print("        Period: ");
-    Serial.print(WateringDuration);
-    Serial.println(" sec");
-    Serial.println("****************************");
-    Serial.println();
-
-    if (enableValve) {
-      // start watering
-      _wateringTask->start();
-    } else {
-      // wait till first sensor publish is done and
-      // sleep afterwards
-      // XXX: check if sensor publish is not already done
-    }
+    checkWatering();
   }
 }
 

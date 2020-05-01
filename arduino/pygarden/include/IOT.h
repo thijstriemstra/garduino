@@ -6,22 +6,19 @@
 
 #include <EEPROM.h>
 #include <WiFi.h>
-extern "C" {
-	#include "freertos/FreeRTOS.h"
-	#include "freertos/timers.h"
-}
-#include <AsyncMqttClient.h>
 #include <Method.h>
+#include <AsyncMqttClient.h>
 
 class IOT
 {
   public:
-    IOT(const char *base_topic);
+    IOT();
     void begin(
       int totalReadings,
       Method connected_callback,
       Method disconnected_callback,
-      Method publishReady_callback
+      Method publishReady_callback,
+      Method connectionFailed_callback
     );
     void publish(const char* sub_topic, double value);
     void connect();
@@ -29,7 +26,6 @@ class IOT
     void connectToMqtt();
 
   private:
-    const char* _baseTopic;
     uint16_t _lastPacketIdPubSent;
 };
 

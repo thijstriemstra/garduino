@@ -6,7 +6,7 @@ Arduino code for greenhouse monitoring using ESP32.
 ## Features
 
 Controls 12V water valve and 12V water pump and starts them once a day
-to water the plants.
+to water the plants for a period of time.
 
 Sensors:
 
@@ -16,7 +16,8 @@ Sensors:
  - Rain (YL-83 sensor)
  - Light (BH1750 sensor)
 
-Readings from the sensors are sent to a MQTT server over WiFi.
+Readings from the sensors are sent to a MQTT server over WiFi. Data and
+time is stored in a battery-powered DS3231 realtime clock.
 
 ## Wiring
 

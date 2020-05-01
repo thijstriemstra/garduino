@@ -29,6 +29,11 @@ class PyGarden
     void openValve();
     void closeValve();
     void toggleValve();
+    void startManualMode();
+    void checkWatering();
+
+    bool started = false;
+    bool connected = false;
 
   private:
     IOT* _iot;
@@ -43,7 +48,6 @@ class PyGarden
     WateringTask* _wateringTask;
     ThreadController* _scheduler;
 
-    bool started = false;
     bool _manualMode = false;
     int _totalReadings = 9;
 
@@ -53,6 +57,7 @@ class PyGarden
     void onManualButtonPush();
     void onConnectionReady();
     void onConnectionClosed();
+    void onConnectionFailed();
     void onPublishReady();
     void onWateringReady();
 };

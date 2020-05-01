@@ -5,7 +5,7 @@ Sensors::Sensors(long interval, bool debug): Thread() {
   _debug = debug;
   _lastPublish = 0;
 
-  enabled = true;
+  enabled = false;
 
   _rain = new YL83_RainSensor(RainSensorPin);
   _soil1 = new FC28_SoilSensor(SoilSensor1Pin);
@@ -27,6 +27,7 @@ void Sensors::begin() {
 void Sensors::startPublish(IOT* iot) {
   _iot = iot;
   _startPublishing = true;
+  enabled = true;
 }
 
 bool Sensors::shouldRun(unsigned long time) {
