@@ -168,22 +168,25 @@ void PyGarden::checkWatering() {
   // check if garden needs watering right now
   bool enableValve = _wateringTask->needsWatering(_clock->startupTime);
   Serial.println();
-  Serial.println("****************************");
-  Serial.print("   Time for watering: ");
+  Serial.println("************************************");
+  Serial.print("      Watering: ");
   if (enableValve) {
     Serial.println("Yes");
   } else {
     Serial.println("No");
   }
-  Serial.print("      Schedule: ");
-  Serial.println(WateringSchedule);
   Serial.print("        Period: ");
   Serial.print(WateringDuration);
   Serial.println(" sec");
+  Serial.print("Daily schedule: ");
+  Serial.print(WateringSchedule);
+  Serial.println(":00");
   Serial.print("  Current time: ");
   Serial.println(_clock->getStartupTime());
+  Serial.print("      Last run: ");
+  Serial.println(_wateringTask->getLastRunTime());
 
-  Serial.println("****************************");
+  Serial.println("************************************");
   Serial.println();
 
   if (enableValve) {

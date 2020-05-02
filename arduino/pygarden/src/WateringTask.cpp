@@ -92,7 +92,9 @@ bool WateringTask::shouldRun(unsigned long time) {
     _lastRun = (time ? time : millis());
 
     Serial.println();
-    Serial.println("Started watering!");
+    Serial.print("Started watering for ");
+    Serial.print(_interval);
+    Serial.println(" seconds!");
     Serial.println("---------------------------------------");
     Serial.println();
 
@@ -123,6 +125,8 @@ void WateringTask::run() {
 }
 
 void WateringTask::save(RtcDateTime timestamp) {
+  // Initialize NVS
+   esp_err_t err = nvs_flash_init();
   _prefs->begin(_namespace, false);
 
   // store the timestamp
@@ -144,4 +148,21 @@ RtcDateTime WateringTask::load() {
   _prefs->end();
 
   return RtcDateTime(timestamp);
+}
+
+String WateringTask::getLastRunTime() {
+  RtcDateTime lastRun = load();
+  char datestring[20];
+
+  snprintf_P(datestring,
+    countof(datestring),
+    PSTR("%04u/%02u/%02u %02u:%02u:%02u"),
+    lastRun.Year(),
+    lastRun.Month(),
+    lastRun.Day(),
+    lastRun.Hour(),
+    lastRun.Minute(),
+    lastRun.Second()
+  );
+  return datestring;
 }
