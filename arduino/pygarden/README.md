@@ -8,6 +8,8 @@ Arduino code for greenhouse monitoring using ESP32.
 Controls 12V water valve and 12V water pump and starts them once a day
 to water the plants for a period of time.
 
+Also includes a manual mode controlled by a button for extra watering.
+
 Sensors:
 
  - Soil (2 FC-28 sensors)
@@ -16,8 +18,9 @@ Sensors:
  - Rain (YL-83 sensor)
  - Light (BH1750 sensor)
 
-Readings from the sensors are sent to a MQTT server over WiFi. Data and
-time is stored in a battery-powered DS3231 realtime clock.
+Readings from the sensors are sent to a MQTT server over WiFi (when available).
+Data and time is stored in a battery-powered DS3231 realtime clock. Clock is
+synced with NTP server once a day.
 
 ## Wiring
 
@@ -39,6 +42,62 @@ time is stored in a battery-powered DS3231 realtime clock.
 | BME280 Barometer SCL | 27 |
 | DS3231 Clock SDA | 17 |
 | DS3231 Clock SCL | 5 |
+
+## Output
+
+Example of cycle report:
+
+```
+Build date: 2020/05/02 14:54:59
+Local time: 2020/05/02 15:16:47
+******************************
+Wakeup cause: timer
+Manual mode: 0
+Schedule: wake up every 40 sec
+******************************
+WiFi - Connecting to MySSID
+==============================
+WiFi connected.
+IP address: 10.42.0.158
+==============================
+MQTT - Connecting to 10.42.0.1
+Connected to MQTT.
+==============================
+
+************************************
+      Watering: No
+        Period: 120 sec
+Daily schedule: 14:00:00
+  Current time: 15:16:47
+      Last run: 2020/05/02 14:00:19
+************************************
+
+Publishing sensor data...
+
+Inside
+------
+
+Light:                  160.83 lx
+Temperature:            19.12 °C
+Pressure:               1008.86
+Humidity:               46.13%
+Soil-1 moisture:        100% dry
+Soil-2 moisture:        100% dry
+System:                 20.25 °C
+
+Outside
+-------
+
+Rain:                   100% dry
+Temperature air:        -127.00 °C
+Temperature water:      -127.00 °C
+
+**********************************************
+
+******************************
+**  Going to sleep... Bye.  **
+******************************
+```
 
 ## Development
 
