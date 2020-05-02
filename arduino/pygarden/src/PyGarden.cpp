@@ -223,7 +223,6 @@ void PyGarden::onConnectionFailed() {
 
   Serial.println();
   Serial.println("*** No WiFi connection available! ***");
-  Serial.println();
 
   // no connection available to publish sensor data,
   // only check for watering or enter manual mode if
@@ -243,8 +242,8 @@ void PyGarden::onConnectionReady() {
   _networkLED->blink();
   _networkLED->enable();
 
-  // start publishing sensor data
-  _sensors->startPublish(_iot);
+  // publish sensor data
+  _sensors->startPublish(_iot, _clock->getStartupTemperature());
 
   // enter manual mode (if button was pressed) or check watering
   if (_manualMode) {

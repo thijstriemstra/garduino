@@ -24,8 +24,9 @@ void Sensors::begin() {
   _light->begin();
 }
 
-void Sensors::startPublish(IOT* iot) {
+void Sensors::startPublish(IOT* iot, float system_temperature) {
   _iot = iot;
+  _sysTemperature = system_temperature;
   _startPublishing = true;
   enabled = true;
 }
@@ -61,6 +62,7 @@ void Sensors::publish() {
   Serial.println("Publishing sensor data...");
   Serial.println();
 
+  // INSIDE
   Serial.println("Inside");
   Serial.println("------");
   Serial.println();
@@ -88,6 +90,15 @@ void Sensors::publish() {
   int moisture2 = soil.array[1];
   _iot->publish("/inside/soil_right", moisture2);
 
+  // SYSTEM TEMPERATURE
+  _iot->publish("/system/temperature", _sysTemperature);
+  if (_debug) {
+    Serial.print("System:\t\t\t");
+    Serial.print(_sysTemperature);
+    Serial.println(" °C");
+  }
+
+  // OUTSIDE
   Serial.println();
   Serial.println("Outside");
   Serial.println("-------");
@@ -97,7 +108,7 @@ void Sensors::publish() {
   int rain = measureRain();
   _iot->publish("/outside/rain", rain);
 
-  // TEMPERATURE
+  // OUTSIDE TEMPERATURE
   OutsideTemperatureResult outside = readTemperature();
   
   float outsideTemp = outside.array[0];
@@ -140,14 +151,14 @@ BME280_Result Sensors::readBarometer() {
   float humidity = result.array[2];
 
   if (_debug) {
-    Serial.print(F("Temperature inside:\t"));
+    Serial.print(F("Temperature:\t\t"));
     Serial.print(temperature);
     Serial.println(" °C");
 
-    Serial.print(F("Pressure inside:\t"));
+    Serial.print(F("Pressure:\t\t"));
     Serial.println(pressure);
 
-    Serial.print("Humidity inside:\t");
+    Serial.print("Humidity:\t\t");
     Serial.print(humidity);
     Serial.println("%");
   }
@@ -163,7 +174,7 @@ OutsideTemperatureResult Sensors::readTemperature() {
   result.array[1] = temperature2;
 
   if (_debug) {
-    Serial.print("Temperature outside:\t");
+    Serial.print("Temperature air:\t");
     Serial.print(temperature1);
     Serial.println(" °C");
   

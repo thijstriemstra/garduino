@@ -49,7 +49,7 @@ class PyGarden
     ThreadController* _scheduler;
 
     bool _manualMode = false;
-    int _totalReadings = 9;
+    int _totalReadings = 10;
 
     // callbacks
     void onSystemWakeup();

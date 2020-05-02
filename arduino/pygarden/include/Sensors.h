@@ -25,7 +25,7 @@ class Sensors: public Thread {
 
     void run();
     void publish();
-    void startPublish(IOT* iot);
+    void startPublish(IOT* iot, float system_temperature);
     bool shouldRun(unsigned long time);
     float measureLight();
     int measureRain();
@@ -38,6 +38,7 @@ class Sensors: public Thread {
     long _interval;
     long _lastPublish;
     bool _startPublishing = false;
+    float _sysTemperature = 0;
 
     IOT* _iot;
     YL83_RainSensor* _rain;
