@@ -4,10 +4,7 @@
 
 #include "WateringTask.h"
 
-RTC_DATA_ATTR bool wateredToday = false;
-
-String getValue(String data, char separator, int index)
-{
+String getValue(String data, char separator, int index) {
     int found = 0;
     int strIndex[] = { 0, -1 };
     int maxIndex = data.length() - 1;
@@ -22,7 +19,12 @@ String getValue(String data, char separator, int index)
     return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
 }
 
-WateringTask::WateringTask(long interval, int valve_pin, String timestamp, Method finished_callback): Thread() {
+WateringTask::WateringTask(
+  long interval,
+  int valve_pin,
+  String timestamp,
+  Method finished_callback
+): Thread() {
   _interval = interval;
   _timestamp = timestamp;
   _lastRun = 0;
@@ -31,12 +33,11 @@ WateringTask::WateringTask(long interval, int valve_pin, String timestamp, Metho
   active = false;
   enabled = false;
 
+  // preferences storage
+  _prefs = new Preferences();
+
   // water valve
   _waterValve = new SolenoidValve(valve_pin);
-}
-
-bool WateringTask::isWatering() {
-    return enabled;
 }
 
 void WateringTask::begin() {
@@ -59,25 +60,29 @@ void WateringTask::close() {
   _waterValve->stop();
 }
 
-bool WateringTask::needsWatering(int hour) {
+bool WateringTask::isWatering() {
+    return enabled;
+}
+
+bool WateringTask::needsWatering(RtcDateTime now) {
   String targetHour = getValue(_timestamp, ':', 0);
   String targetMinute = getValue(_timestamp, ':', 1);
+  RtcDateTime timestamp = load();
+  int currentHour = now.Hour();
+  int currentMinute = now.Minute();
 
-  // reset flag at midnight
-  if (hour == 0) {
-    if (wateredToday == true) {
-      wateredToday = false;
-    }
-  }
+  // currently in part of hour for watering
+  if (currentHour == targetHour.toInt() && currentMinute >= targetMinute.toInt()) {
+    // compare time, check if it's not today
+    if (timestamp.Day() != now.Day()) {
+      // timestamp is not from today, overwrite timestamp
+      // with current time and start watering
+      save(now);
 
-  // needs watering today
-  if (wateredToday == false) {
-    if (hour == targetHour.toInt()) {
-      // set flag to prevent watering multiple times this hour
-      wateredToday = true;
       return true;
     }
   }
+
   return false;
 }
 
@@ -117,4 +122,28 @@ void WateringTask::run() {
 
   // run the thread
   Thread::run();
+}
+
+void WateringTask::save(RtcDateTime timestamp) {
+  _prefs->begin(_namespace, false);
+
+  // store the timestamp
+  _prefs->putUInt("timestamp", timestamp.TotalSeconds());
+
+  // close the preferences
+  _prefs->end();
+}
+
+RtcDateTime WateringTask::load() {
+  _prefs->begin(_namespace, true);
+
+  // get the value, if the key does not exist,
+  // return a default value of 0
+  // note: key name is limited to 15 chars
+  unsigned int timestamp = _prefs->getUInt("timestamp", 0);
+
+  // close the preferences
+  _prefs->end();
+
+  return RtcDateTime(timestamp);
 }

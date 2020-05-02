@@ -172,7 +172,7 @@ void PyGarden::startManualMode() {
 
 void PyGarden::checkWatering() {
   // check if garden needs watering right now
-  bool enableValve = _wateringTask->needsWatering(_clock->startupTime.Hour());
+  bool enableValve = _wateringTask->needsWatering(_clock->startupTime);
   Serial.println();
   Serial.println("****************************");
   Serial.print("   Time for watering: ");

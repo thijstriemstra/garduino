@@ -7,7 +7,8 @@
 #include <Arduino.h>
 #include <Thread.h>
 #include <Method.h>
-
+#include <RtcDS3231.h>
+#include <Preferences.h>
 #include <SolenoidValve.h>
 
 class WateringTask: public Thread {
@@ -20,8 +21,10 @@ class WateringTask: public Thread {
     void start();
     void open();
     void close();
+    void save(RtcDateTime timestamp);
+    RtcDateTime load();
     bool isWatering();
-    bool needsWatering(int hour);
+    bool needsWatering(RtcDateTime now);
     bool shouldRun(unsigned long time);
 
   private:
@@ -29,8 +32,10 @@ class WateringTask: public Thread {
     long _interval;
     long _lastRun;
     String _timestamp;
+    Preferences* _prefs;
     SolenoidValve* _waterValve;
     Method _finishedCallback;
+    const char* _namespace = "pygarden";
 };
 
 #endif
