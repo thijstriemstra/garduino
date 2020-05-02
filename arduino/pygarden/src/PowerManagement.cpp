@@ -4,8 +4,6 @@
 
 #include "PowerManagement.h"
 
-RTC_DATA_ATTR int deviceBootCount = 0;
-
 /**
  * Constructor.
  */
@@ -20,10 +18,6 @@ void PowerManagement::init(Method wakeup_callback) {
 
   // print the wakeup reason
   wokeup();
-
-  // increment boot number and print it every reboot
-  ++deviceBootCount;
-  Serial.println("Total number of reboots: " + String(deviceBootCount));
 
   // configure the wake up sources
   esp_sleep_enable_ext0_wakeup((gpio_num_t) ManualRunButtonPin, 1);
