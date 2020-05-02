@@ -59,7 +59,7 @@ void Sensors::run() {
 }
 
 void Sensors::publish() {
-  Serial.println("Publishing sensor data...");
+  Serial.println("MQTT - Publishing sensor data...");
   Serial.println();
 
   // INSIDE

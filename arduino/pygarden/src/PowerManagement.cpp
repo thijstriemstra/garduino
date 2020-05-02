@@ -24,8 +24,6 @@ void PowerManagement::init(Method wakeup_callback) {
 
   // wake up esp32 periodically
   esp_sleep_enable_timer_wakeup(_wakeupTime * uS_TO_S_FACTOR);
-  Serial.println("Schedule: wake up every " + String(_wakeupTime) +
-      " sec");
 
   Serial.println("******************************");
 }
@@ -38,7 +36,7 @@ void PowerManagement::sleep() {
 void PowerManagement::wokeup() {
   wakeup_reason = esp_sleep_get_wakeup_cause();
 
-  Serial.print("Wakeup cause: ");
+  Serial.print("Wakeup reason: ");
   switch (wakeup_reason)
   {
     case ESP_SLEEP_WAKEUP_EXT0:
@@ -50,7 +48,9 @@ void PowerManagement::wokeup() {
       break;
 
     case ESP_SLEEP_WAKEUP_TIMER:
-      Serial.println("timer");
+      Serial.print("timer (");
+      Serial.print(_wakeupTime);
+      Serial.println(" sec)");
       break;
 
     case ESP_SLEEP_WAKEUP_TOUCHPAD:

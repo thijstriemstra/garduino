@@ -287,9 +287,6 @@ void PyGarden::onSystemWakeup() {
   } else {
     _manualMode = false;
   }
-
-  Serial.print("Manual mode: ");
-  Serial.println(_manualMode);
 }
 
 void PyGarden::onManualButtonPush() {

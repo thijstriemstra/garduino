@@ -49,19 +49,19 @@ synced with NTP server once a day.
 Example of cycle report:
 
 ```
-Build date: 2020/05/02 14:54:59
-Local time: 2020/05/02 15:16:47
+Build date: 2020/05/02 16:30:31
+Local time: 2020/05/02 16:44:03
 ******************************
-Wakeup cause: timer
-Manual mode: 0
-Schedule: wake up every 40 sec
+Wakeup reason: timer (40 sec)
 ******************************
-WiFi - Connecting to MySSID
+WiFi - SSID: MyInternet
+WiFi - Connecting...
+
 ==============================
-WiFi connected.
+WiFi - Connected.
 IP address: 10.42.0.158
 ==============================
-MQTT - Connecting to 10.42.0.1
+MQTT - Connecting to: 10.42.0.1
 Connected to MQTT.
 ==============================
 
@@ -69,22 +69,22 @@ Connected to MQTT.
       Watering: No
         Period: 120 sec
 Daily schedule: 14:00:00
-  Current time: 15:16:47
+  Current time: 16:44:03
       Last run: 2020/05/02 14:00:19
 ************************************
 
-Publishing sensor data...
+MQTT - Publishing sensor data...
 
 Inside
 ------
 
-Light:                  160.83 lx
-Temperature:            19.12 °C
-Pressure:               1008.86
-Humidity:               46.13%
+Light:                  53.33 lx
+Temperature:            22.09 °C
+Pressure:               1009.81
+Humidity:               41.10%
 Soil-1 moisture:        100% dry
 Soil-2 moisture:        100% dry
-System:                 20.25 °C
+System:                 23.50 °C
 
 Outside
 -------
@@ -94,6 +94,7 @@ Temperature air:        -127.00 °C
 Temperature water:      -127.00 °C
 
 **********************************************
+
 
 ******************************
 **  Going to sleep... Bye.  **
