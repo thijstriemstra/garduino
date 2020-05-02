@@ -33,7 +33,7 @@ void connectToWifi() {
 }
 
 void mqttConnect() {
-  Serial.print("MQTT - Connecting to ");
+  Serial.print("MQTT - Connecting to SSID: ");
   Serial.println(MQTT_HOST);
 
   _mqttClient.connect();
@@ -45,7 +45,7 @@ void WiFiEvent(WiFiEvent_t event) {
   switch (event) {
     case SYSTEM_EVENT_STA_GOT_IP:
       Serial.println("==============================");
-      Serial.println("WiFi connected.");
+      Serial.println("WiFi - connected.");
       Serial.print("IP address: ");
       Serial.println(WiFi.localIP());
       Serial.println("==============================");
@@ -55,7 +55,7 @@ void WiFiEvent(WiFiEvent_t event) {
       break;
 
     case SYSTEM_EVENT_STA_DISCONNECTED:
-      Serial.println("WiFi lost connection");
+      Serial.println("WiFi - lost connection.");
 
       WiFi.disconnect(true);
 
