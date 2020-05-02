@@ -128,9 +128,6 @@ void PyGarden::openValve() {
   // open valve
   _wateringTask->open();
 
-  // enable led
-  _manualLED->enable();
-
   Serial.println("-----------------------");
   Serial.println("Water: valve open");
 }
@@ -140,9 +137,6 @@ void PyGarden::closeValve() {
 
   // close valve
   _wateringTask->close();
-
-  // disable led
-  _manualLED->disable();
 
   Serial.println("-----------------------");
   Serial.println("Water: valve closed");
@@ -162,6 +156,9 @@ void PyGarden::startManualMode() {
   Serial.println("==  Manual mode  ==");
   Serial.println("===================");
   Serial.println();
+
+  // enable manual led
+  _manualLED->enable();
 
   // open valve
   openValve();
