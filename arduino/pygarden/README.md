@@ -31,6 +31,7 @@ synced with NTP server once a day.
 | Power Button | 18 |
 | Manual Run LED | 2 |
 | Manual Run Button | 13 |
+| Watering Indication LED | 12 |
 | BH1750 Light Sensor SDA | 23 |
 | BH1750 Light Sensor SCL | 19 |
 | Single Channel Relay | 22 |

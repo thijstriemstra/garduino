@@ -163,6 +163,7 @@ void IOT::begin(
   _mqttClient.onUnsubscribe(onMqttUnsubscribe);
   _mqttClient.onMessage(onMqttMessage);
   _mqttClient.onPublish(onMqttPublish);
+  _mqttClient.setKeepAlive(MQTT_TIMEOUT);
   _mqttClient.setServer(MQTT_HOST, MQTT_PORT);
   _mqttClient.setCredentials(MQTT_USER, MQTT_PASSWORD);
 
