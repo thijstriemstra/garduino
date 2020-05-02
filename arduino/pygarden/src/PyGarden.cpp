@@ -157,9 +157,6 @@ void PyGarden::startManualMode() {
   Serial.println("===================");
   Serial.println();
 
-  // enable manual led
-  _manualLED->enable();
-
   // open valve
   openValve();
 
@@ -273,6 +270,9 @@ void PyGarden::onSystemWakeup() {
   if (_power->wakeup_reason == ESP_SLEEP_WAKEUP_EXT0) {
     // manual button pressed
     _manualMode = true;
+
+    // enable manual led
+    _manualLED->enable();
   } else {
     _manualMode = false;
   }
