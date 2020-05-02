@@ -67,22 +67,20 @@ bool WateringTask::isWatering() {
 bool WateringTask::needsWatering(RtcDateTime now) {
   String targetHour = getValue(_timestamp, ':', 0);
   String targetMinute = getValue(_timestamp, ':', 1);
-  RtcDateTime timestamp = load();
   int currentHour = now.Hour();
   int currentMinute = now.Minute();
 
   // currently in part of hour for watering
   if (currentHour == targetHour.toInt() && currentMinute >= targetMinute.toInt()) {
-    // compare time, check if it's not today
+    // compare timestamp, check if it's not today
+    RtcDateTime timestamp = load();
     if (timestamp.Day() != now.Day()) {
       // timestamp is not from today, overwrite timestamp
       // with current time and start watering
       save(now);
-
       return true;
     }
   }
-
   return false;
 }
 
