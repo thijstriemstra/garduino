@@ -166,9 +166,6 @@ void PyGarden::startManualMode() {
   Serial.println("===================");
   Serial.println();
 
-  // open valve
-  openValve();
-
   // now wait till user presses the manual button again to control the valve,
   // and then eventually presses power button to put device back into deepsleep
 }
@@ -234,11 +231,11 @@ void PyGarden::onConnectionFailed() {
   Serial.println("*** No WiFi connection available! ***");
 
   // no connection available to publish sensor data,
-  // only check for watering or enter manual mode if
-  // button was pressed at startup
+  // only check for watering if not in manual mode
+  // or watering already
   if (_manualMode) {
     startManualMode();
-  } else {
+  } else if (!_manualMode && !_wateringTask->isWatering()) {
     checkWatering();
   }
 }
