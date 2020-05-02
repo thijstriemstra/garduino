@@ -184,21 +184,21 @@ void IOT::disconnect() {
 }
 
 void IOT::publish(const char* sub_topic, double value) {
-  char mainTopic[80];
-  sprintf(mainTopic, "%s%s", MQTT_BASE_TOPIC, sub_topic);
-
   // check for connection
   if (_mqttClient.connected()) {
+    char mainTopic[80];
+    sprintf(mainTopic, "%s%s", MQTT_BASE_TOPIC, sub_topic);
+
+    // publish
     _lastPacketIdPubSent = _mqttClient.publish(mainTopic, 1, true, String(value).c_str());
+    bool debug = false;
+    if (debug) {
+      Serial.printf("Publishing on topic %s at QoS 1, packetId: ", mainTopic);
+      Serial.println(_lastPacketIdPubSent);
+      Serial.printf("Message: %.2f \n", value);
+    }
   } else {
     // no connection
-    //Serial.println("Cannot publish message: not connected to MQTT");
-  }
-
-  bool debug = false;
-  if (debug) {
-    Serial.printf("Publishing on topic %s at QoS 1, packetId: ", mainTopic);
-    Serial.println(_lastPacketIdPubSent);
-    Serial.printf("Message: %.2f \n", value);
+    Serial.println("Cannot publish message: not connected to MQTT");
   }
 }

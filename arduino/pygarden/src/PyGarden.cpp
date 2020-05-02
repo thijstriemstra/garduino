@@ -89,7 +89,6 @@ void PyGarden::begin() {
   _power->init(systemWakeupCallback);
 
   // connect to wifi/mqtt
-  _networkLED->blink();
   _iot->begin(
     _totalReadings,
     connectionReadyCallback,
@@ -112,10 +111,16 @@ void PyGarden::loop() {
   _scheduler->run();
 }
 
-void PyGarden::sleep() {
+void PyGarden::sleep(bool forced) {
   Serial.println();
   Serial.println("******************************");
-  Serial.println("**  Going to sleep... Bye.  **");
+  Serial.print("**  ");
+  if (forced) {
+    Serial.print("Forced");
+  } else {
+    Serial.print("Going");
+  }
+  Serial.println(" to sleep... Bye.  **");
   Serial.println("******************************");
 
   // disable power led
@@ -219,13 +224,12 @@ void PyGarden::onPublishReady() {
 
 void PyGarden::onConnectionClosed() {
   connected = false;
-
-  // network connection closed
   _networkLED->disable();
 }
 
 void PyGarden::onConnectionFailed() {
   connected = false;
+  _networkLED->disable();
 
   Serial.println();
   Serial.println("*** No WiFi connection available! ***");
@@ -244,8 +248,6 @@ void PyGarden::onConnectionReady() {
   connected = true;
 
   // network status LED
-  // stop blinking
-  _networkLED->blink();
   _networkLED->enable();
 
   // publish sensor data
@@ -254,7 +256,7 @@ void PyGarden::onConnectionReady() {
   // enter manual mode (if button was pressed) or check watering
   if (_manualMode) {
     // sync time only in manual mode
-    _clock->sync();
+    //_clock->sync();
 
     startManualMode();
   } else {
@@ -291,6 +293,6 @@ void PyGarden::onManualButtonPush() {
 }
 
 void PyGarden::onPowerButtonPush() {
-  _iot->disconnect();
-  sleep();
+  // forced to sleep
+  sleep(true);
 }

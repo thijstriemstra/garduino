@@ -126,7 +126,7 @@ void WateringTask::run() {
 
 void WateringTask::save(RtcDateTime timestamp) {
   // Initialize NVS
-   esp_err_t err = nvs_flash_init();
+  //esp_err_t err = nvs_flash_init();
   _prefs->begin(_namespace, false);
 
   // store the timestamp

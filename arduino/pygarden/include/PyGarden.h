@@ -25,7 +25,7 @@ class PyGarden
     PyGarden();
     void begin();
     void loop();
-    void sleep();
+    void sleep(bool forced = false);
     void openValve();
     void closeValve();
     void toggleValve();
