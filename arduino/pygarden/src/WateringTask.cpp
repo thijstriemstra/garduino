@@ -22,12 +22,13 @@ String getValue(String data, char separator, int index) {
 WateringTask::WateringTask(
   long interval,
   int valve_pin,
+  IOT* iot,
   String timestamp,
   Method finished_callback
 ): Thread() {
   _interval = interval;
+  _iot = iot;
   _timestamp = timestamp;
-  _lastRun = 0;
   _finishedCallback = finished_callback;
 
   active = false;
@@ -53,11 +54,17 @@ void WateringTask::start() {
 void WateringTask::open() {
   // open valve
   _waterValve->start();
+
+  // publish
+  _iot->publish("/water/valve", 1);
 }
 
 void WateringTask::close() {
   // close valve
   _waterValve->stop();
+
+  // publish
+  _iot->publish("/water/valve", 0);
 }
 
 bool WateringTask::isWatering() {

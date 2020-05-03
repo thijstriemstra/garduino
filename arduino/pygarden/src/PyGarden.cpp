@@ -16,6 +16,9 @@ PyGarden::PyGarden() {
   // scheduler
   _scheduler = new ThreadController();
 
+  // wifi/mqtt
+  _iot = new IOT();
+
   // watering task
   Method wateringReadyCallback;
   wateringReadyCallback.attachCallback(
@@ -24,6 +27,7 @@ PyGarden::PyGarden() {
   _wateringTask = new WateringTask(
     duration,
     WaterValvePin,
+    _iot,
     WateringSchedule,
     wateringReadyCallback
   );
@@ -33,9 +37,6 @@ PyGarden::PyGarden() {
 
   // power management
   _power = new PowerManagement(WakeupSchedule);
-
-  // wifi/mqtt
-  _iot = new IOT();
 
   // sensors
   int publishSchedule = SensorPublishSchedule * 1000;

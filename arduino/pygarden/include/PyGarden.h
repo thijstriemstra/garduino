@@ -5,7 +5,6 @@
 #define PyGarden_h
 
 #include <Arduino.h>
-
 #include <Functor.h>
 #include <Method.h>
 #include <Thread.h>
@@ -25,12 +24,12 @@ class PyGarden
     PyGarden();
     void begin();
     void loop();
-    void sleep(bool forced = false);
     void openValve();
     void closeValve();
     void toggleValve();
-    void startManualMode();
     void checkWatering();
+    void startManualMode();
+    void sleep(bool forced = false);
 
     bool started = false;
     bool connected = false;
@@ -41,9 +40,9 @@ class PyGarden
     LED* _waterLED;
     LED* _manualLED;
     LED* _networkLED;
-    Button* _manualBtn;
-    Button* _powerBtn;
     Sensors* _sensors;
+    Button* _powerBtn;
+    Button* _manualBtn;
     SystemClock* _clock;
     PowerManagement* _power;
     WateringTask* _wateringTask;
