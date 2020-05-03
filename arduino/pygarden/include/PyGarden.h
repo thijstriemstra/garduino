@@ -51,6 +51,7 @@ class PyGarden
     bool _manualMode = false;
     int _totalReadings = 10;
     const char* _namespace = "pygarden";
+    const char* _version = "2.0.0";
 
     // callbacks
     void onSystemWakeup();

@@ -44,6 +44,11 @@ PyGarden::PyGarden() {
 }
 
 void PyGarden::begin() {
+  // print version
+  Serial.print(_namespace);
+  Serial.print(" ");
+  Serial.println(_version);
+
   // callbacks
   Method manualBtnCallback;
   manualBtnCallback.attachCallback(

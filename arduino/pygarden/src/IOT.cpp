@@ -24,7 +24,7 @@ void connectToWifi() {
 }
 
 void mqttConnect() {
-  Serial.print("MQTT - Connecting to: ");
+  Serial.print("MQTT - Connecting to ");
   Serial.println(MQTT_HOST);
 
   _mqttClient.connect();

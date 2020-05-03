@@ -8,7 +8,8 @@ Arduino code for greenhouse monitoring using ESP32.
 Controls 12V water valve and 12V water pump and starts them once a day
 to water the plants for a period of time.
 
-Also includes a manual mode controlled by a button for extra watering.
+Also includes a manual mode controlled by a button to enable/disable the
+water valve manually.
 
 Sensors:
 
@@ -49,6 +50,7 @@ synced with NTP server once a day.
 Example of cycle report:
 
 ```
+pygarden 2.0.0
 Build date: 2020/05/02 16:30:31
 Local time: 2020/05/02 16:44:03
 ******************************
@@ -56,12 +58,10 @@ Wakeup reason: timer (40 sec)
 ******************************
 WiFi - SSID: MyInternet
 WiFi - Connecting...
-
-==============================
 WiFi - Connected.
 IP address: 10.42.0.158
 ==============================
-MQTT - Connecting to: 10.42.0.1
+MQTT - Connecting to 10.42.0.1
 Connected to MQTT.
 ==============================
 
