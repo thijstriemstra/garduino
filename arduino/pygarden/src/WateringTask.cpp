@@ -20,14 +20,14 @@ String getValue(String data, char separator, int index) {
 }
 
 WateringTask::WateringTask(
-  long interval,
+  long duration,
   int valve_pin,
   IOT* iot,
   const char* app_namespace,
   String timestamp,
   Method finished_callback
 ): Thread() {
-  _interval = interval;
+  _duration = duration;
   _iot = iot;
   _namespace = app_namespace;
   _timestamp = timestamp;
@@ -102,7 +102,7 @@ bool WateringTask::shouldRun(unsigned long time) {
 
     Serial.println();
     Serial.print("Started watering for ");
-    Serial.print(_interval);
+    Serial.print(_duration);
     Serial.println(" seconds!");
     Serial.println("---------------------------------------");
     Serial.println();
@@ -117,7 +117,7 @@ bool WateringTask::shouldRun(unsigned long time) {
 
 void WateringTask::run() {
   // check if time elapsed since last publish
-  if (millis() > _lastRun + _interval){
+  if (millis() > _lastRun + (_duration * 1000)) {
     // done watering
     active = false;
     enabled = false;

@@ -18,7 +18,7 @@
 class WateringTask: public Thread {
   public:
     WateringTask(
-      long interval,
+      long duration,
       int valve_pin,
       IOT* iot,
       const char* app_namespace,
@@ -41,7 +41,7 @@ class WateringTask: public Thread {
 
   private:
     bool _debug;
-    long _interval;
+    long _duration;
     const char* _namespace;
     long _lastRun = 0;
     IOT* _iot;

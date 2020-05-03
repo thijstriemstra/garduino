@@ -4,7 +4,6 @@ AsyncMqttClient _mqttClient;
 uint16_t _lastPacketIdPubAck;
 bool _stopReconnect = false;
 int _totalConnectionAttempts = 0;
-const int _maxConnectionAttempts = 5;
 int _totalReadings;
 
 // callbacks
@@ -19,15 +18,6 @@ void connectToWifi() {
   Serial.print("WiFi - SSID: ");
   Serial.println(WIFI_SSID);
   Serial.println("WiFi - Connecting...");
-  if (_totalConnectionAttempts <= 1) {
-    Serial.println();
-  } else {
-    Serial.print(" (tried ");
-    Serial.print(_totalConnectionAttempts);
-    Serial.print("/");
-    Serial.print(_maxConnectionAttempts);
-    Serial.println(" times now)");
-  }
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -45,7 +35,6 @@ void WiFiEvent(WiFiEvent_t event) {
 
   switch (event) {
     case SYSTEM_EVENT_STA_GOT_IP:
-      Serial.println("==============================");
       Serial.println("WiFi - Connected.");
       Serial.print("IP address: ");
       Serial.println(WiFi.localIP());

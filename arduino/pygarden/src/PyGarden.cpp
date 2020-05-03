@@ -23,9 +23,8 @@ PyGarden::PyGarden() {
   Method wateringReadyCallback;
   wateringReadyCallback.attachCallback(
     makeFunctor((Functor0 *)0, *this, &PyGarden::onWateringReady));
-  int duration = WateringDuration * 1000;
   _wateringTask = new WateringTask(
-    duration,
+    WateringDuration,
     WaterValvePin,
     _iot,
     _namespace,
