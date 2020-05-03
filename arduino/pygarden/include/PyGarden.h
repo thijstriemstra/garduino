@@ -50,6 +50,7 @@ class PyGarden
 
     bool _manualMode = false;
     int _totalReadings = 10;
+    const char* _namespace = "pygarden";
 
     // callbacks
     void onSystemWakeup();

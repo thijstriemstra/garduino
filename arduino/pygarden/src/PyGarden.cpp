@@ -28,6 +28,7 @@ PyGarden::PyGarden() {
     duration,
     WaterValvePin,
     _iot,
+    _namespace,
     WateringSchedule,
     wateringReadyCallback
   );

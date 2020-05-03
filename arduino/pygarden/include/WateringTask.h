@@ -21,6 +21,7 @@ class WateringTask: public Thread {
       long interval,
       int valve_pin,
       IOT* iot,
+      const char* app_namespace,
       String timestamp,
       Method finished_callback
     );
@@ -41,13 +42,13 @@ class WateringTask: public Thread {
   private:
     bool _debug;
     long _interval;
+    const char* _namespace;
     long _lastRun = 0;
     IOT* _iot;
     String _timestamp;
     Preferences* _prefs;
     Method _finishedCallback;
     SolenoidValve* _waterValve;
-    const char* _namespace = "pygarden";
 };
 
 #endif

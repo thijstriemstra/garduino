@@ -23,11 +23,13 @@ WateringTask::WateringTask(
   long interval,
   int valve_pin,
   IOT* iot,
+  const char* app_namespace,
   String timestamp,
   Method finished_callback
 ): Thread() {
   _interval = interval;
   _iot = iot;
+  _namespace = app_namespace;
   _timestamp = timestamp;
   _finishedCallback = finished_callback;
 
