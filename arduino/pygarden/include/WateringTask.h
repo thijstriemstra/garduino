@@ -11,6 +11,7 @@
 #include <Preferences.h>
 
 #include <IOT.h>
+#include <LED.h>
 #include <SolenoidValve.h>
 
 #define countof(a) (sizeof(a) / sizeof(a[0]))
@@ -20,13 +21,13 @@ class WateringTask: public Thread {
     WateringTask(
       long duration,
       int valve_pin,
+      int led_pin,
       IOT* iot,
       const char* app_namespace,
       String timestamp,
       Method finished_callback
     );
     bool active;
-
     void run();
     void begin();
     void start();
@@ -42,9 +43,10 @@ class WateringTask: public Thread {
   private:
     bool _debug;
     long _duration;
-    const char* _namespace;
     long _lastRun = 0;
+    const char* _namespace;
     IOT* _iot;
+    LED* _waterLED;
     String _timestamp;
     Preferences* _prefs;
     Method _finishedCallback;

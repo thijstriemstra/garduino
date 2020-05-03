@@ -11,7 +11,6 @@ PyGarden::PyGarden() {
   _networkLED = new LED(NetworkLEDPin);
   _powerBtn = new Button(PowerButtonPin);
   _powerLED = new LED(PowerLEDPin);
-  _waterLED = new LED(WateringIndicationLEDPin);
 
   // scheduler
   _scheduler = new ThreadController();
@@ -26,6 +25,7 @@ PyGarden::PyGarden() {
   _wateringTask = new WateringTask(
     WateringDuration,
     WaterValvePin,
+    WateringIndicationLEDPin,
     _iot,
     _namespace,
     WateringSchedule,
@@ -78,7 +78,6 @@ void PyGarden::begin() {
   _powerBtn->begin(powerBtnCallback);
   _powerLED->begin();
   _networkLED->begin();
-  _waterLED->begin();
 
   // watering task
   _wateringTask->begin();
@@ -111,7 +110,6 @@ void PyGarden::loop() {
   _powerBtn->loop();
   _powerLED->loop();
   _networkLED->loop();
-  _waterLED->loop();
 
   // scheduler
   _scheduler->run();
@@ -139,27 +137,15 @@ void PyGarden::sleep(bool forced) {
 void PyGarden::openValve() {
   started = true;
 
-  // indication LED
-  _waterLED->enable();
-
   // open valve
   _wateringTask->open();
-
-  Serial.println("-----------------------");
-  Serial.println("Water: valve open");
 }
 
 void PyGarden::closeValve() {
   started = false;
 
-  // indication LED
-  _waterLED->disable();
-
   // close valve
   _wateringTask->close();
-
-  Serial.println("-----------------------");
-  Serial.println("Water: valve closed");
 }
 
 void PyGarden::toggleValve() {

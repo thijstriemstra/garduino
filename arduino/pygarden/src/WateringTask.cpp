@@ -22,6 +22,7 @@ String getValue(String data, char separator, int index) {
 WateringTask::WateringTask(
   long duration,
   int valve_pin,
+  int led_pin,
   IOT* iot,
   const char* app_namespace,
   String timestamp,
@@ -39,11 +40,17 @@ WateringTask::WateringTask(
   // preferences storage
   _prefs = new Preferences();
 
+  // indication LED
+  _waterLED = new LED(led_pin);
+
   // water valve
   _waterValve = new SolenoidValve(valve_pin);
 }
 
 void WateringTask::begin() {
+  // indication LED
+  _waterLED->begin();
+
   // water valve
   _waterValve->begin();
 }
@@ -54,6 +61,12 @@ void WateringTask::start() {
 }
 
 void WateringTask::open() {
+  Serial.println("-----------------------");
+  Serial.println("Water: valve open");
+
+  // enable LED
+  _waterLED->enable();
+
   // open valve
   _waterValve->start();
 
@@ -62,6 +75,12 @@ void WateringTask::open() {
 }
 
 void WateringTask::close() {
+  Serial.println("-----------------------");
+  Serial.println("Water: valve closed");
+
+  // disable LED
+  _waterLED->disable();
+
   // close valve
   _waterValve->stop();
 
