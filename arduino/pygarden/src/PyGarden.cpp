@@ -176,9 +176,6 @@ void PyGarden::startManualMode() {
   Serial.println("===================");
   Serial.println();
 
-  // display
-  _display->writeBig("Manual");
-
   // now wait till user presses the manual button again to control the valve,
   // and then eventually presses power button to put device back into deepsleep
 }
@@ -276,6 +273,7 @@ void PyGarden::onValveOpen() {
   // publish
   _iot->publish("/water/valve", 1);
 
+  // display
   _display->writeBig("Open");
 }
 
@@ -283,6 +281,7 @@ void PyGarden::onValveClosed() {
   // publish
   _iot->publish("/water/valve", 0);
 
+  // display
   _display->writeBig("Closed");
 }
 
@@ -306,7 +305,8 @@ void PyGarden::onSystemWakeup() {
     // enable manual led
     _manualLED->enable();
 
-    _display->writeSmall("Connecting...");
+    // display
+    _display->writeBig("Manual");
   } else {
     _manualMode = false;
   }
