@@ -23,16 +23,18 @@ WateringTask::WateringTask(
   long duration,
   int valve_pin,
   int led_pin,
-  IOT* iot,
   const char* app_namespace,
   String timestamp,
-  Method finished_callback
+  Method finished_callback,
+  Method valveOpen_callback,
+  Method valveClosed_callback
 ): Thread() {
   _duration = duration;
-  _iot = iot;
   _namespace = app_namespace;
   _timestamp = timestamp;
   _finishedCallback = finished_callback;
+  _valveOpenCallback = valveOpen_callback;
+  _valveClosedCallback = valveClosed_callback;
 
   active = false;
   enabled = false;
@@ -64,28 +66,28 @@ void WateringTask::open() {
   Serial.println("-----------------------");
   Serial.println("Water: valve open");
 
+  // notify others
+  _valveOpenCallback.callback();
+
   // enable LED
   _waterLED->enable();
 
   // open valve
   _waterValve->start();
-
-  // publish
-  _iot->publish("/water/valve", 1);
 }
 
 void WateringTask::close() {
   Serial.println("-----------------------");
   Serial.println("Water: valve closed");
 
+  // notify others
+  _valveClosedCallback.callback();
+
   // disable LED
   _waterLED->disable();
 
   // close valve
   _waterValve->stop();
-
-  // publish
-  _iot->publish("/water/valve", 0);
 }
 
 bool WateringTask::isWatering() {

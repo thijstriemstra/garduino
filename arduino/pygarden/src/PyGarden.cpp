@@ -5,15 +5,15 @@
 #include <PyGarden.h>
 
 PyGarden::PyGarden() {
+  // scheduler
+  _scheduler = new ThreadController();
+
   // controls
   _manualBtn = new Button(ManualRunButtonPin);
   _manualLED = new LED(ManualRunLEDPin);
   _networkLED = new LED(NetworkLEDPin);
   _powerBtn = new Button(PowerButtonPin);
   _powerLED = new LED(PowerLEDPin);
-
-  // scheduler
-  _scheduler = new ThreadController();
 
   // wifi/mqtt
   _iot = new IOT();
@@ -22,14 +22,21 @@ PyGarden::PyGarden() {
   Method wateringReadyCallback;
   wateringReadyCallback.attachCallback(
     makeFunctor((Functor0 *)0, *this, &PyGarden::onWateringReady));
+  Method valveOpenCallback;
+  valveOpenCallback.attachCallback(
+    makeFunctor((Functor0 *)0, *this, &PyGarden::onValveOpen));
+  Method valveClosedCallback;
+  valveClosedCallback.attachCallback(
+    makeFunctor((Functor0 *)0, *this, &PyGarden::onValveClosed));
   _wateringTask = new WateringTask(
     WateringDuration,
     WaterValvePin,
     WateringIndicationLEDPin,
-    _iot,
     _namespace,
     WateringSchedule,
-    wateringReadyCallback
+    wateringReadyCallback,
+    valveOpenCallback,
+    valveClosedCallback
   );
 
   // system time
@@ -37,6 +44,9 @@ PyGarden::PyGarden() {
 
   // power management
   _power = new PowerManagement(WakeupSchedule);
+
+  // display
+  _display = new SSD1306_OLEDDisplay(DisplaySDAPin, DisplaySCLPin);
 
   // sensors
   int publishSchedule = SensorPublishSchedule * 1000;
@@ -85,6 +95,9 @@ void PyGarden::begin() {
 
   // system time
   _clock->begin();
+
+  // display
+  _display->begin();
 
   // sensors
   _scheduler->add(_sensors);
@@ -162,6 +175,9 @@ void PyGarden::startManualMode() {
   Serial.println("==  Manual mode  ==");
   Serial.println("===================");
   Serial.println();
+
+  // display
+  _display->writeBig("Manual");
 
   // now wait till user presses the manual button again to control the valve,
   // and then eventually presses power button to put device back into deepsleep
@@ -256,6 +272,20 @@ void PyGarden::onConnectionReady() {
   }
 }
 
+void PyGarden::onValveOpen() {
+  // publish
+  _iot->publish("/water/valve", 1);
+
+  _display->writeBig("Open");
+}
+
+void PyGarden::onValveClosed() {
+  // publish
+  _iot->publish("/water/valve", 0);
+
+  _display->writeBig("Closed");
+}
+
 void PyGarden::onWateringReady() {
   Serial.println();
   Serial.println("**************************************");
@@ -275,6 +305,8 @@ void PyGarden::onSystemWakeup() {
 
     // enable manual led
     _manualLED->enable();
+
+    _display->writeSmall("Connecting...");
   } else {
     _manualMode = false;
   }
@@ -285,6 +317,9 @@ void PyGarden::onManualButtonPush() {
 }
 
 void PyGarden::onPowerButtonPush() {
+  // display
+  _display->disable();
+
   // forced to sleep
   sleep(true);
 }

@@ -8,7 +8,9 @@ Arduino code for greenhouse monitoring using ESP32.
 Controls 12V water valve and 12V water pump and starts them once a day
 to water the plants for a period of time.
 
-Also includes a manual mode controlled by a button to enable/disable the
+Device status is displayed on a small 0.91 inch OLED screen.
+
+Includes a manual mode controlled by a button to enable/disable the
 water valve manually.
 
 Sensors:
@@ -44,6 +46,10 @@ synced with NTP server once a day.
 | BME280 Barometer SCL | 27 |
 | DS3231 Clock SDA | 17 |
 | DS3231 Clock SCL | 5 |
+| SSD1306 128x32 OLED SDA | 26 |
+| SSD1306 128x32 OLED SCL | 25 |
+
+Available pins: 33, 16
 
 ## Output
 

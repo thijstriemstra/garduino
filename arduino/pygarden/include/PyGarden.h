@@ -17,6 +17,7 @@
 #include <SystemClock.h>
 #include <WateringTask.h>
 #include <PowerManagement.h>
+#include <SSD1306_OLEDDisplay.h>
 
 class PyGarden
 {
@@ -46,6 +47,7 @@ class PyGarden
     PowerManagement* _power;
     WateringTask* _wateringTask;
     ThreadController* _scheduler;
+    SSD1306_OLEDDisplay* _display;
 
     bool _manualMode = false;
     int _totalReadings = 10;
@@ -61,6 +63,8 @@ class PyGarden
     void onConnectionFailed();
     void onPublishReady();
     void onWateringReady();
+    void onValveOpen();
+    void onValveClosed();
 };
 
 #endif

@@ -10,7 +10,6 @@
 #include <RtcDS3231.h>
 #include <Preferences.h>
 
-#include <IOT.h>
 #include <LED.h>
 #include <SolenoidValve.h>
 
@@ -22,10 +21,11 @@ class WateringTask: public Thread {
       long duration,
       int valve_pin,
       int led_pin,
-      IOT* iot,
       const char* app_namespace,
       String timestamp,
-      Method finished_callback
+      Method finished_callback,
+      Method valveOpen_callback,
+      Method valveClosed_callback
     );
     bool active;
     void run();
@@ -45,12 +45,15 @@ class WateringTask: public Thread {
     long _duration;
     long _lastRun = 0;
     const char* _namespace;
-    IOT* _iot;
     LED* _waterLED;
     String _timestamp;
     Preferences* _prefs;
-    Method _finishedCallback;
     SolenoidValve* _waterValve;
+
+    // callbacks
+    Method _finishedCallback;
+    Method _valveOpenCallback;
+    Method _valveClosedCallback;
 };
 
 #endif
