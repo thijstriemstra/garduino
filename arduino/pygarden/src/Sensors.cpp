@@ -139,7 +139,7 @@ int Sensors::measureRain() {
   if (_debug) {
     Serial.print("Rain:\t\t\t");
     Serial.print(rainSensorValue);
-    Serial.println("% dry");
+    Serial.println("% wet");
   }
   return rainSensorValue;
 }
@@ -197,11 +197,11 @@ SoilMoistureResult Sensors::readSoilMoisture() {
   if (_debug) {
     Serial.print("Soil-1 moisture:\t");
     Serial.print(moisture1);
-    Serial.println("% dry");
+    Serial.println("% wet");
 
     Serial.print("Soil-2 moisture:\t");
     Serial.print(moisture2);
-    Serial.println("% dry");
+    Serial.println("% wet");
   }
   return result;
 }

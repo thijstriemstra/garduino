@@ -130,7 +130,7 @@ void PyGarden::loop() {
 
 void PyGarden::sleep(bool forced) {
   _iot->disconnect();
-  delay(500);
+  delay(300);
 
   Serial.println();
   Serial.println("******************************");
@@ -293,6 +293,9 @@ void PyGarden::onWateringReady() {
   Serial.println("**************************************");
   Serial.println("* Watering finished! Back to sleep.  *");
   Serial.println("**************************************");
+
+  // wait a while so IOT can complete
+  delay(300);
 
   sleep();
 }
