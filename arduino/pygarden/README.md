@@ -6,7 +6,8 @@ Arduino code for greenhouse monitoring using ESP32.
 ## Features
 
 Controls 12V water valve and water pump and starts them once a day
-to water the plants for a period of time.
+to water the plants for a period of time. Water flow meter keeps
+track of how much water is used.
 
 Device status is displayed on a small 0.91 inch OLED screen.
 
@@ -23,7 +24,7 @@ Includes a manual mode button to enable/disable the water valve manually.
 | Rain | YL-83 | Outside | 1 |
 | Light | BH1750 | Inside | 1 |
 
-Readings from the sensors are sent to a MQTT server over WiFi (when available).
+Readings from the sensors are sent to a MQTT server over WiFi (if available).
 Data and time is stored in a battery-powered DS3231 realtime clock. Clock can
 be synced with NTP server if neccessary.
 
@@ -59,7 +60,7 @@ Available pins: 33
 Example of cycle report:
 
 ```
-pygarden 2.0.0
+pygarden 2.1.0
 Build date: 2020/05/02 16:30:31
 Local time: 2020/05/02 16:44:03
 ******************************
@@ -76,7 +77,7 @@ Connected to MQTT.
 
 ************************************
       Watering: No
-        Period: 120 sec
+        Period: 180 sec
 Daily schedule: 14:00:00
   Current time: 16:44:03
       Last run: 2020/05/02 14:00:19
@@ -87,20 +88,21 @@ MQTT - Publishing sensor data...
 Inside
 ------
 
-Light:                  53.33 lx
-Temperature:            22.09 °C
-Pressure:               1009.81
-Humidity:               41.10%
-Soil-1 moisture:        100% dry
-Soil-2 moisture:        100% dry
-System:                 23.50 °C
+Light:                  20.83 lx
+Temperature:            25.47 °C
+Pressure:               1020.37 hPa
+Humidity:               43.45%
+Soil-1 moisture:        45% wet
+Soil-2 moisture:        67% wet
+System:                 25.75 °C
+Total liters:           35.1 ltr
 
 Outside
 -------
 
-Rain:                   100% dry
-Temperature air:        -127.00 °C
-Temperature water:      -127.00 °C
+Rain:                   0% wet
+Temperature air:        22.34 °C
+Temperature water:      16.23 °C
 
 **********************************************
 
