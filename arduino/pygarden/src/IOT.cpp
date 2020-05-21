@@ -19,7 +19,7 @@ void connectToWifi() {
   Serial.println(WIFI_SSID);
   Serial.println("WiFi - Connecting...");
 
-  WiFi.mode(WIFI_STA);
+  //WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 }
 

@@ -156,7 +156,8 @@ BME280_Result Sensors::readBarometer() {
     Serial.println(" °C");
 
     Serial.print(F("Pressure:\t\t"));
-    Serial.println(pressure);
+    Serial.print(pressure);
+    Serial.println(" hPa");
 
     Serial.print("Humidity:\t\t");
     Serial.print(humidity);

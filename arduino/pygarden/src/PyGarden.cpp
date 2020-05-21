@@ -129,6 +129,9 @@ void PyGarden::loop() {
 }
 
 void PyGarden::sleep(bool forced) {
+  _iot->disconnect();
+  delay(500);
+
   Serial.println();
   Serial.println("******************************");
   Serial.print("**  ");
