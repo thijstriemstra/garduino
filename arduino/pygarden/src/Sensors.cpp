@@ -13,6 +13,7 @@ Sensors::Sensors(long interval, bool debug): Thread() {
   _temperature = new DS18B20_TemperatureSensors(TemperatureSensorsPin);
   _light = new BH1750_LightSensor(LightSensorSCLPin, LightSensorSDAPin);
   _barometer = new BME280_BarometerSensor(BarometerSCLPin, BarometerSDAPin);
+  _waterFlow = new WaterFlowMeter(WaterFlowMeterPin);
 }
 
 void Sensors::begin() {
@@ -22,6 +23,7 @@ void Sensors::begin() {
   _soil2->begin();
   _temperature->begin();
   _light->begin();
+  _waterFlow->begin();
 }
 
 void Sensors::startPublish(IOT* iot, float system_temperature) {
@@ -53,6 +55,9 @@ void Sensors::run() {
     // exceeded time, disable it
     _startPublishing = true;
   }
+
+  // water flow
+  _waterFlow->measure();
 
   // run the thread
   Thread::run();
@@ -96,6 +101,15 @@ void Sensors::publish() {
     Serial.print("System:\t\t\t");
     Serial.print(_sysTemperature);
     Serial.println(" °C");
+  }
+
+  // WATER FLOW
+  unsigned long totalLiters = _waterFlow->getTotalLiters();
+  _iot->publish("/water/quantity", totalLiters);
+  if (_debug) {
+    Serial.print("Total liters:\t\t");
+    Serial.print(totalLiters);
+    Serial.println(" ltr");
   }
 
   // OUTSIDE

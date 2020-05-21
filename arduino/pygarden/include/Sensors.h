@@ -8,6 +8,7 @@
 #include <Thread.h>
 
 #include <IOT.h>
+#include <WaterFlowMeter.h>
 #include <YL83_RainSensor.h>
 #include <FC28_SoilSensor.h>
 #include <BH1750_LightSensor.h>
@@ -44,6 +45,7 @@ class Sensors: public Thread {
     YL83_RainSensor* _rain;
     FC28_SoilSensor* _soil1;
     FC28_SoilSensor* _soil2;
+    WaterFlowMeter* _waterFlow;
     BH1750_LightSensor* _light;
     BME280_BarometerSensor* _barometer;
     DS18B20_TemperatureSensors* _temperature;
