@@ -1,6 +1,6 @@
 #include "Sensors.h"
 
-Sensors::Sensors(long interval, bool debug): Thread() {
+Sensors::Sensors(long interval, bool debug, const char * ns): Thread() {
   _interval = interval;
   _debug = debug;
   _lastPublish = 0;
@@ -13,7 +13,7 @@ Sensors::Sensors(long interval, bool debug): Thread() {
   _temperature = new DS18B20_TemperatureSensors(TemperatureSensorsPin);
   _light = new BH1750_LightSensor(LightSensorSCLPin, LightSensorSDAPin);
   _barometer = new BME280_BarometerSensor(BarometerSCLPin, BarometerSDAPin);
-  _waterFlow = new WaterFlowMeter(WaterFlowMeterPin);
+  _waterFlow = new WaterFlowMeter(WaterFlowMeterPin, ns);
 }
 
 void Sensors::begin() {
@@ -24,6 +24,11 @@ void Sensors::begin() {
   _temperature->begin();
   _light->begin();
   _waterFlow->begin();
+}
+
+void Sensors::reset() {
+  // water flow
+  _waterFlow->reset();
 }
 
 void Sensors::startPublish(IOT* iot, float system_temperature) {
@@ -57,10 +62,15 @@ void Sensors::run() {
   }
 
   // water flow
-  _waterFlow->measure();
+  _waterFlow->measure(1);
 
   // run the thread
   Thread::run();
+}
+
+void Sensors::save() {
+  // water flow
+  _waterFlow->saveHistoric(_waterFlow->getTotalVolume());
 }
 
 void Sensors::publish() {
@@ -103,15 +113,6 @@ void Sensors::publish() {
     Serial.println(" °C");
   }
 
-  // WATER FLOW
-  unsigned long totalLiters = _waterFlow->getTotalLiters();
-  _iot->publish("/water/quantity", totalLiters);
-  if (_debug) {
-    Serial.print("Total liters:\t\t");
-    Serial.print(totalLiters);
-    Serial.println(" ltr");
-  }
-
   // OUTSIDE
   Serial.println();
   Serial.println("Outside");
@@ -128,8 +129,32 @@ void Sensors::publish() {
   float outsideTemp = outside.array[0];
   _iot->publish("/outside/temperature", outsideTemp);
 
+  // WATER
+  Serial.println();
+  Serial.println("Water");
+  Serial.println("-------");
+  Serial.println();
+
+  // WATER
+  double totalLiters = _waterFlow->getTotalVolume();
+  double historicLiters = _waterFlow->getHistoricVolume();
   float waterTemp = outside.array[1];
   _iot->publish("/water/temperature", waterTemp);
+  _iot->publish("/water/cycle_volume", totalLiters);
+  _iot->publish("/water/historic_volume", historicLiters);
+  if (_debug) {
+    Serial.print("Temperature:\t\t");
+    Serial.print(waterTemp);
+    Serial.println(" °C");
+
+    Serial.print("Historic volume:\t");
+    Serial.print(historicLiters);
+    Serial.println(" ltr");
+
+    Serial.print("Cycle volume:\t\t");
+    Serial.print(totalLiters);
+    Serial.println(" ltr");
+  }
 
   Serial.println();
   Serial.println("**********************************************");
@@ -191,10 +216,6 @@ OutsideTemperatureResult Sensors::readTemperature() {
   if (_debug) {
     Serial.print("Temperature air:\t");
     Serial.print(temperature1);
-    Serial.println(" °C");
-  
-    Serial.print("Temperature water:\t");
-    Serial.print(temperature2);
     Serial.println(" °C");
   }
   return result;

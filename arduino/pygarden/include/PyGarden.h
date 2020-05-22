@@ -50,7 +50,7 @@ class PyGarden
     SSD1306_OLEDDisplay* _display;
 
     bool _manualMode = false;
-    int _totalReadings = 11;
+    int _totalReadings = 12;
     const char* _namespace = "pygarden";
     const char* _version = "2.1.0";
 

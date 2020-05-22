@@ -6,7 +6,7 @@ Arduino code for greenhouse monitoring using ESP32.
 ## Features
 
 Controls 12V water valve and water pump and starts them once a day
-to water the plants for a period of time. Water flow meter keeps
+to water the plants for a period of time. A water flow meter keeps
 track of how much water is used.
 
 Device status is displayed on a small 0.91 inch OLED screen.
@@ -15,14 +15,14 @@ Includes a manual mode button to enable/disable the water valve manually.
 
 ### Sensors
 
-| Purpose | Type | Location | Amount |
+| Target | Sensor | Location | Amount |
 | --- | --- | --- | --- |
+| Light | BH1750 | Inside | 1 |
 | Soil moisture | FC-28 | Inside | 2 |
 | Temperature/pressure/humidity | BME280 | Inside | 1 |
 | Air temperature | DS18B20 | Outside | 1 |
 | Water temperature | DS18B20 | Outside | 1 |
 | Rain | YL-83 | Outside | 1 |
-| Light | BH1750 | Inside | 1 |
 
 Readings from the sensors are sent to a MQTT server over WiFi (if available).
 Data and time is stored in a battery-powered DS3231 realtime clock. Clock can
@@ -52,8 +52,6 @@ be synced with NTP server if neccessary.
 | SSD1306 128x32 OLED SDA | 26 |
 | SSD1306 128x32 OLED SCL | 25 |
 | Water Flow Sensor | 16 |
-
-Available pins: 33
 
 ## Output
 
@@ -95,7 +93,8 @@ Humidity:               43.45%
 Soil-1 moisture:        45% wet
 Soil-2 moisture:        67% wet
 System:                 25.75 °C
-Total liters:           35.1 ltr
+Total liters:           0.00 ltr
+Flow rate:              0.00 ltr/min
 
 Outside
 -------

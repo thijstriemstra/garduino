@@ -21,10 +21,12 @@ struct OutsideTemperatureResult {
 
 class Sensors: public Thread {
   public:
-    Sensors(long interval, bool debug = true);
+    Sensors(long interval, bool debug = true, const char * ns = "pygarden");
     void begin();
 
     void run();
+    void save();
+    void reset();
     void publish();
     void startPublish(IOT* iot, float system_temperature);
     bool shouldRun(unsigned long time);

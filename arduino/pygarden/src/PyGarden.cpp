@@ -50,7 +50,7 @@ PyGarden::PyGarden() {
 
   // sensors
   int publishSchedule = SensorPublishSchedule * 1000;
-  _sensors = new Sensors(publishSchedule);
+  _sensors = new Sensors(publishSchedule, _namespace);
 }
 
 void PyGarden::begin() {
@@ -129,6 +129,13 @@ void PyGarden::loop() {
 }
 
 void PyGarden::sleep(bool forced) {
+  // save total volume added
+  _sensors->save();
+
+  // uncomment this to reset stored memory
+  //_sensors->reset();
+
+  // iot
   _iot->disconnect();
   delay(300);
 
