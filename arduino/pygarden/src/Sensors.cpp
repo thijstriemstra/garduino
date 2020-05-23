@@ -70,7 +70,7 @@ void Sensors::run() {
 
 void Sensors::save() {
   // water flow
-  _waterFlow->saveHistoric(_waterFlow->getTotalVolume());
+  _waterFlow->saveHistoric();
 }
 
 void Sensors::publish() {
@@ -147,12 +147,12 @@ void Sensors::publish() {
     Serial.print(waterTemp);
     Serial.println(" °C");
 
-    Serial.print("Historic volume:\t");
-    Serial.print(historicLiters);
+    Serial.print("Current:\t\t");
+    Serial.print(totalLiters);
     Serial.println(" ltr");
 
-    Serial.print("Cycle volume:\t\t");
-    Serial.print(totalLiters);
+    Serial.print("Total:\t\t\t");
+    Serial.print(historicLiters);
     Serial.println(" ltr");
   }
 
@@ -178,7 +178,7 @@ int Sensors::measureRain() {
   if (_debug) {
     Serial.print("Rain:\t\t\t");
     Serial.print(rainSensorValue);
-    Serial.println("% wet");
+    Serial.println("%");
   }
   return rainSensorValue;
 }
@@ -190,6 +190,10 @@ BME280_Result Sensors::readBarometer() {
   float humidity = result.array[2];
 
   if (_debug) {
+    Serial.print("Humidity:\t\t");
+    Serial.print(humidity);
+    Serial.println("%");
+
     Serial.print(F("Temperature:\t\t"));
     Serial.print(temperature);
     Serial.println(" °C");
@@ -197,10 +201,6 @@ BME280_Result Sensors::readBarometer() {
     Serial.print(F("Pressure:\t\t"));
     Serial.print(pressure);
     Serial.println(" hPa");
-
-    Serial.print("Humidity:\t\t");
-    Serial.print(humidity);
-    Serial.println("%");
   }
   return result;
 }
@@ -214,7 +214,7 @@ OutsideTemperatureResult Sensors::readTemperature() {
   result.array[1] = temperature2;
 
   if (_debug) {
-    Serial.print("Temperature air:\t");
+    Serial.print("Temperature:\t\t");
     Serial.print(temperature1);
     Serial.println(" °C");
   }
@@ -232,11 +232,11 @@ SoilMoistureResult Sensors::readSoilMoisture() {
   if (_debug) {
     Serial.print("Soil-1 moisture:\t");
     Serial.print(moisture1);
-    Serial.println("% wet");
+    Serial.println("%");
 
     Serial.print("Soil-2 moisture:\t");
     Serial.print(moisture2);
-    Serial.println("% wet");
+    Serial.println("%");
   }
   return result;
 }

@@ -25,8 +25,7 @@ Includes a manual mode button to enable/disable the water valve manually.
 | Rain | YL-83 | Outside | 1 |
 
 Readings from the sensors are sent to a MQTT server over WiFi (if available).
-Data and time is stored in a battery-powered DS3231 realtime clock. Clock can
-be synced with NTP server if neccessary.
+Data and time is stored in a battery-powered DS3231 realtime clock.
 
 ## Wiring
 
@@ -55,7 +54,7 @@ be synced with NTP server if neccessary.
 
 ## Output
 
-Example of cycle report:
+Example of cycle report on serial line:
 
 ```
 pygarden 2.1.0
@@ -86,22 +85,26 @@ MQTT - Publishing sensor data...
 Inside
 ------
 
-Light:                  20.83 lx
-Temperature:            25.47 °C
-Pressure:               1020.37 hPa
-Humidity:               43.45%
-Soil-1 moisture:        45% wet
-Soil-2 moisture:        67% wet
-System:                 25.75 °C
-Total liters:           0.00 ltr
-Flow rate:              0.00 ltr/min
+Light:                  120.83 lx
+Humidity:               45.62%
+Temperature:            22.09 °C
+Pressure:               1018.10 hPa
+Soil-1 moisture:        33%
+Soil-2 moisture:        51%
+System:                 22.00 °C
 
 Outside
 -------
 
-Rain:                   0% wet
-Temperature air:        22.34 °C
-Temperature water:      16.23 °C
+Rain:                   0%
+Temperature:            19.45 °C
+
+Water
+-------
+
+Temperature:            16.12 °C
+Current:                0.00 ltr
+Total:                  40.21 ltr
 
 **********************************************
 
@@ -113,11 +116,13 @@ Temperature water:      16.23 °C
 
 ## Development
 
-Checkout code and open the `pygarden` project in VSCode with the PlatformIO IDE extension.
+Checkout code and open the `pygarden` project in VSCode with the PlatformIO
+IDE extension.
 
 ## Local NTP Server
 
-Setup a local NTP server instead of fetching this information online every time.
+Setup a local NTP server instead of fetching this information online every
+time.
 
 ```console
 sudo apt-get install ntp
