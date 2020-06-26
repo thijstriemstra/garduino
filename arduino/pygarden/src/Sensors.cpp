@@ -1,3 +1,7 @@
+/*
+  Sensors.cpp
+*/
+
 #include "Sensors.h"
 
 Sensors::Sensors(long interval, bool debug, const char * ns): Thread() {
