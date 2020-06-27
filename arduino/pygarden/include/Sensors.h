@@ -8,10 +8,11 @@
 #include <Thread.h>
 
 #include <IOT.h>
+#include <SoilSensors.h>
 #include <WaterFlowMeter.h>
 #include <YL83_RainSensor.h>
-#include <FC28_SoilSensor.h>
 #include <BH1750_LightSensor.h>
+#include <MultiPlexer_74HC4067.h>
 #include <BME280_BarometerSensor.h>
 #include <DS18B20_TemperatureSensors.h>
 
@@ -23,7 +24,6 @@ class Sensors: public Thread {
   public:
     Sensors(long interval, bool debug = true, const char * ns = "pygarden");
     void begin();
-
     void run();
     void save();
     void reset();
@@ -33,7 +33,7 @@ class Sensors: public Thread {
     float measureLight();
     int measureRain();
     BME280_Result readBarometer();
-    OutsideTemperatureResult readTemperature();
+    OutsideTemperatureResult readOutsideTemperature();
     SoilMoistureResult readSoilMoisture();
 
   private:
@@ -44,9 +44,9 @@ class Sensors: public Thread {
     float _sysTemperature = 0;
 
     IOT* _iot;
+    SoilSensors* _soil;
     YL83_RainSensor* _rain;
-    FC28_SoilSensor* _soil1;
-    FC28_SoilSensor* _soil2;
+    MultiPlexer_74HC4067* _mux;
     WaterFlowMeter* _waterFlow;
     BH1750_LightSensor* _light;
     BME280_BarometerSensor* _barometer;

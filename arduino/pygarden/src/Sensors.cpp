@@ -11,9 +11,25 @@ Sensors::Sensors(long interval, bool debug, const char * ns): Thread() {
 
   enabled = false;
 
+  _mux = new MultiPlexer_74HC4067(
+    MultiPlexerSignalPin,
+    MultiPlexerS0Pin,
+    MultiPlexerS1Pin,
+    MultiPlexerS2Pin,
+    MultiPlexerS3Pin
+  );
+
+  _soil = new SoilSensors(
+    SoilSensor1Pin,
+    SoilSensor2Pin,
+    SoilSensor3Pin,
+    SoilSensor4Pin,
+    SoilSensor5Pin,
+    SoilSensor6Pin,
+    SoilSensor7Pin,
+    SoilSensor8Pin
+  );
   _rain = new YL83_RainSensor(RainSensorPin);
-  _soil1 = new FC28_SoilSensor(SoilSensor1Pin);
-  _soil2 = new FC28_SoilSensor(SoilSensor2Pin);
   _temperature = new DS18B20_TemperatureSensors(TemperatureSensorsPin);
   _light = new BH1750_LightSensor(LightSensorSCLPin, LightSensorSDAPin);
   _barometer = new BME280_BarometerSensor(BarometerSCLPin, BarometerSDAPin);
@@ -23,8 +39,7 @@ Sensors::Sensors(long interval, bool debug, const char * ns): Thread() {
 void Sensors::begin() {
   _barometer->begin();
   _rain->begin();
-  _soil1->begin();
-  _soil2->begin();
+  _soil->begin();
   _temperature->begin();
   _light->begin();
   _waterFlow->begin();
@@ -103,11 +118,14 @@ void Sensors::publish() {
 
   // SOIL
   SoilMoistureResult soil = readSoilMoisture();
-  int moisture1 = soil.array[0];
-  _iot->publish("/inside/soil_left", moisture1);
-
-  int moisture2 = soil.array[1];
-  _iot->publish("/inside/soil_right", moisture2);
+  _iot->publish("/inside/soil_1", soil.array[0]);
+  _iot->publish("/inside/soil_2", soil.array[1]);
+  _iot->publish("/inside/soil_3", soil.array[2]);
+  _iot->publish("/inside/soil_4", soil.array[3]);
+  _iot->publish("/inside/soil_5", soil.array[4]);
+  _iot->publish("/inside/soil_6", soil.array[5]);
+  _iot->publish("/inside/soil_7", soil.array[6]);
+  _iot->publish("/inside/soil_8", soil.array[7]);
 
   // SYSTEM TEMPERATURE
   _iot->publish("/system/temperature", _sysTemperature);
@@ -128,7 +146,7 @@ void Sensors::publish() {
   _iot->publish("/outside/rain", rain);
 
   // OUTSIDE TEMPERATURE
-  OutsideTemperatureResult outside = readTemperature();
+  OutsideTemperatureResult outside = readOutsideTemperature();
   
   float outsideTemp = outside.array[0];
   _iot->publish("/outside/temperature", outsideTemp);
@@ -209,7 +227,7 @@ BME280_Result Sensors::readBarometer() {
   return result;
 }
 
-OutsideTemperatureResult Sensors::readTemperature() {
+OutsideTemperatureResult Sensors::readOutsideTemperature() {
   float temperature1 = _temperature->getTemperatureByIndex(0);
   float temperature2 = _temperature->getTemperatureByIndex(1);
 
@@ -226,21 +244,17 @@ OutsideTemperatureResult Sensors::readTemperature() {
 }
 
 SoilMoistureResult Sensors::readSoilMoisture() {
-  int moisture1 = _soil1->measurePercentage();
-  int moisture2 = _soil2->measurePercentage();
-  
-  SoilMoistureResult result;
-  result.array[0] = moisture1;
-  result.array[1] = moisture2;
+  SoilMoistureResult result = _soil->readAll(_mux);
 
   if (_debug) {
-    Serial.print("Soil-1 moisture:\t");
-    Serial.print(moisture1);
-    Serial.println("%");
-
-    Serial.print("Soil-2 moisture:\t");
-    Serial.print(moisture2);
-    Serial.println("%");
+    for (int index = 0; index < 8; index++) {
+      Serial.print("Soil-");
+      Serial.print(index);
+      Serial.print(" moisture:\t");
+      Serial.print(result.array[index]);
+      Serial.println("%");
+    }
   }
+
   return result;
 }

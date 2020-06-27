@@ -18,7 +18,7 @@ Includes a manual mode button to enable/disable the water valve manually.
 | Target | Sensor | Location | Amount |
 | --- | --- | --- | --- |
 | Light | BH1750 | Inside | 1 |
-| Soil moisture | FC-28 | Inside | 2 |
+| Soil moisture | Capacitive Soil Moisture Sensor v2.0 | Inside | 8 |
 | Temperature/pressure/humidity | BME280 | Inside | 1 |
 | Air temperature | DS18B20 | Outside | 1 |
 | Water temperature | DS18B20 | Outside | 1 |
@@ -40,17 +40,34 @@ Data and time is stored in a battery-powered DS3231 realtime clock.
 | BH1750 Light Sensor SDA | 23 |
 | BH1750 Light Sensor SCL | 19 |
 | Single Channel Relay | 22 |
+| Water Flow Sensor | 16 |
 | Dual DS18B20 Temperature Sensors | 15 |
-| YL-83 Rain Sensor | 34 |
-| FC-38 Soil Sensor 1 | 35 |
-| FC-38 Soil Sensor 2 | 32 |
 | BME280 Barometer SDA | 0 |
 | BME280 Barometer SCL | 27 |
 | DS3231 Clock SDA | 17 |
 | DS3231 Clock SCL | 5 |
 | SSD1306 128x32 OLED SDA | 26 |
 | SSD1306 128x32 OLED SCL | 25 |
-| Water Flow Sensor | 16 |
+| 16 Channel Analog Multiplexer S0 | ?? (32) |
+| 16 Channel Analog Multiplexer S1 | ?? (33) |
+| 16 Channel Analog Multiplexer S2 | ?? (34) |
+| 16 Channel Analog Multiplexer S3 | ?? (35) |
+| 16 Channel Analog Multiplexer Z | ?? |
+| YL-83 Rain Sensor | 34 |
+| FC-38 Soil Sensor 1 | 35 |
+| FC-38 Soil Sensor 2 | 32 |
+
+| Sensor | Multiplexer Pin |
+| --- | --- |
+| Soil Sensor 1 | Y0 |
+| Soil Sensor 2 | Y1 |
+| Soil Sensor 3 | Y2 |
+| Soil Sensor 4 | Y3 |
+| Soil Sensor 5 | Y4 |
+| Soil Sensor 6 | Y5 |
+| Soil Sensor 7 | Y6 |
+| Soil Sensor 8 | Y7 |
+| YL-83 Rain Sensor | Y8 |
 
 ## Output
 
