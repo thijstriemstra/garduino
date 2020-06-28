@@ -27,11 +27,14 @@ cache:
     - $HOME/.cache/pip
 
 env:
-  - PLATFORMIO_CI_SRC=src/main.cpp PLATFORMIO_INCLUDE_DIR
+  - PLATFORMIO_CI_SRC=src/main.cpp PLATFORMIO_LIB_EXTRA_DIRS=/tmp/arduino-lib
 
 install:
   - pip install -U platformio pip setuptools
   - platformio update
+
+  - wget https://github.com/collab-project/arduino-lib/archive/master.zip -O /tmp/arduino-lib.zip
+  - unzip /tmp/arduino-lib.zip -d /tmp
 
 script:
   - platformio ci --project-conf platformio.ini --lib="."
