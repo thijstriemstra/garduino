@@ -27,7 +27,7 @@ cache:
     - $HOME/.cache/pip
 
 env:
-  - PLATFORMIO_CI_SRC=src/main
+  - PLATFORMIO_CI_SRC=src/main.c
 
 install:
   - pip install -U platformio pip setuptools
