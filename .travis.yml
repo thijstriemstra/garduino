@@ -30,4 +30,4 @@ install:
   - platformio update
 
 script:
-  - platformio ci --lib="arduino/pygarden/"
+  - platformio ci arduino/pygarden/
