@@ -31,4 +31,4 @@ install:
   - platformio update
 
 script:
-  - platformio ci --project-conf platformio.ini src
+  - platformio ci --project-conf platformio.ini --lib="."
