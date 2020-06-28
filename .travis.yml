@@ -27,7 +27,7 @@ cache:
     - $HOME/.cache/pip
 
 env:
-  - PLATFORMIO_CI_SRC=src/main.cpp PLATFORMIO_LIB_EXTRA_DIRS=/tmp/arduino-lib
+  - PLATFORMIO_CI_SRC=src/main.cpp PLATFORMIO_LIB_EXTRA_DIRS=/tmp/arduino-lib-master
 
 install:
   - pip install -U platformio pip setuptools
