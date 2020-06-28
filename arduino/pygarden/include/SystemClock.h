@@ -1,1 +1,1 @@
-../../../../pingpong-led/arduino/libraries/boatlife/SystemClock.h
+/home/thijs/projects/arduino-lib/SystemClock.h

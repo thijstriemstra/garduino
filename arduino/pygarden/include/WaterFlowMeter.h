@@ -1,1 +1,1 @@
-../../../../pingpong-led/arduino/libraries/boatlife/WaterFlowMeter.h
+/home/thijs/projects/arduino-lib/WaterFlowMeter.h

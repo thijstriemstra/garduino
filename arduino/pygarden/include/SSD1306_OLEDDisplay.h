@@ -1,1 +1,1 @@
-../../../../pingpong-led/arduino/libraries/boatlife/SSD1306_OLEDDisplay.h
+/home/thijs/projects/arduino-lib/SSD1306_OLEDDisplay.h

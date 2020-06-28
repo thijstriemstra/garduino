@@ -1,1 +1,1 @@
-../../../../pingpong-led/arduino/libraries/boatlife/DS3231_RealtimeClock.h
+/home/thijs/projects/arduino-lib/DS3231_RealtimeClock.h

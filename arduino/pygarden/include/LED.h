@@ -1,1 +1,1 @@
-../../../../pingpong-led/arduino/libraries/boatlife/LED.h
+/home/thijs/projects/arduino-lib/LED.h
