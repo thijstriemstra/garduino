@@ -245,9 +245,10 @@ OutsideTemperatureResult Sensors::readOutsideTemperature() {
 
 SoilMoistureResult Sensors::readSoilMoisture() {
   SoilMoistureResult result = _soil->readAll(_mux);
+  int sensorCount = sizeof(result.array) / sizeof(int);
 
   if (_debug) {
-    for (int index = 0; index < 8; index++) {
+    for (int index = 0; index < sensorCount; index++) {
       Serial.print("Soil-");
       Serial.print(index);
       Serial.print(" moisture:\t");
