@@ -31,4 +31,4 @@ install:
   - platformio update
 
 script:
-  - platformio ci --project-conf arduino/pygarden/platformio.ini arduino/pygarden/
+  - platformio ci --project-conf platformio.ini .
