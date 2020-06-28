@@ -1,1 +1,1 @@
-../../../../pingpong-led/arduino/libraries/boatlife/Capacitive_SoilSensor.h
+/home/thijs/projects/arduino-lib/Capacitive_SoilSensor.h
