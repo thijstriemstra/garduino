@@ -18,18 +18,17 @@ Sensors::Sensors(long interval, bool debug, const char * ns): Thread() {
     MultiPlexerS2Pin,
     MultiPlexerS3Pin
   );
-
   _soil = new SoilSensors(
-    SoilSensor1Pin,
-    SoilSensor2Pin,
-    SoilSensor3Pin,
-    SoilSensor4Pin,
-    SoilSensor5Pin,
-    SoilSensor6Pin,
-    SoilSensor7Pin,
-    SoilSensor8Pin
+    SoilSensor1Pin, SoilSensor1Wet, SoilSensor1Dry,
+    SoilSensor2Pin, SoilSensor2Wet, SoilSensor2Dry,
+    SoilSensor3Pin, SoilSensor3Wet, SoilSensor3Dry,
+    SoilSensor4Pin, SoilSensor4Wet, SoilSensor4Dry,
+    SoilSensor5Pin, SoilSensor5Wet, SoilSensor5Dry,
+    SoilSensor6Pin, SoilSensor6Wet, SoilSensor6Dry,
+    SoilSensor7Pin, SoilSensor7Wet, SoilSensor7Dry,
+    SoilSensor8Pin, SoilSensor8Wet, SoilSensor8Dry
   );
-  _rain = new YL83_RainSensor(RainSensorPin);
+  _rain = new YL83_RainSensor_Mux(RainSensorPin);
   _temperature = new DS18B20_TemperatureSensors(TemperatureSensorsPin);
   _light = new BH1750_LightSensor(LightSensorSCLPin, LightSensorSDAPin);
   _barometer = new BME280_BarometerSensor(BarometerSCLPin, BarometerSDAPin);
@@ -195,7 +194,7 @@ float Sensors::measureLight() {
 }
 
 int Sensors::measureRain() {
-  int rainSensorValue = _rain->measurePercentage();
+  int rainSensorValue = _rain->measurePercentage(_mux);
 
   if (_debug) {
     Serial.print("Rain:\t\t\t");
