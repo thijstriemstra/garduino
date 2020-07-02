@@ -1,5 +1,5 @@
-py-garden
-=========
+Garduino
+========
 
 Arduino code for greenhouse monitoring using ESP32.
 
@@ -74,7 +74,7 @@ Data and time is stored in a battery-powered DS3231 realtime clock.
 Example of cycle report on serial line:
 
 ```
-pygarden 2.1.0
+garduino 2.3.0
 Build date: 2020/05/02 16:30:31
 Local time: 2020/05/02 16:44:03
 ******************************
@@ -133,7 +133,7 @@ Total:                  40.21 ltr
 
 ## Development
 
-Checkout code and open the `pygarden` project in VSCode with the PlatformIO
+Checkout code and open the `garduino` project in VSCode with the PlatformIO
 IDE extension.
 
 ## Local NTP Server

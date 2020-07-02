@@ -1,10 +1,10 @@
 /*
-  PyGarden.cpp - Library for monitoring a garden.
+  Garduino.cpp - Library for monitoring a garden.
 */
 
-#include <PyGarden.h>
+#include <Garduino.h>
 
-PyGarden::PyGarden() {
+Garduino::Garduino() {
   // scheduler
   _scheduler = new ThreadController();
 
@@ -21,13 +21,13 @@ PyGarden::PyGarden() {
   // watering task
   Method wateringReadyCallback;
   wateringReadyCallback.attachCallback(
-    makeFunctor((Functor0 *)0, *this, &PyGarden::onWateringReady));
+    makeFunctor((Functor0 *)0, *this, &Garduino::onWateringReady));
   Method valveOpenCallback;
   valveOpenCallback.attachCallback(
-    makeFunctor((Functor0 *)0, *this, &PyGarden::onValveOpen));
+    makeFunctor((Functor0 *)0, *this, &Garduino::onValveOpen));
   Method valveClosedCallback;
   valveClosedCallback.attachCallback(
-    makeFunctor((Functor0 *)0, *this, &PyGarden::onValveClosed));
+    makeFunctor((Functor0 *)0, *this, &Garduino::onValveClosed));
   _wateringTask = new WateringTask(
     WateringDuration,
     WaterValvePin,
@@ -53,7 +53,7 @@ PyGarden::PyGarden() {
   _sensors = new Sensors(publishSchedule, _namespace);
 }
 
-void PyGarden::begin() {
+void Garduino::begin() {
   // print version
   Serial.print(_namespace);
   Serial.print(" ");
@@ -62,25 +62,25 @@ void PyGarden::begin() {
   // callbacks
   Method manualBtnCallback;
   manualBtnCallback.attachCallback(
-    makeFunctor((Functor0 *)0, *this, &PyGarden::onManualButtonPush));
+    makeFunctor((Functor0 *)0, *this, &Garduino::onManualButtonPush));
   Method powerBtnCallback;
   powerBtnCallback.attachCallback(
-    makeFunctor((Functor0 *)0, *this, &PyGarden::onPowerButtonPush));
+    makeFunctor((Functor0 *)0, *this, &Garduino::onPowerButtonPush));
   Method connectionReadyCallback;
   connectionReadyCallback.attachCallback(
-    makeFunctor((Functor0 *)0, *this, &PyGarden::onConnectionReady));
+    makeFunctor((Functor0 *)0, *this, &Garduino::onConnectionReady));
   Method disconnectedCallback;
   disconnectedCallback.attachCallback(
-    makeFunctor((Functor0 *)0, *this, &PyGarden::onConnectionClosed));
+    makeFunctor((Functor0 *)0, *this, &Garduino::onConnectionClosed));
   Method failedConnectionCallback;
   failedConnectionCallback.attachCallback(
-    makeFunctor((Functor0 *)0, *this, &PyGarden::onConnectionFailed));
+    makeFunctor((Functor0 *)0, *this, &Garduino::onConnectionFailed));
   Method publishReadyCallback;
   publishReadyCallback.attachCallback(
-    makeFunctor((Functor0 *)0, *this, &PyGarden::onPublishReady));
+    makeFunctor((Functor0 *)0, *this, &Garduino::onPublishReady));
   Method systemWakeupCallback;
   systemWakeupCallback.attachCallback(
-    makeFunctor((Functor0 *)0, *this, &PyGarden::onSystemWakeup));
+    makeFunctor((Functor0 *)0, *this, &Garduino::onSystemWakeup));
 
   // controls
   _manualBtn->begin(manualBtnCallback);
@@ -116,7 +116,7 @@ void PyGarden::begin() {
   );
 }
 
-void PyGarden::loop() {
+void Garduino::loop() {
   // controls
   _manualBtn->loop();
   _manualLED->loop();
@@ -128,7 +128,7 @@ void PyGarden::loop() {
   _scheduler->run();
 }
 
-void PyGarden::sleep(bool forced) {
+void Garduino::sleep(bool forced) {
   // save total volume added
   _sensors->save();
 
@@ -157,21 +157,21 @@ void PyGarden::sleep(bool forced) {
   _power->sleep();
 }
 
-void PyGarden::openValve() {
+void Garduino::openValve() {
   started = true;
 
   // open valve
   _wateringTask->open();
 }
 
-void PyGarden::closeValve() {
+void Garduino::closeValve() {
   started = false;
 
   // close valve
   _wateringTask->close();
 }
 
-void PyGarden::toggleValve() {
+void Garduino::toggleValve() {
   if (started == false) {
     openValve();
   } else {
@@ -179,7 +179,7 @@ void PyGarden::toggleValve() {
   }
 }
 
-void PyGarden::startManualMode() {
+void Garduino::startManualMode() {
   Serial.println();
   Serial.println("===================");
   Serial.println("==  Manual mode  ==");
@@ -190,7 +190,7 @@ void PyGarden::startManualMode() {
   // and then eventually presses power button to put device back into deepsleep
 }
 
-void PyGarden::checkWatering() {
+void Garduino::checkWatering() {
   // check if garden needs watering right now
   bool enableValve = _wateringTask->needsWatering(_clock->startupTime);
   Serial.println();
@@ -228,7 +228,7 @@ void PyGarden::checkWatering() {
   }
 }
 
-void PyGarden::onPublishReady() {
+void Garduino::onPublishReady() {
   // only shutdown when manual mode is not enabled and system is
   // not watering at the moment
   if (!_manualMode && !_wateringTask->isWatering()) {
@@ -237,12 +237,12 @@ void PyGarden::onPublishReady() {
   }
 }
 
-void PyGarden::onConnectionClosed() {
+void Garduino::onConnectionClosed() {
   connected = false;
   _networkLED->disable();
 }
 
-void PyGarden::onConnectionFailed() {
+void Garduino::onConnectionFailed() {
   connected = false;
   _networkLED->disable();
 
@@ -259,7 +259,7 @@ void PyGarden::onConnectionFailed() {
   }
 }
 
-void PyGarden::onConnectionReady() {
+void Garduino::onConnectionReady() {
   connected = true;
 
   // network status LED
@@ -279,7 +279,7 @@ void PyGarden::onConnectionReady() {
   }
 }
 
-void PyGarden::onValveOpen() {
+void Garduino::onValveOpen() {
   // publish
   _iot->publish("/water/valve", 1);
 
@@ -287,7 +287,7 @@ void PyGarden::onValveOpen() {
   _display->writeBig("Open");
 }
 
-void PyGarden::onValveClosed() {
+void Garduino::onValveClosed() {
   // publish
   _iot->publish("/water/valve", 0);
 
@@ -295,7 +295,7 @@ void PyGarden::onValveClosed() {
   _display->writeBig("Closed");
 }
 
-void PyGarden::onWateringReady() {
+void Garduino::onWateringReady() {
   Serial.println();
   Serial.println("**************************************");
   Serial.println("* Watering finished! Back to sleep.  *");
@@ -307,7 +307,7 @@ void PyGarden::onWateringReady() {
   sleep();
 }
 
-void PyGarden::onSystemWakeup() {
+void Garduino::onSystemWakeup() {
   // enable power led
   _powerLED->enable();
 
@@ -325,11 +325,11 @@ void PyGarden::onSystemWakeup() {
   }
 }
 
-void PyGarden::onManualButtonPush() {
+void Garduino::onManualButtonPush() {
   toggleValve();
 }
 
-void PyGarden::onPowerButtonPush() {
+void Garduino::onPowerButtonPush() {
   // display
   _display->disable();
 

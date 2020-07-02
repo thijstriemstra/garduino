@@ -3,10 +3,10 @@
 * All rights reserved
 */
 
-#include "PyGarden.h"
+#include "Garduino.h"
 #define SERIAL_BAUD_RATE 115200
 
-PyGarden *app = new PyGarden();
+Garduino *app = new Garduino();
 
 void setup() {
   // start serial connection

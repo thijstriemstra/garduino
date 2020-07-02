@@ -1,8 +1,8 @@
 /*
-  PyGarden.h - Library for monitoring a garden.
+  Garduino.h - Library for monitoring a garden.
 */
-#ifndef PyGarden_h
-#define PyGarden_h
+#ifndef Garduino_h
+#define Garduino_h
 
 #include <Arduino.h>
 #include <Functor.h>
@@ -19,10 +19,10 @@
 #include <PowerManagement.h>
 #include <SSD1306_OLEDDisplay.h>
 
-class PyGarden
+class Garduino
 {
   public:
-    PyGarden();
+    Garduino();
     void begin();
     void loop();
     void openValve();
@@ -51,6 +51,7 @@ class PyGarden
 
     bool _manualMode = false;
     int _totalReadings = 12;
+    // XXX: only change after saving all stored values!
     const char* _namespace = "pygarden";
     const char* _version = "2.3.0";
 
