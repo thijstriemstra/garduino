@@ -50,9 +50,8 @@ class Garduino
     SSD1306_OLEDDisplay* _display;
 
     bool _manualMode = false;
-    int _totalReadings = 12;
-    // XXX: only change after saving all stored values!
-    const char* _namespace = "pygarden";
+    int _totalReadings = 15;
+    const char* _namespace = "garduino";
     const char* _version = "2.3.0";
 
     // callbacks
