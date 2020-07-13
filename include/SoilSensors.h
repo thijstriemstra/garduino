@@ -5,11 +5,10 @@
 #define SoilSensors_h
 
 #include "Arduino.h"
-#include <MultiPlexer_74HC4067.h>
 #include <Capacitive_SoilSensor.h>
 
 struct SoilMoistureResult {
-    int array[8];
+    int array[5];
 };
 
 class SoilSensors
@@ -20,12 +19,9 @@ class SoilSensors
       int sensor2_pin, int sensor2_wet, int sensor2_dry,
       int sensor3_pin, int sensor3_wet, int sensor3_dry,
       int sensor4_pin, int sensor4_wet, int sensor4_dry,
-      int sensor5_pin, int sensor5_wet, int sensor5_dry,
-      int sensor6_pin, int sensor6_wet, int sensor6_dry,
-      int sensor7_pin, int sensor7_wet, int sensor7_dry,
-      int sensor8_pin, int sensor8_wet, int sensor8_dry
+      int sensor5_pin, int sensor5_wet, int sensor5_dry
     );
-    SoilMoistureResult readAll(MultiPlexer_74HC4067* mux);
+    SoilMoistureResult readAll();
     void begin();
 
   private:
@@ -34,9 +30,6 @@ class SoilSensors
     Capacitive_SoilSensor* _soil3;
     Capacitive_SoilSensor* _soil4;
     Capacitive_SoilSensor* _soil5;
-    Capacitive_SoilSensor* _soil6;
-    Capacitive_SoilSensor* _soil7;
-    Capacitive_SoilSensor* _soil8;
 };
 
 #endif

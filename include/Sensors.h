@@ -10,9 +10,8 @@
 #include <IOT.h>
 #include <SoilSensors.h>
 #include <WaterFlowMeter.h>
+#include <YL83_RainSensor.h>
 #include <BH1750_LightSensor.h>
-#include <YL83_RainSensor_Mux.h>
-#include <MultiPlexer_74HC4067.h>
 #include <BME280_BarometerSensor.h>
 #include <DS18B20_TemperatureSensors.h>
 
@@ -45,8 +44,7 @@ class Sensors: public Thread {
 
     IOT* _iot;
     SoilSensors* _soil;
-    YL83_RainSensor_Mux* _rain;
-    MultiPlexer_74HC4067* _mux;
+    YL83_RainSensor* _rain;
     WaterFlowMeter* _waterFlow;
     BH1750_LightSensor* _light;
     BME280_BarometerSensor* _barometer;
