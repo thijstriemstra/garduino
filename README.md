@@ -48,12 +48,12 @@ Data and time is stored in a battery-powered DS3231 realtime clock.
 | DS3231 Clock SCL | 5 |
 | SSD1306 128x32 OLED SDA | 26 |
 | SSD1306 128x32 OLED SCL | 25 |
-| Capacitive Soil Sensor 1 | 35 |
+| Capacitive Soil Sensor 1 | 39 |
 | Capacitive Soil Sensor 2 | 32 |
-| Capacitive Soil Sensor 3 | 33 |
+| Capacitive Soil Sensor 3 | 34 |
 | Capacitive Soil Sensor 4 | 36 |
-| Capacitive Soil Sensor 5 | 39 |
-| YL-83 Rain Sensor | 34 |
+| Capacitive Soil Sensor 5 | 33 |
+| YL-83 Rain Sensor | 35 |
 
 ## Output
 
