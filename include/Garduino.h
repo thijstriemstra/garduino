@@ -52,7 +52,7 @@ class Garduino
     bool _manualMode = false;
     int _totalReadings = 15;
     const char* _namespace = "garduino";
-    const char* _version = "2.3.0";
+    const char* _version = "2.4.0";
 
     // callbacks
     void onSystemWakeup();
