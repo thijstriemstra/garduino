@@ -13,6 +13,8 @@ Device status is displayed on a small 0.91 inch OLED screen.
 
 Includes a manual mode button to enable/disable the water valve manually.
 
+Time is stored in a battery-powered DS3231 realtime clock.
+
 ### Sensors
 
 | Target | Sensor | Location | Amount |
@@ -25,7 +27,6 @@ Includes a manual mode button to enable/disable the water valve manually.
 | Rain | YL-83 | Outside | 1 |
 
 Readings from the sensors are sent to a MQTT server over WiFi (if available).
-Data and time is stored in a battery-powered DS3231 realtime clock.
 
 ## Wiring
 
