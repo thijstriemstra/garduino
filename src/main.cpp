@@ -1,12 +1,12 @@
 /*
-* Copyright (c) 2020 Collab
+* Copyright (c) 2020-2021 Collab
 * All rights reserved
 */
 
-#include "Garduino.h"
+#include "Garduinov3.h"
 #define SERIAL_BAUD_RATE 115200
 
-Garduino *app = new Garduino();
+Garduinov3 *app = new Garduinov3();
 
 void setup() {
   // start serial connection
