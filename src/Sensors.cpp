@@ -4,12 +4,12 @@
 
 #include "Sensors.h"
 
-Sensors::Sensors(long interval, bool debug, const char * ns): Thread() {
+Sensors::Sensors(long interval, bool debug, const char * ns) {
   _interval = interval;
   _debug = debug;
   _lastPublish = 0;
 
-  enabled = false;
+  //enabled = false;
 
   _soil = new SoilSensors(
     SoilSensor1Pin, SoilSensor1Wet, SoilSensor1Dry,
@@ -43,7 +43,7 @@ void Sensors::startPublish(IOT* iot, float system_temperature) {
   _iot = iot;
   _sysTemperature = system_temperature;
   _startPublishing = true;
-  enabled = true;
+  //enabled = true;
 }
 
 bool Sensors::shouldRun(unsigned long time) {
@@ -59,7 +59,8 @@ bool Sensors::shouldRun(unsigned long time) {
   }
 
   // let default method check for it
-  return Thread::shouldRun(time);
+  //return Thread::shouldRun(time);
+  return false;
 }
 
 void Sensors::run() {
@@ -73,7 +74,7 @@ void Sensors::run() {
   _waterFlow->measure(1);
 
   // run the thread
-  Thread::run();
+  //Thread::run();
 }
 
 void Sensors::save() {
@@ -133,7 +134,7 @@ void Sensors::publish() {
 
   // OUTSIDE TEMPERATURE
   OutsideTemperatureResult outside = readOutsideTemperature();
-  
+
   float outsideTemp = outside.array[0];
   _iot->publish("/outside/temperature", outsideTemp);
 

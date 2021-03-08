@@ -6,15 +6,8 @@
 
 Garduinov3::Garduinov3()
 {
-    // scheduler
-    _scheduler = new ThreadController();
-
     // controls
-    _manualBtn = new Button(ManualRunButtonPin);
-    _manualLED = new LED(ManualRunLEDPin);
-    _networkLED = new LED(NetworkLEDPin);
-    _powerBtn = new Button(PowerButtonPin);
-    _powerLED = new LED(PowerLEDPin);
+    _controls = new Controls();
 
     // wifi/mqtt
     _iot = new IOT();
@@ -56,9 +49,17 @@ Garduinov3::Garduinov3()
 void Garduinov3::begin()
 {
     // print version
+    Serial.println("\n========================");
+    Serial.print("= ");
     Serial.print(_namespace);
-    Serial.print(" ");
-    Serial.println(_version);
+    Serial.print(" v");
+    Serial.print(_version);
+    Serial.println(" =");
+    Serial.println("========================\n");
+
+    // board info
+    Serial.print("Board:\t\t");
+    Serial.println(ARDUINO_BOARD);
 
     // callbacks
     Method manualBtnCallback;
@@ -84,15 +85,11 @@ void Garduinov3::begin()
         makeFunctor((Functor0 *)0, *this, &Garduinov3::onSystemWakeup));
 
     // controls
-    _manualBtn->begin(manualBtnCallback);
-    _manualLED->begin();
-    _powerBtn->begin(powerBtnCallback);
-    _powerLED->begin();
-    _networkLED->begin();
+    _controls->begin(manualBtnCallback, powerBtnCallback);
 
     // watering task
     _wateringTask->begin();
-    _scheduler->add(_wateringTask);
+    //_scheduler->add(_wateringTask);
 
     // system time
     _clock->begin();
@@ -101,7 +98,7 @@ void Garduinov3::begin()
     _display->begin();
 
     // sensors
-    _scheduler->add(_sensors);
+    //_scheduler->add(_sensors);
     _sensors->begin();
 
     // power management
@@ -118,15 +115,11 @@ void Garduinov3::begin()
 
 void Garduinov3::loop()
 {
-    // controls
-    _manualBtn->loop();
-    _manualLED->loop();
-    _powerBtn->loop();
-    _powerLED->loop();
-    _networkLED->loop();
-
     // scheduler
-    _scheduler->run();
+    //_scheduler.run();
+
+    // controls
+    _controls->loop();
 }
 
 void Garduinov3::sleep(bool forced)
@@ -156,7 +149,7 @@ void Garduinov3::sleep(bool forced)
     Serial.println("******************************");
 
     // disable power led
-    _powerLED->disable();
+    _controls->powerLED->disable();
 
     // put device to sleep
     _power->sleep();
@@ -262,13 +255,13 @@ void Garduinov3::onPublishReady()
 void Garduinov3::onConnectionClosed()
 {
     connected = false;
-    _networkLED->disable();
+    _controls->networkLED->disable();
 }
 
 void Garduinov3::onConnectionFailed()
 {
     connected = false;
-    _networkLED->disable();
+    _controls->networkLED->disable();
 
     Serial.println();
     Serial.println("*** No WiFi connection available! ***");
@@ -291,7 +284,7 @@ void Garduinov3::onConnectionReady()
     connected = true;
 
     // network status LED
-    _networkLED->enable();
+    _controls->networkLED->enable();
 
     // publish sensor data
     _sensors->startPublish(_iot, _clock->getStartupTemperature());
@@ -344,7 +337,7 @@ void Garduinov3::onWateringReady()
 void Garduinov3::onSystemWakeup()
 {
     // enable power led
-    _powerLED->enable();
+    _controls->powerLED->enable();
 
     if (_power->wakeup_reason == ESP_SLEEP_WAKEUP_EXT0)
     {
@@ -352,7 +345,7 @@ void Garduinov3::onSystemWakeup()
         _manualMode = true;
 
         // enable manual led
-        _manualLED->enable();
+        _controls->manualLED->enable();
 
         // display
         _display->writeBig("Manual");

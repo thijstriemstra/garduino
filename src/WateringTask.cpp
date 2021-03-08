@@ -28,7 +28,7 @@ WateringTask::WateringTask(
   Method finished_callback,
   Method valveOpen_callback,
   Method valveClosed_callback
-): Thread() {
+) {
   _duration = duration;
   _namespace = app_namespace;
   _timestamp = timestamp;
@@ -37,7 +37,7 @@ WateringTask::WateringTask(
   _valveClosedCallback = valveClosed_callback;
 
   active = false;
-  enabled = false;
+  //enabled = false;
 
   // preferences storage
   _prefs = new Preferences();
@@ -58,7 +58,7 @@ void WateringTask::begin() {
 }
 
 void WateringTask::start() {
-    enabled = true;
+    //enabled = true;
     active = true;
 }
 
@@ -91,7 +91,8 @@ void WateringTask::close() {
 }
 
 bool WateringTask::isWatering() {
-    return enabled;
+    //return enabled;
+    return false;
 }
 
 bool WateringTask::needsWatering(RtcDateTime now) {
@@ -133,7 +134,8 @@ bool WateringTask::shouldRun(unsigned long time) {
   }
 
   // let default method check for it
-  return Thread::shouldRun(time);
+  //return Thread::shouldRun(time);
+  return false;
 }
 
 void WateringTask::run() {
@@ -141,7 +143,7 @@ void WateringTask::run() {
   if (millis() > _lastRun + (_duration * 1000)) {
     // done watering
     active = false;
-    enabled = false;
+    //enabled = false;
 
     // close valve
     close();
@@ -151,7 +153,7 @@ void WateringTask::run() {
   }
 
   // run the thread
-  Thread::run();
+  //Thread::run();
 }
 
 void WateringTask::save(RtcDateTime timestamp) {

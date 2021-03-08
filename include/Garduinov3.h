@@ -7,12 +7,9 @@
 #include <Arduino.h>
 #include <Functor.h>
 #include <Method.h>
-#include <Thread.h>
-#include <ThreadController.h>
 
 #include <IOT.h>
-#include <LED.h>
-#include <Button.h>
+#include <Controls.h>
 #include <Sensors.h>
 #include <SystemClock.h>
 #include <WateringTask.h>
@@ -37,16 +34,11 @@ public:
 
 private:
     IOT *_iot;
-    LED *_powerLED;
-    LED *_manualLED;
-    LED *_networkLED;
     Sensors *_sensors;
-    Button *_powerBtn;
-    Button *_manualBtn;
+    Controls *_controls;
     SystemClock *_clock;
     PowerManagement *_power;
     WateringTask *_wateringTask;
-    ThreadController *_scheduler;
     SSD1306_OLEDDisplay *_display;
 
     bool _manualMode = false;

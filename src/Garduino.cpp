@@ -6,7 +6,7 @@
 
 Garduino::Garduino() {
   // scheduler
-  _scheduler = new ThreadController();
+  //_scheduler = new ThreadController();
 
   // controls
   _manualBtn = new Button(ManualRunButtonPin);
@@ -91,7 +91,7 @@ void Garduino::begin() {
 
   // watering task
   _wateringTask->begin();
-  _scheduler->add(_wateringTask);
+  //_scheduler->add(_wateringTask);
 
   // system time
   _clock->begin();
@@ -100,7 +100,7 @@ void Garduino::begin() {
   _display->begin();
 
   // sensors
-  _scheduler->add(_sensors);
+  //_scheduler->add(_sensors);
   _sensors->begin();
 
   // power management
@@ -125,7 +125,7 @@ void Garduino::loop() {
   _networkLED->loop();
 
   // scheduler
-  _scheduler->run();
+  //_scheduler->run();
 }
 
 void Garduino::sleep(bool forced) {

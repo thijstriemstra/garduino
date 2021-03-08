@@ -5,7 +5,6 @@
 #define Sensors_h
 
 #include <Arduino.h>
-#include <Thread.h>
 
 #include <IOT.h>
 #include <SoilSensors.h>
@@ -19,7 +18,7 @@ struct OutsideTemperatureResult {
     float array[2];
 };
 
-class Sensors: public Thread {
+class Sensors {
   public:
     Sensors(long interval, bool debug = true, const char * ns = "pygarden");
     void begin();

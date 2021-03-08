@@ -5,7 +5,6 @@
 #define WateringTask_h
 
 #include <Arduino.h>
-#include <Thread.h>
 #include <Method.h>
 #include <RtcDS3231.h>
 #include <Preferences.h>
@@ -15,7 +14,7 @@
 
 #define countof(a) (sizeof(a) / sizeof(a[0]))
 
-class WateringTask: public Thread {
+class WateringTask {
   public:
     WateringTask(
       long duration,

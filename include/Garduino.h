@@ -7,8 +7,6 @@
 #include <Arduino.h>
 #include <Functor.h>
 #include <Method.h>
-#include <Thread.h>
-#include <ThreadController.h>
 
 #include <IOT.h>
 #include <LED.h>
@@ -46,7 +44,7 @@ class Garduino
     SystemClock* _clock;
     PowerManagement* _power;
     WateringTask* _wateringTask;
-    ThreadController* _scheduler;
+    //ThreadController* _scheduler;
     SSD1306_OLEDDisplay* _display;
 
     bool _manualMode = false;
