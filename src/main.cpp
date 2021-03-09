@@ -54,6 +54,7 @@ void setup() {
   //app->begin();
   pinMode(led1, OUTPUT);
 
+  // To use core 0 you need to create tasks
   xTaskCreatePinnedToCore(
       toggleLED,    // Function that should be called
       "Toggle LED", // Name of the task (for debugging)
@@ -64,6 +65,7 @@ void setup() {
       0             // Core you want to run the task on (0 or 1)
   );
 
+  // Arduino sketches run on core 1 by default
   xTaskCreatePinnedToCore(
       task2,        // Function that should be called
       "Task 2", // Name of the task (for debugging)
