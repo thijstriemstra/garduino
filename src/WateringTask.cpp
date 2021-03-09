@@ -2,22 +2,7 @@
   WateringTask.cpp
 */
 
-#include "WateringTask.h"
-
-String getValue(String data, char separator, int index) {
-    int found = 0;
-    int strIndex[] = { 0, -1 };
-    int maxIndex = data.length() - 1;
-
-    for (int i = 0; i <= maxIndex && found <= index; i++) {
-        if (data.charAt(i) == separator || i == maxIndex) {
-            found++;
-            strIndex[0] = strIndex[1] + 1;
-            strIndex[1] = (i == maxIndex) ? i+1 : i;
-        }
-    }
-    return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
-}
+#include <WateringTask.h>
 
 WateringTask::WateringTask(
   long duration,
@@ -95,7 +80,8 @@ bool WateringTask::isWatering() {
     return false;
 }
 
-bool WateringTask::needsWatering(RtcDateTime now) {
+bool WateringTask::needsWatering(DateTime now) {
+  /*
   String targetHour = getValue(_timestamp, ':', 0);
   String targetMinute = getValue(_timestamp, ':', 1);
   int currentHour = now.Hour();
@@ -104,7 +90,7 @@ bool WateringTask::needsWatering(RtcDateTime now) {
   // currently in part of hour for watering
   if (currentHour == targetHour.toInt() && currentMinute >= targetMinute.toInt()) {
     // compare timestamp, check if it's not today
-    RtcDateTime timestamp = load();
+    DateTime timestamp = load();
     if (timestamp.Day() != now.Day()) {
       // timestamp is not from today, overwrite timestamp
       // with current time and start watering
@@ -112,6 +98,7 @@ bool WateringTask::needsWatering(RtcDateTime now) {
       return true;
     }
   }
+  */
   return false;
 }
 
@@ -156,19 +143,19 @@ void WateringTask::run() {
   //Thread::run();
 }
 
-void WateringTask::save(RtcDateTime timestamp) {
+void WateringTask::save(DateTime timestamp) {
   // Initialize NVS
   //esp_err_t err = nvs_flash_init();
   _prefs->begin(_namespace, false);
 
   // store the timestamp
-  _prefs->putUInt("timestamp", timestamp.TotalSeconds());
+  //_prefs->putUInt("timestamp", timestamp.TotalSeconds());
 
   // close the preferences
   _prefs->end();
 }
 
-RtcDateTime WateringTask::load() {
+DateTime WateringTask::load() {
   _prefs->begin(_namespace, true);
 
   // get the value, if the key does not exist,
@@ -179,13 +166,14 @@ RtcDateTime WateringTask::load() {
   // close the preferences
   _prefs->end();
 
-  return RtcDateTime(timestamp);
+  return DateTime(timestamp);
 }
 
 String WateringTask::getLastRunTime() {
-  RtcDateTime lastRun = load();
-  char datestring[20];
 
+  //DateTime lastRun = load();
+  char datestring[20];
+  /*
   snprintf_P(datestring,
     countof(datestring),
     PSTR("%04u/%02u/%02u %02u:%02u:%02u"),
@@ -196,5 +184,6 @@ String WateringTask::getLastRunTime() {
     lastRun.Minute(),
     lastRun.Second()
   );
+  */
   return datestring;
 }

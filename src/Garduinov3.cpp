@@ -46,8 +46,7 @@ Garduinov3::Garduinov3()
     _sensors = new Sensors(publishSchedule, _namespace);
 }
 
-void Garduinov3::begin()
-{
+void Garduinov3::begin() {
     // print version
     Serial.println("\n========================");
     Serial.print("= ");
@@ -84,15 +83,15 @@ void Garduinov3::begin()
     systemWakeupCallback.attachCallback(
         makeFunctor((Functor0 *)0, *this, &Garduinov3::onSystemWakeup));
 
+    // system time
+    _clock->begin();
+
     // controls
     _controls->begin(manualBtnCallback, powerBtnCallback);
 
     // watering task
     _wateringTask->begin();
     //_scheduler->add(_wateringTask);
-
-    // system time
-    _clock->begin();
 
     // display
     _display->begin();
@@ -113,8 +112,7 @@ void Garduinov3::begin()
         failedConnectionCallback);
 }
 
-void Garduinov3::loop()
-{
+void Garduinov3::loop() {
     // scheduler
     //_scheduler.run();
 
@@ -122,8 +120,7 @@ void Garduinov3::loop()
     _controls->loop();
 }
 
-void Garduinov3::sleep(bool forced)
-{
+void Garduinov3::sleep(bool forced) {
     // save total volume added
     _sensors->save();
 
@@ -137,8 +134,7 @@ void Garduinov3::sleep(bool forced)
     Serial.println();
     Serial.println("******************************");
     Serial.print("**  ");
-    if (forced)
-    {
+    if (forced) {
         Serial.print("Forced");
     }
     else
@@ -155,36 +151,29 @@ void Garduinov3::sleep(bool forced)
     _power->sleep();
 }
 
-void Garduinov3::openValve()
-{
+void Garduinov3::openValve() {
     started = true;
 
     // open valve
     _wateringTask->open();
 }
 
-void Garduinov3::closeValve()
-{
+void Garduinov3::closeValve() {
     started = false;
 
     // close valve
     _wateringTask->close();
 }
 
-void Garduinov3::toggleValve()
-{
-    if (started == false)
-    {
+void Garduinov3::toggleValve() {
+    if (started == false) {
         openValve();
-    }
-    else
-    {
+    } else {
         closeValve();
     }
 }
 
-void Garduinov3::startManualMode()
-{
+void Garduinov3::startManualMode() {
     Serial.println();
     Serial.println("===================");
     Serial.println("==  Manual mode  ==");
@@ -195,19 +184,15 @@ void Garduinov3::startManualMode()
     // and then eventually presses power button to put device back into deepsleep
 }
 
-void Garduinov3::checkWatering()
-{
+void Garduinov3::checkWatering() {
     // check if garden needs watering right now
     bool enableValve = _wateringTask->needsWatering(_clock->startupTime);
     Serial.println();
     Serial.println("************************************");
     Serial.print("      Watering: ");
-    if (enableValve)
-    {
+    if (enableValve) {
         Serial.println("Yes");
-    }
-    else
-    {
+    } else {
         Serial.println("No");
     }
     Serial.print("        Period: ");
@@ -224,25 +209,20 @@ void Garduinov3::checkWatering()
     Serial.println("************************************");
     Serial.println();
 
-    if (enableValve)
-    {
+    if (enableValve) {
         // start watering
         // will put device back to sleep when done
         _wateringTask->start();
-    }
-    else
-    {
+    } else {
         // check if sensor publish is not already done
-        if (!connected)
-        {
+        if (!connected) {
             // go to sleep, everything is done
             sleep();
         }
     }
 }
 
-void Garduinov3::onPublishReady()
-{
+void Garduinov3::onPublishReady() {
     // only shutdown when manual mode is not enabled and system is
     // not watering at the moment
     if (!_manualMode && !_wateringTask->isWatering())
@@ -252,14 +232,12 @@ void Garduinov3::onPublishReady()
     }
 }
 
-void Garduinov3::onConnectionClosed()
-{
+void Garduinov3::onConnectionClosed() {
     connected = false;
     _controls->networkLED->disable();
 }
 
-void Garduinov3::onConnectionFailed()
-{
+void Garduinov3::onConnectionFailed() {
     connected = false;
     _controls->networkLED->disable();
 
@@ -269,18 +247,14 @@ void Garduinov3::onConnectionFailed()
     // no connection available to publish sensor data,
     // only check for watering if not in manual mode
     // or watering already
-    if (_manualMode)
-    {
+    if (_manualMode) {
         startManualMode();
-    }
-    else if (!_manualMode && !_wateringTask->isWatering())
-    {
+    } else if (!_manualMode && !_wateringTask->isWatering()) {
         checkWatering();
     }
 }
 
-void Garduinov3::onConnectionReady()
-{
+void Garduinov3::onConnectionReady() {
     connected = true;
 
     // network status LED
@@ -290,21 +264,17 @@ void Garduinov3::onConnectionReady()
     _sensors->startPublish(_iot, _clock->getStartupTemperature());
 
     // enter manual mode (if button was pressed) or check watering
-    if (_manualMode)
-    {
+    if (_manualMode) {
         // sync time only in manual mode
         //_clock->sync();
 
         startManualMode();
-    }
-    else
-    {
+    } else {
         checkWatering();
     }
 }
 
-void Garduinov3::onValveOpen()
-{
+void Garduinov3::onValveOpen() {
     // publish
     _iot->publish("/water/valve", 1);
 
@@ -312,8 +282,7 @@ void Garduinov3::onValveOpen()
     _display->writeBig("Open");
 }
 
-void Garduinov3::onValveClosed()
-{
+void Garduinov3::onValveClosed() {
     // publish
     _iot->publish("/water/valve", 0);
 
@@ -321,8 +290,7 @@ void Garduinov3::onValveClosed()
     _display->writeBig("Closed");
 }
 
-void Garduinov3::onWateringReady()
-{
+void Garduinov3::onWateringReady() {
     Serial.println();
     Serial.println("**************************************");
     Serial.println("* Watering finished! Back to sleep.  *");
@@ -334,13 +302,11 @@ void Garduinov3::onWateringReady()
     sleep();
 }
 
-void Garduinov3::onSystemWakeup()
-{
+void Garduinov3::onSystemWakeup() {
     // enable power led
     _controls->powerLED->enable();
 
-    if (_power->wakeup_reason == ESP_SLEEP_WAKEUP_EXT0)
-    {
+    if (_power->wakeup_reason == ESP_SLEEP_WAKEUP_EXT0) {
         // manual button pressed
         _manualMode = true;
 
@@ -349,20 +315,16 @@ void Garduinov3::onSystemWakeup()
 
         // display
         _display->writeBig("Manual");
-    }
-    else
-    {
+    } else {
         _manualMode = false;
     }
 }
 
-void Garduinov3::onManualButtonPush()
-{
+void Garduinov3::onManualButtonPush() {
     toggleValve();
 }
 
-void Garduinov3::onPowerButtonPush()
-{
+void Garduinov3::onPowerButtonPush() {
     // display
     _display->disable();
 
