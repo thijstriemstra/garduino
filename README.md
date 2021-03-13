@@ -52,6 +52,7 @@ Readings from the sensors are sent to a MQTT server over WiFi (if available).
 | Manual Run LED | GPIO | `?` | Digital Output |
 | Network LED | GPIO | `?` | Digital Output |
 | Power LED | GPIO | `?` | Digital Output |
+| Water Flow Sensor | `?` | Analog Input |
 
 ### TCA9548A
 
@@ -73,8 +74,7 @@ Readings from the sensors are sent to a MQTT server over WiFi (if available).
 | Capacitive Soil 3 | Analog Input | `2` |
 | Capacitive Soil 4 | Analog Input | `3` |
 | Capacitive Soil 5 | Analog Input | `4` |
-| Water Flow Sensor | Analog Input | `5` |
-| YL-83 Rain Sensor | Analog Input | `6` |
+| YL-83 Rain Sensor | Analog Input | `5` |
 
 ## Old Wiring
 
