@@ -34,36 +34,36 @@ Readings from the sensors are sent to a MQTT server over WiFi (if available).
 
 | Device | Pin Label | ESP8266 Pin | Type |
 | --- | --- | --- | --- |
-| TCA9548A I2C Expander | SDA | `?` | I2C (address: `0x70`) |
-| TCA9548A I2C Expander | SCL | `?` | I2C (address: `0x70`) |
-| DS3231 Realtime Clock | SDA | `?` | I2C (address: `0x68`,) |
-| DS3231 Realtime Clock | SCL | `?` | I2C (address: `0x68`) |
-| AT24C32 EEPROM on DS3231 | SDA | `?` | I2C (address: `0x57`) |
-| AT24C32 EEPROM on DS3231 | SCL | `?` | I2C (address: `0x57`) |
+| TCA9548A I2C Expander | SDA | `4` | I2C (address: `0x70`) |
+| TCA9548A I2C Expander | SCL | `22` | I2C (address: `0x70`) |
+| DS3231 Realtime Clock | SDA | `16` | I2C (address: `0x68`,) |
+| DS3231 Realtime Clock | SCL | `17` | I2C (address: `0x68`) |
+| AT24C32 EEPROM on DS3231 | SDA | `16` | I2C (address: `0x57`) |
+| AT24C32 EEPROM on DS3231 | SCL | `17` | I2C (address: `0x57`) |
 | MCP3008 Analog Expander | CLK | `18` | SCK |
 | MCP3008 Analog Expander | DOUT | `19` | MISO |
 | MCP3008 Analog Expander | DIN | `23` | MOSI |
 | MCP3008 Analog Expander | CS | `5` | SS |
-| DS18B20 Temperature Sensors | GPIO | `?` | Digital Input |
-| Single Channel Relay | GPIO | `?` | Digital Output |
-| Manual Run Button | GPIO | `?` | Digital Input |
-| Power Button | GPIO | `?` | Digital Input |
-| Watering Indication LED | GPIO | `?` | Digital Output |
-| Manual Run LED | GPIO | `?` | Digital Output |
-| Network LED | GPIO | `?` | Digital Output |
-| Power LED | GPIO | `?` | Digital Output |
-| Water Flow Sensor | `?` | Analog Input |
+| DS18B20 Temperature Sensors | GPIO | `13` | Digital Input |
+| Single Channel Relay | GPIO | `2` | Digital Output |
+| Manual Run Button | GPIO | `36` | Digital Input |
+| Power Button | GPIO | `39` | Digital Input |
+| Watering Indication LED | GPIO | `27` | Digital Output |
+| Manual Run LED | GPIO | `26` | Digital Output |
+| Network LED | GPIO | `25` | Digital Output |
+| Power LED | GPIO | `33` | Digital Output |
+| Water Flow Sensor | `15` | Analog Input |
 
 ### TCA9548A
 
 | Device | Pin Label | TCA9548A Pin | Address |
 | --- | --- | --- | --- |
-| 0.96" OLED Display | SDA | `SD0` | `0x3C` |
-| 0.96" OLED Display | SCL | `SC0` | `0x3C` |
+| BH1750 light sensor | SDA | `SD0` | `0x23` |
+| BH1750 light sensor | SCL | `SC0` | `0x23` |
 | BME280 barometer | SDA | `SD1` | `0x77` |
 | BME280 barometer | SCL | `SC1` | `0x77` |
-| BH1750 light sensor | SDA | `SD2` | `0x23` |
-| BH1750 light sensor | SCL | `SC2` | `0x23` |
+| 0.96" OLED Display | SDA | `SD2` | `0x3C` |
+| 0.96" OLED Display | SCL | `SC2` | `0x3C` |
 
 ### MCP3008
 
