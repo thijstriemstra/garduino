@@ -60,8 +60,8 @@ Readings from the sensors are sent to a MQTT server over WiFi (if available).
 | --- | --- | --- | --- |
 | BH1750 light sensor | SDA | `SD0` | `0x23` |
 | BH1750 light sensor | SCL | `SC0` | `0x23` |
-| BME280 barometer | SDA | `SD1` | `0x77` |
-| BME280 barometer | SCL | `SC1` | `0x77` |
+| BME280 barometer | SDA | `SD1` | `0x76` |
+| BME280 barometer | SCL | `SC1` | `0x76` |
 | 0.96" OLED Display | SDA | `SD2` | `0x3C` |
 | 0.96" OLED Display | SCL | `SC2` | `0x3C` |
 
