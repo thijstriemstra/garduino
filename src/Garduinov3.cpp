@@ -4,10 +4,12 @@
 
 #include <Garduinov3.h>
 
-Garduinov3::Garduinov3()
-{
+Garduinov3::Garduinov3() {
     // controls
     _controls = new Controls();
+
+    // I2C
+    _i2c = new MultiPlexer_TCA9548A();
 
     // wifi/mqtt
     _iot = new IOT();
@@ -43,7 +45,7 @@ Garduinov3::Garduinov3()
 
     // sensors
     int publishSchedule = SensorPublishSchedule * 1000;
-    _sensors = new Sensors(publishSchedule, _namespace);
+    _sensors = new Sensors(publishSchedule, _i2c, true, _namespace);
 }
 
 void Garduinov3::begin() {
@@ -85,6 +87,9 @@ void Garduinov3::begin() {
 
     // system time
     _clock->begin();
+
+    // i2c
+    _i2c->begin(ExpanderSDAPin, ExpanderSCLPin);
 
     // controls
     _controls->begin(manualBtnCallback, powerBtnCallback);

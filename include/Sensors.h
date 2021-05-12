@@ -9,9 +9,11 @@
 #include <IOT.h>
 #include <SoilSensors.h>
 #include <WaterFlowMeter.h>
-#include <YL83_RainSensor.h>
-#include <BH1750_LightSensor.h>
-#include <BME280_BarometerSensor.h>
+#include <MultiPlexer_MCP3008.h>
+#include <MultiPlexer_TCA9548A.h>
+#include <BH1750_LightSensor_Mux.h>
+#include <YL83_RainSensor_MCP3008.h>
+#include <BME280_BarometerSensor_Mux.h>
 #include <DS18B20_TemperatureSensors.h>
 
 struct OutsideTemperatureResult {
@@ -20,7 +22,7 @@ struct OutsideTemperatureResult {
 
 class Sensors {
   public:
-    Sensors(long interval, bool debug = true, const char * ns = "pygarden");
+    Sensors(long interval, MultiPlexer_TCA9548A* i2c, bool debug = true, const char *ns = "garduino");
     void begin();
     void run();
     void save();
@@ -43,10 +45,11 @@ class Sensors {
 
     IOT* _iot;
     SoilSensors* _soil;
-    YL83_RainSensor* _rain;
+    MultiPlexer_MCP3008* _adc;
     WaterFlowMeter* _waterFlow;
-    BH1750_LightSensor* _light;
-    BME280_BarometerSensor* _barometer;
+    BH1750_LightSensor_Mux* _light;
+    YL83_RainSensor_MCP3008* _rain;
+    BME280_BarometerSensor_Mux* _barometer;
     DS18B20_TemperatureSensors* _temperature;
 };
 

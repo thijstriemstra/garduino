@@ -15,7 +15,6 @@
 #include <WateringTask.h>
 #include <PowerManagement.h>
 #include <SSD1306_OLEDDisplay.h>
-#include <MultiPlexer_MCP3008.h>
 #include <MultiPlexer_TCA9548A.h>
 
 class Garduinov3 {
@@ -39,8 +38,7 @@ class Garduinov3 {
       Controls *_controls;
       SystemClock *_clock;
       PowerManagement *_power;
-      MultiPlexer_MCP3008 *_adc;
-      MultiPlexer_TCA9548A *_ic2;
+      MultiPlexer_TCA9548A *_i2c;
       WateringTask *_wateringTask;
       SSD1306_OLEDDisplay *_display;
 

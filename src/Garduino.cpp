@@ -50,7 +50,7 @@ Garduino::Garduino() {
 
   // sensors
   int publishSchedule = SensorPublishSchedule * 1000;
-  _sensors = new Sensors(publishSchedule, _namespace);
+  //_sensors = new Sensors(publishSchedule, _namespace);
 }
 
 void Garduino::begin() {
