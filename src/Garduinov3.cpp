@@ -41,7 +41,7 @@ Garduinov3::Garduinov3() {
     _power = new PowerManagement(WakeupSchedule);
 
     // display
-    _display = new SSD1306_OLEDDisplay(DisplaySDAPin, DisplaySCLPin);
+    _display = new SSD1306_OLEDDisplay_Mux(DisplaySDAPin, DisplaySCLPin);
 
     // sensors
     int publishSchedule = SensorPublishSchedule * 1000;

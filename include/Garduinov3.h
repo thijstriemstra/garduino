@@ -14,8 +14,8 @@
 #include <SystemClock.h>
 #include <WateringTask.h>
 #include <PowerManagement.h>
-#include <SSD1306_OLEDDisplay.h>
 #include <MultiPlexer_TCA9548A.h>
+#include <SSD1306_OLEDDisplay_Mux.h>
 
 class Garduinov3 {
   public:
@@ -40,7 +40,7 @@ class Garduinov3 {
       PowerManagement *_power;
       MultiPlexer_TCA9548A *_i2c;
       WateringTask *_wateringTask;
-      SSD1306_OLEDDisplay *_display;
+      SSD1306_OLEDDisplay_Mux *_display;
 
       bool _manualMode = false;
       int _totalReadings = 15;
