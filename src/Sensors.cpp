@@ -2,7 +2,7 @@
   Sensors.cpp
 */
 
-#include "Sensors.h"
+#include <Sensors.h>
 
 Sensors::Sensors(long interval, MultiPlexer_TCA9548A* i2c, bool debug, const char *ns)
 {
@@ -36,7 +36,7 @@ Sensors::Sensors(long interval, MultiPlexer_TCA9548A* i2c, bool debug, const cha
   //_rain = new YL83_RainSensor_MCP3008(RainSensorPin, _adc);
   _waterFlow = new WaterFlowMeter(WaterFlowMeterPin, ns);
   _temperature = new DS18B20_TemperatureSensors(TemperatureSensorsPin);
-  //_light = new BH1750_LightSensor_Mux(i2c, LightSensorSCLPin, LightSensorSDAPin);
+  _light = new BH1750_LightSensor_Mux(i2c);
   //_barometer = new BME280_BarometerSensor_Mux(BarometerSCLPin, BarometerSDAPin);
 }
 
@@ -46,7 +46,7 @@ void Sensors::begin() {
   //_rain->begin();
   //_soil->begin();
   _temperature->begin();
-  //_light->begin();
+  _light->begin();
   _waterFlow->begin();
 }
 
@@ -99,17 +99,17 @@ void Sensors::save() {
 }
 
 void Sensors::publish() {
-  Serial.println("MQTT - Publishing sensor data...");
+  Serial.println(F("MQTT - Publishing sensor data..."));
   Serial.println();
 
   // INSIDE
-  Serial.println("Inside");
-  Serial.println("------");
+  Serial.println(F("Inside"));
+  Serial.println(F("------"));
   Serial.println();
 
   // LIGHT
-  //float lux = measureLight();
-  //_iot->publish("/inside/light", lux);
+  float lux = measureLight();
+  _iot->publish("/inside/light", lux);
 
   // BME280
   /*BME280_Result barometer = readBarometer();
@@ -135,15 +135,15 @@ void Sensors::publish() {
   // SYSTEM TEMPERATURE
   _iot->publish("/system/temperature", _sysTemperature);
   if (_debug) {
-    Serial.print("System:\t\t\t");
+    Serial.print(F("System:\t\t\t"));
     Serial.print(_sysTemperature);
-    Serial.println(" °C");
+    Serial.println(F(" °C"));
   }
 
   // OUTSIDE
   Serial.println();
-  Serial.println("Outside");
-  Serial.println("-------");
+  Serial.println(F("Outside"));
+  Serial.println(F("-------"));
   Serial.println();
 
   // RAIN
@@ -158,8 +158,8 @@ void Sensors::publish() {
 
   // WATER
   Serial.println();
-  Serial.println("Water");
-  Serial.println("-------");
+  Serial.println(F("Water"));
+  Serial.println(F("-------"));
   Serial.println();
 
   // WATER
@@ -170,21 +170,21 @@ void Sensors::publish() {
   _iot->publish("/water/cycle_volume", totalLiters);
   _iot->publish("/water/historic_volume", historicLiters);
   if (_debug) {
-    Serial.print("Temperature:\t\t");
+    Serial.print(F("Temperature:\t\t"));
     Serial.print(waterTemp);
-    Serial.println(" °C");
+    Serial.println(F(" °C"));
 
-    Serial.print("Current:\t\t");
+    Serial.print(F("Current:\t\t"));
     Serial.print(totalLiters);
-    Serial.println(" ltr");
+    Serial.println(F(" ltr"));
 
-    Serial.print("Total:\t\t\t");
+    Serial.print(F("Total:\t\t\t"));
     Serial.print(historicLiters);
-    Serial.println(" ltr");
+    Serial.println(F(" ltr"));
   }
 
   Serial.println();
-  Serial.println("**********************************************");
+  Serial.println(F("**********************************************"));
   Serial.println();
 }
 
@@ -192,9 +192,9 @@ float Sensors::measureLight() {
   float lux = _light->read();
 
   if (_debug) {
-    Serial.print("Light:\t\t\t");
+    Serial.print(F("Light:\t\t\t"));
     Serial.print(lux);
-    Serial.println(" lx");
+    Serial.println(F(" lx"));
   }
   return lux;
 }
@@ -203,9 +203,9 @@ int Sensors::measureRain() {
   int rainSensorValue = _rain->measurePercentage();
 
   if (_debug) {
-    Serial.print("Rain:\t\t\t");
+    Serial.print(F("Rain:\t\t\t"));
     Serial.print(rainSensorValue);
-    Serial.println("%");
+    Serial.println(F("%"));
   }
   return rainSensorValue;
 }
@@ -217,17 +217,17 @@ BME280_Result Sensors::readBarometer() {
   float humidity = result.array[2];
 
   if (_debug) {
-    Serial.print("Humidity:\t\t");
+    Serial.print(F("Humidity:\t\t"));
     Serial.print(humidity);
-    Serial.println("%");
+    Serial.println(F("%"));
 
     Serial.print(F("Temperature:\t\t"));
     Serial.print(temperature);
-    Serial.println(" °C");
+    Serial.println(F(" °C"));
 
     Serial.print(F("Pressure:\t\t"));
     Serial.print(pressure);
-    Serial.println(" hPa");
+    Serial.println(F(" hPa"));
   }
   return result;
 }
@@ -241,9 +241,9 @@ OutsideTemperatureResult Sensors::readOutsideTemperature() {
   result.array[1] = temperature2;
 
   if (_debug) {
-    Serial.print("Temperature:\t\t");
+    Serial.print(F("Temperature:\t\t"));
     Serial.print(temperature1);
-    Serial.println(" °C");
+    Serial.println(F(" °C"));
   }
   return result;
 }
@@ -254,11 +254,11 @@ SoilMoistureResult Sensors::readSoilMoisture() {
 
   if (_debug) {
     for (int index = 0; index < sensorCount; index++) {
-      Serial.print("Soil-");
+      Serial.print(F("Soil-"));
       Serial.print(index);
-      Serial.print(" moisture:\t");
+      Serial.print(F(" moisture:\t"));
       Serial.print(result.array[index]);
-      Serial.println("%");
+      Serial.println(F("%"));
     }
   }
 

@@ -9,7 +9,11 @@ Garduinov3::Garduinov3() {
     _controls = new Controls();
 
     // I2C
-    _i2c = new MultiPlexer_TCA9548A();
+    _i2c = new MultiPlexer_TCA9548A(
+        ExpanderSDAPin,
+        ExpanderSCLPin,
+        ExpanderAddress
+    );
 
     // wifi/mqtt
     _iot = new IOT();
@@ -41,7 +45,11 @@ Garduinov3::Garduinov3() {
     _power = new PowerManagement(WakeupSchedule);
 
     // display
-    _display = new SSD1306_OLEDDisplay_Mux(DisplaySDAPin, DisplaySCLPin);
+    _display = new SSD1306_OLEDDisplay_Mux(
+        _i2c,
+        DisplayAddress,
+        OLEDDISPLAY_GEOMETRY::GEOMETRY_128_32
+    );
 
     // sensors
     int publishSchedule = SensorPublishSchedule * 1000;
@@ -50,13 +58,13 @@ Garduinov3::Garduinov3() {
 
 void Garduinov3::begin() {
     // print version
-    Serial.println("\n========================");
-    Serial.print("= ");
+    Serial.println(F("\n========================"));
+    Serial.print(F("= "));
     Serial.print(_namespace);
-    Serial.print(" v");
+    Serial.print(F(" v"));
     Serial.print(_version);
-    Serial.println(" =");
-    Serial.println("========================\n");
+    Serial.println(F(" ="));
+    Serial.println(F("========================\n"));
 
     // board info
     Serial.print("Board:\t\t");
@@ -89,7 +97,7 @@ void Garduinov3::begin() {
     _clock->begin();
 
     // i2c
-    _i2c->begin(ExpanderSDAPin, ExpanderSCLPin);
+    _i2c->begin();
 
     // controls
     _controls->begin(manualBtnCallback, powerBtnCallback);
@@ -137,17 +145,17 @@ void Garduinov3::sleep(bool forced) {
     delay(300);
 
     Serial.println();
-    Serial.println("******************************");
-    Serial.print("**  ");
+    Serial.println(F("******************************"));
+    Serial.print(F("**  "));
     if (forced) {
-        Serial.print("Forced");
+        Serial.print(F("Forced"));
     }
     else
     {
-        Serial.print("Going");
+        Serial.print(F("Going"));
     }
-    Serial.println(" to sleep... Bye.  **");
-    Serial.println("******************************");
+    Serial.println(F(" to sleep... Bye.  **"));
+    Serial.println(F("******************************"));
 
     // disable power led
     _controls->powerLED->disable();
@@ -180,9 +188,9 @@ void Garduinov3::toggleValve() {
 
 void Garduinov3::startManualMode() {
     Serial.println();
-    Serial.println("===================");
-    Serial.println("==  Manual mode  ==");
-    Serial.println("===================");
+    Serial.println(F("==================="));
+    Serial.println(F("==  Manual mode  =="));
+    Serial.println(F("==================="));
     Serial.println();
 
     // now wait till user presses the manual button again to control the valve,
@@ -193,25 +201,25 @@ void Garduinov3::checkWatering() {
     // check if garden needs watering right now
     bool enableValve = _wateringTask->needsWatering(_clock->startupTime);
     Serial.println();
-    Serial.println("************************************");
-    Serial.print("      Watering: ");
+    Serial.println(F("************************************"));
+    Serial.print(F("      Watering: "));
     if (enableValve) {
-        Serial.println("Yes");
+        Serial.println(F("Yes"));
     } else {
-        Serial.println("No");
+        Serial.println(F("No"));
     }
-    Serial.print("        Period: ");
+    Serial.print(F("        Period: "));
     Serial.print(WateringDuration);
-    Serial.println(" sec");
-    Serial.print("Daily schedule: ");
+    Serial.println(F(" sec"));
+    Serial.print(F("Daily schedule: "));
     Serial.print(WateringSchedule);
-    Serial.println(":00");
-    Serial.print("  Current time: ");
+    Serial.println(F(":00"));
+    Serial.print(F("  Current time: "));
     Serial.println(_clock->getStartupTime());
-    Serial.print("      Last run: ");
+    Serial.print(F("      Last run: "));
     Serial.println(_wateringTask->getLastRunTime());
 
-    Serial.println("************************************");
+    Serial.println(F("************************************"));
     Serial.println();
 
     if (enableValve) {
@@ -247,7 +255,7 @@ void Garduinov3::onConnectionFailed() {
     _controls->networkLED->disable();
 
     Serial.println();
-    Serial.println("*** No WiFi connection available! ***");
+    Serial.println(F("*** No WiFi connection available! ***"));
 
     // no connection available to publish sensor data,
     // only check for watering if not in manual mode
@@ -284,7 +292,7 @@ void Garduinov3::onValveOpen() {
     _iot->publish("/water/valve", 1);
 
     // display
-    _display->writeBig("Open");
+    _display->writeBig(F("Open"));
 }
 
 void Garduinov3::onValveClosed() {
@@ -292,14 +300,14 @@ void Garduinov3::onValveClosed() {
     _iot->publish("/water/valve", 0);
 
     // display
-    _display->writeBig("Closed");
+    _display->writeBig(F("Closed"));
 }
 
 void Garduinov3::onWateringReady() {
     Serial.println();
-    Serial.println("**************************************");
-    Serial.println("* Watering finished! Back to sleep.  *");
-    Serial.println("**************************************");
+    Serial.println(F("**************************************"));
+    Serial.println(F("* Watering finished! Back to sleep.  *"));
+    Serial.println(F("**************************************"));
 
     // wait a while so IOT can complete
     delay(300);
@@ -319,7 +327,7 @@ void Garduinov3::onSystemWakeup() {
         _controls->manualLED->enable();
 
         // display
-        _display->writeBig("Manual");
+        _display->writeBig(F("Manual"));
     } else {
         _manualMode = false;
     }
