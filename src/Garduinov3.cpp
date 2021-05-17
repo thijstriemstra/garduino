@@ -1,3 +1,6 @@
+/*  Copyright (c) 2020-2021, Collab
+ *  All rights reserved
+*/
 /*
   Garduinov3.cpp - Library for monitoring a garden.
 */
@@ -8,12 +11,9 @@ Garduinov3::Garduinov3() {
     // controls
     _controls = new Controls();
 
-    // I2C
-    _i2c = new MultiPlexer_TCA9548A(
-        ExpanderSDAPin,
-        ExpanderSCLPin,
-        ExpanderAddress
-    );
+    // exapnder on 2nd I2C bus
+    Wire1.setPins(ExpanderSDAPin, ExpanderSCLPin);
+    _i2c = new MultiPlexer_TCA9548A(ExpanderAddress);
 
     // wifi/mqtt
     _iot = new IOT();
@@ -47,8 +47,11 @@ Garduinov3::Garduinov3() {
     // display
     _display = new SSD1306_OLEDDisplay_Mux(
         _i2c,
+        DisplayChannel,
         DisplayAddress,
-        OLEDDISPLAY_GEOMETRY::GEOMETRY_128_32
+        DisplayFlipVertical,
+        OLEDDISPLAY_GEOMETRY::GEOMETRY_128_32,
+        HW_I2C::I2C_TWO
     );
 
     // sensors
@@ -67,7 +70,7 @@ void Garduinov3::begin() {
     Serial.println(F("========================\n"));
 
     // board info
-    Serial.print("Board:\t\t");
+    Serial.print(F("Board:\t\t"));
     Serial.println(ARDUINO_BOARD);
 
     // callbacks

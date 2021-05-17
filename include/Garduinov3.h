@@ -1,3 +1,6 @@
+/*  Copyright (c) 2020-2021, Collab
+ *  All rights reserved
+*/
 /*
   Garduinov3.h - Library for monitoring a garden.
 */

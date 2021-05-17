@@ -1,50 +1,55 @@
+/*  Copyright (c) 2020-2021, Collab
+ *  All rights reserved
+*/
 /*
   Sensors.cpp
 */
 
 #include <Sensors.h>
 
-Sensors::Sensors(long interval, MultiPlexer_TCA9548A* i2c, bool debug, const char *ns)
-{
+Sensors::Sensors(
+  long interval,
+  MultiPlexer_TCA9548A* i2c,
+  bool debug,
+  const char *ns
+) {
   _interval = interval;
   _debug = debug;
   _lastPublish = 0;
 
   //enabled = false;
 
-  /*
   SoilSensorsConfig soilCfg;
-  soilCfg.sensor1_pin = SoilSensor1Pin;
+  soilCfg.sensor1_channel = SoilSensor1Channel;
   soilCfg.sensor1_wet = SoilSensor1Wet;
   soilCfg.sensor1_dry = SoilSensor1Dry;
-  soilCfg.sensor2_pin = SoilSensor2Pin;
+  soilCfg.sensor2_channel = SoilSensor2Channel;
   soilCfg.sensor2_wet = SoilSensor2Wet;
   soilCfg.sensor2_dry = SoilSensor2Dry;
-  soilCfg.sensor3_pin = SoilSensor3Pin;
+  soilCfg.sensor3_channel = SoilSensor3Channel;
   soilCfg.sensor3_wet = SoilSensor3Wet;
   soilCfg.sensor3_dry = SoilSensor3Dry;
-  soilCfg.sensor4_pin = SoilSensor4Pin;
+  soilCfg.sensor4_channel = SoilSensor4Channel;
   soilCfg.sensor4_wet = SoilSensor4Wet;
   soilCfg.sensor4_dry = SoilSensor4Dry;
-  soilCfg.sensor5_pin = SoilSensor5Pin;
+  soilCfg.sensor5_channel = SoilSensor5Channel;
   soilCfg.sensor5_wet = SoilSensor5Wet;
   soilCfg.sensor5_dry = SoilSensor5Dry;
-  */
 
   _adc = new MultiPlexer_MCP3008(AnalogExpanderCSPin);
-  //_soil = new SoilSensors(soilCfg, _adc);
-  //_rain = new YL83_RainSensor_MCP3008(RainSensorPin, _adc);
+  _soil = new SoilSensors(soilCfg, _adc);
+  _rain = new YL83_RainSensor_MCP3008(_adc, RainSensorChannel);
   _waterFlow = new WaterFlowMeter(WaterFlowMeterPin, ns);
   _temperature = new DS18B20_TemperatureSensors(TemperatureSensorsPin);
-  _light = new BH1750_LightSensor_Mux(i2c);
-  //_barometer = new BME280_BarometerSensor_Mux(BarometerSCLPin, BarometerSDAPin);
+  _light = new BH1750_LightSensor_Mux(i2c, LightSensorChannel, LightSensorAddress);
+  _barometer = new BME280_BarometerSensor_Mux(i2c, BarometerChannel);
 }
 
 void Sensors::begin() {
   _adc->begin();
-  //_barometer->begin();
-  //_rain->begin();
-  //_soil->begin();
+  _barometer->begin();
+  _rain->begin();
+  _soil->begin();
   _temperature->begin();
   _light->begin();
   _waterFlow->begin();
@@ -112,25 +117,18 @@ void Sensors::publish() {
   _iot->publish("/inside/light", lux);
 
   // BME280
-  /*BME280_Result barometer = readBarometer();
-  float temperature_inside = barometer.array[0];
-  _iot->publish("/inside/temperature", temperature_inside);
-
-  float pressure_inside = barometer.array[1];
-  _iot->publish("/inside/pressure", pressure_inside);
-
-  float humidity_inside = barometer.array[2];
-  _iot->publish("/inside/humidity", humidity_inside);
-  */
+  BME280_Result barometer = readBarometer();
+  _iot->publish("/inside/temperature", barometer.temperature);
+  _iot->publish("/inside/pressure", barometer.pressure);
+  _iot->publish("/inside/humidity", barometer.humidity);
 
   // SOIL
-  /*SoilMoistureResult soil = readSoilMoisture();
-  _iot->publish("/inside/soil_1", soil.array[0]);
-  _iot->publish("/inside/soil_2", soil.array[1]);
-  _iot->publish("/inside/soil_3", soil.array[2]);
-  _iot->publish("/inside/soil_4", soil.array[3]);
-  _iot->publish("/inside/soil_5", soil.array[4]);
-  */
+  SoilMoistureResult soil = readSoilMoisture();
+  _iot->publish("/inside/soil_1", soil.sensor1);
+  _iot->publish("/inside/soil_2", soil.sensor2);
+  _iot->publish("/inside/soil_3", soil.sensor3);
+  _iot->publish("/inside/soil_4", soil.sensor4);
+  _iot->publish("/inside/soil_5", soil.sensor5);
 
   // SYSTEM TEMPERATURE
   _iot->publish("/system/temperature", _sysTemperature);
@@ -147,8 +145,8 @@ void Sensors::publish() {
   Serial.println();
 
   // RAIN
-  //int rain = measureRain();
-  //_iot->publish("/outside/rain", rain);
+  int rain = measureRain();
+  _iot->publish("/outside/rain", rain);
 
   // OUTSIDE TEMPERATURE
   OutsideTemperatureResult outside = readOutsideTemperature();
@@ -212,21 +210,18 @@ int Sensors::measureRain() {
 
 BME280_Result Sensors::readBarometer() {
   BME280_Result result = _barometer->readAll();
-  float temperature = result.array[0];
-  float pressure = result.array[1];
-  float humidity = result.array[2];
 
   if (_debug) {
     Serial.print(F("Humidity:\t\t"));
-    Serial.print(humidity);
+    Serial.print(result.humidity);
     Serial.println(F("%"));
 
     Serial.print(F("Temperature:\t\t"));
-    Serial.print(temperature);
+    Serial.print(result.temperature);
     Serial.println(F(" °C"));
 
     Serial.print(F("Pressure:\t\t"));
-    Serial.print(pressure);
+    Serial.print(result.pressure);
     Serial.println(F(" hPa"));
   }
   return result;
@@ -250,16 +245,27 @@ OutsideTemperatureResult Sensors::readOutsideTemperature() {
 
 SoilMoistureResult Sensors::readSoilMoisture() {
   SoilMoistureResult result = _soil->readAll();
-  int sensorCount = sizeof(result.array) / sizeof(int);
 
   if (_debug) {
-    for (int index = 0; index < sensorCount; index++) {
-      Serial.print(F("Soil-"));
-      Serial.print(index);
-      Serial.print(F(" moisture:\t"));
-      Serial.print(result.array[index]);
-      Serial.println(F("%"));
-    }
+    Serial.print(F("Soil-1 moisture:\t"));
+    Serial.print(result.sensor1);
+    Serial.println(F("%"));
+
+    Serial.print(F("Soil-2 moisture:\t"));
+    Serial.print(result.sensor2);
+    Serial.println(F("%"));
+
+    Serial.print(F("Soil-3 moisture:\t"));
+    Serial.print(result.sensor3);
+    Serial.println(F("%"));
+
+    Serial.print(F("Soil-4 moisture:\t"));
+    Serial.print(result.sensor4);
+    Serial.println(F("%"));
+
+    Serial.print(F("Soil-5 moisture:\t"));
+    Serial.print(result.sensor5);
+    Serial.println(F("%"));
   }
 
   return result;
