@@ -1,3 +1,7 @@
+/*  Copyright (c) 2020-2021, Collab
+ *  All rights reserved
+*/
+
 #include "IOT.h"
 
 AsyncMqttClient _mqttClient;
