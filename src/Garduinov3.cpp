@@ -11,7 +11,7 @@ Garduinov3::Garduinov3() {
     // controls
     _controls = new Controls();
 
-    // exapnder on 2nd I2C bus
+    // expander on 2nd I2C bus
     Wire1.setPins(ExpanderSDAPin, ExpanderSCLPin);
     _i2c = new MultiPlexer_TCA9548A(ExpanderAddress);
 

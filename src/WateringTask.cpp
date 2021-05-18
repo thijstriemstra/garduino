@@ -84,24 +84,23 @@ bool WateringTask::isWatering() {
 }
 
 bool WateringTask::needsWatering(DateTime now) {
-  /*
-  String targetHour = getValue(_timestamp, ':', 0);
-  String targetMinute = getValue(_timestamp, ':', 1);
-  int currentHour = now.Hour();
-  int currentMinute = now.Minute();
+  long targetHour = Utils::splitHourString(_timestamp, ':', 0);
+  long targetMinute = Utils::splitHourString(_timestamp, ':', 1);
+  int currentHour = now.hour();
+  int currentMinute = now.minute();
 
   // currently in part of hour for watering
-  if (currentHour == targetHour.toInt() && currentMinute >= targetMinute.toInt()) {
+  if (currentHour == targetHour && currentMinute >= targetMinute) {
     // compare timestamp, check if it's not today
     DateTime timestamp = load();
-    if (timestamp.Day() != now.Day()) {
+    if (timestamp.day() != now.day()) {
       // timestamp is not from today, overwrite timestamp
       // with current time and start watering
       save(now);
       return true;
     }
   }
-  */
+
   return false;
 }
 
@@ -152,7 +151,7 @@ void WateringTask::save(DateTime timestamp) {
   _prefs->begin(_namespace, false);
 
   // store the timestamp
-  //_prefs->putUInt("timestamp", timestamp.TotalSeconds());
+  _prefs->putUInt("timestamp", timestamp.secondstime());
 
   // close the preferences
   _prefs->end();
@@ -169,24 +168,12 @@ DateTime WateringTask::load() {
   // close the preferences
   _prefs->end();
 
-  return DateTime(timestamp);
+  return DateTime(SECONDS_FROM_1970_TO_2000 + timestamp);
 }
 
 String WateringTask::getLastRunTime() {
+  DateTime lastRun = load();
 
-  //DateTime lastRun = load();
-  char datestring[20];
-  /*
-  snprintf_P(datestring,
-    countof(datestring),
-    PSTR("%04u/%02u/%02u %02u:%02u:%02u"),
-    lastRun.Year(),
-    lastRun.Month(),
-    lastRun.Day(),
-    lastRun.Hour(),
-    lastRun.Minute(),
-    lastRun.Second()
-  );
-  */
-  return datestring;
+  return lastRun.timestamp(DateTime::TIMESTAMP_DATE) + " " +
+      lastRun.timestamp(DateTime::TIMESTAMP_TIME);
 }
