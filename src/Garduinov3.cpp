@@ -206,11 +206,7 @@ void Garduinov3::checkWatering() {
     Serial.println();
     Serial.println(F("************************************"));
     Serial.print(F("      Watering: "));
-    if (enableValve) {
-        Serial.println(F("Yes"));
-    } else {
-        Serial.println(F("No"));
-    }
+    Serial.println(Utils::BoolToString(enableValve));
     Serial.print(F("        Period: "));
     Serial.print(WateringDuration);
     Serial.println(F(" sec"));

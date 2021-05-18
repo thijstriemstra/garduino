@@ -12,6 +12,7 @@
 #include <Method.h>
 
 #include <IOT.h>
+#include <Utils.h>
 #include <Controls.h>
 #include <Sensors.h>
 #include <SystemClock.h>
