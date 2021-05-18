@@ -38,13 +38,13 @@ class Garduinov3 {
 
   private:
       IOT *_iot;
-      Sensors *_sensors;
-      Controls *_controls;
-      SystemClock *_clock;
-      PowerManagement *_power;
-      MultiPlexer_TCA9548A *_i2c;
-      WateringTask *_wateringTask;
-      SSD1306_OLEDDisplay_Mux *_display;
+      Sensors* _sensors;
+      Controls* _controls;
+      SystemClock* _clock;
+      PowerManagement* _power;
+      MultiPlexer_TCA9548A* _i2c;
+      WateringTask* _wateringTask;
+      SSD1306_OLEDDisplay_Mux* _display;
 
       bool _manualMode = false;
       int _totalReadings = 15;

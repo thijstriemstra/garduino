@@ -25,6 +25,7 @@ WateringTask::WateringTask(
   _valveClosedCallback = valveClosed_callback;
 
   active = false;
+  // TODO
   //enabled = false;
 
   // preferences storage
@@ -46,8 +47,9 @@ void WateringTask::begin() {
 }
 
 void WateringTask::start() {
-    //enabled = true;
-    active = true;
+  // TODO
+  //enabled = true;
+  active = true;
 }
 
 void WateringTask::open() {
@@ -79,8 +81,10 @@ void WateringTask::close() {
 }
 
 bool WateringTask::isWatering() {
-    //return enabled;
-    return false;
+  // TODO
+  //return enabled;
+
+  return false;
 }
 
 bool WateringTask::needsWatering(DateTime now) {
@@ -123,6 +127,7 @@ bool WateringTask::shouldRun(unsigned long time) {
   }
 
   // let default method check for it
+  // TODO
   //return Thread::shouldRun(time);
   return false;
 }
@@ -132,6 +137,7 @@ void WateringTask::run() {
   if (millis() > _lastRun + (_duration * 1000)) {
     // done watering
     active = false;
+    // TODO
     //enabled = false;
 
     // close valve
@@ -141,13 +147,12 @@ void WateringTask::run() {
     _finishedCallback.callback();
   }
 
+  // TODO
   // run the thread
   //Thread::run();
 }
 
 void WateringTask::save(DateTime timestamp) {
-  // Initialize NVS
-  //esp_err_t err = nvs_flash_init();
   _prefs->begin(_namespace, false);
 
   // store the timestamp

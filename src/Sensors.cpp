@@ -47,10 +47,10 @@ Sensors::Sensors(
 
 void Sensors::begin() {
   _adc->begin();
-  _barometer->begin();
   _rain->begin();
   _soil->begin();
   _temperature->begin();
+  _barometer->begin();
   _light->begin();
   _waterFlow->begin();
 }

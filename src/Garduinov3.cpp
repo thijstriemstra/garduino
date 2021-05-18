@@ -96,11 +96,11 @@ void Garduinov3::begin() {
     systemWakeupCallback.attachCallback(
         makeFunctor((Functor0 *)0, *this, &Garduinov3::onSystemWakeup));
 
-    // system time
-    _clock->begin();
-
     // i2c
     _i2c->begin();
+
+    // system time
+    _clock->begin();
 
     // controls
     _controls->begin(manualBtnCallback, powerBtnCallback);
@@ -125,11 +125,13 @@ void Garduinov3::begin() {
         connectionReadyCallback,
         disconnectedCallback,
         publishReadyCallback,
-        failedConnectionCallback);
+        failedConnectionCallback
+    );
 }
 
 void Garduinov3::loop() {
     // scheduler
+    // TODO
     //_scheduler.run();
 
     // controls
@@ -237,8 +239,7 @@ void Garduinov3::checkWatering() {
 void Garduinov3::onPublishReady() {
     // only shutdown when manual mode is not enabled and system is
     // not watering at the moment
-    if (!_manualMode && !_wateringTask->isWatering())
-    {
+    if (!_manualMode && !_wateringTask->isWatering()) {
         // done, go into deepsleep and wait till woken up by button or timer
         sleep();
     }
