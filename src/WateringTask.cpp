@@ -24,10 +24,6 @@ WateringTask::WateringTask(
   _valveOpenCallback = valveOpen_callback;
   _valveClosedCallback = valveClosed_callback;
 
-  active = false;
-  // TODO
-  //enabled = false;
-
   // preferences storage
   _prefs = new Preferences();
 
@@ -47,9 +43,58 @@ void WateringTask::begin() {
 }
 
 void WateringTask::start() {
-  // TODO
-  //enabled = true;
   active = true;
+
+  // start task on core 1, otherwise it will corrupt the OLED display
+  // see https://github.com/ThingPulse/esp8266-oled-ssd1306/issues/326
+  xTaskCreatePinnedToCore(
+    &WateringTask::setupTask,  // function that should be called
+    "wateringTask",            // name of the task (for debugging)
+    2048,                      // stack size (bytes)
+    this,                      // passing instance pointer as function param
+    1,                         // task priority
+    NULL,                      // task handle
+    1                          // core to run the task on (0 or 1)
+  );
+}
+
+void WateringTask::setupTask(void *pvParameter) {
+  // task requires infinite loop
+  // obtain the instance pointer
+  WateringTask* task = reinterpret_cast<WateringTask*>(pvParameter);
+
+  // delay start of task
+  vTaskDelay(1000 / portTICK_PERIOD_MS);
+
+  // dispatch to the member function, now that we have an instance pointer
+  task->run();
+
+  // pause the task and leave pump open
+  vTaskDelay(task->_duration * 1000 / portTICK_PERIOD_MS);
+
+  // done watering
+  task->active = false;
+
+  // close valve
+  task->close();
+
+  // notify others
+  task->_finishedCallback.callback();
+
+  // cleanup task
+  vTaskDelete(NULL);
+}
+
+void WateringTask::run() {
+  Serial.println();
+  Serial.print("Started watering for ");
+  Serial.print(_duration);
+  Serial.println(" seconds!");
+  Serial.println("---------------------------------------");
+  Serial.println();
+
+  // open valve for x seconds
+  open();
 }
 
 void WateringTask::open() {
@@ -81,10 +126,7 @@ void WateringTask::close() {
 }
 
 bool WateringTask::isWatering() {
-  // TODO
-  //return enabled;
-
-  return false;
+  return active;
 }
 
 bool WateringTask::needsWatering(DateTime now) {
@@ -106,50 +148,6 @@ bool WateringTask::needsWatering(DateTime now) {
   }
 
   return false;
-}
-
-bool WateringTask::shouldRun(unsigned long time) {
-  if (active) {
-    active = false;
-
-    // save the current time
-    _lastRun = (time ? time : millis());
-
-    Serial.println();
-    Serial.print("Started watering for ");
-    Serial.print(_duration);
-    Serial.println(" seconds!");
-    Serial.println("---------------------------------------");
-    Serial.println();
-
-    // open valve for x seconds
-    open();
-  }
-
-  // let default method check for it
-  // TODO
-  //return Thread::shouldRun(time);
-  return false;
-}
-
-void WateringTask::run() {
-  // check if time elapsed since last publish
-  if (millis() > _lastRun + (_duration * 1000)) {
-    // done watering
-    active = false;
-    // TODO
-    //enabled = false;
-
-    // close valve
-    close();
-
-    // notify others
-    _finishedCallback.callback();
-  }
-
-  // TODO
-  // run the thread
-  //Thread::run();
 }
 
 void WateringTask::save(DateTime timestamp) {

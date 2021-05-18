@@ -86,7 +86,7 @@ void Sensors::setupTask(void *pvParameter) {
     // dispatch to the member function, now that we have an instance pointer
     sensors->run();
 
-    // Pause the task
+    // pause the task
     vTaskDelay(sensors->_interval / portTICK_PERIOD_MS);
   }
 }

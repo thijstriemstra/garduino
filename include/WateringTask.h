@@ -27,7 +27,7 @@ class WateringTask {
       Method valveOpen_callback,
       Method valveClosed_callback
     );
-    bool active;
+    bool active = false;
     void run();
     void begin();
     void start();
@@ -37,18 +37,18 @@ class WateringTask {
     void save(DateTime timestamp);
     bool isWatering();
     bool needsWatering(DateTime now);
-    bool shouldRun(unsigned long time);
     String getLastRunTime();
 
   private:
     bool _debug;
     long _duration;
-    long _lastRun = 0;
     const char* _namespace;
     LED* _waterLED;
     String _timestamp;
     Preferences* _prefs;
     SolenoidValve* _waterValve;
+
+    static void setupTask(void *pvParameter);
 
     // callbacks
     Method _finishedCallback;

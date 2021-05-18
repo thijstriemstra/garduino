@@ -106,14 +106,11 @@ void Garduinov3::begin() {
 
     // watering task
     _wateringTask->begin();
-    //_scheduler->add(_wateringTask);
 
     // display
     _display->begin();
 
     // sensors
-    // TODO
-    //_scheduler->add(_sensors);
     _sensors->begin();
 
     // power management
@@ -135,6 +132,9 @@ void Garduinov3::loop() {
 }
 
 void Garduinov3::sleep(bool forced) {
+    // display
+    _display->disable();
+
     // save total volume added
     _sensors->save();
 
@@ -334,9 +334,6 @@ void Garduinov3::onManualButtonPush() {
 }
 
 void Garduinov3::onPowerButtonPush() {
-    // display
-    _display->disable();
-
     // forced to sleep
     sleep(true);
 }
