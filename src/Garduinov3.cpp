@@ -36,7 +36,8 @@ Garduinov3::Garduinov3() {
         WateringSchedule,
         wateringReadyCallback,
         valveOpenCallback,
-        valveClosedCallback);
+        valveClosedCallback
+    );
 
     // system time
     _clock = new SystemClock(ClockSCLPin, ClockSDAPin, NTP_HOST);
@@ -113,6 +114,7 @@ void Garduinov3::begin() {
     _display->begin();
 
     // sensors
+    // TODO
     //_scheduler->add(_sensors);
     _sensors->begin();
 
