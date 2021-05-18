@@ -50,9 +50,7 @@ Garduinov3::Garduinov3() {
         _i2c,
         DisplayChannel,
         DisplayAddress,
-        DisplayFlipVertical,
-        OLEDDISPLAY_GEOMETRY::GEOMETRY_128_32,
-        HW_I2C::I2C_TWO
+        true
     );
 
     // sensors
@@ -132,10 +130,6 @@ void Garduinov3::begin() {
 }
 
 void Garduinov3::loop() {
-    // scheduler
-    // TODO
-    //_scheduler.run();
-
     // controls
     _controls->loop();
 }

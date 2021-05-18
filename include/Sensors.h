@@ -20,7 +20,8 @@
 #include <DS18B20_TemperatureSensors.h>
 
 struct OutsideTemperatureResult {
-    float array[2];
+    float air;
+    float water;
 };
 
 class Sensors {
@@ -32,7 +33,6 @@ class Sensors {
     void reset();
     void publish();
     void startPublish(IOT* iot, float system_temperature);
-    bool shouldRun(unsigned long time);
     float measureLight();
     int measureRain();
     BME280_Result readBarometer();
@@ -42,9 +42,9 @@ class Sensors {
   private:
     bool _debug;
     long _interval;
-    long _lastPublish;
-    bool _startPublishing = false;
     float _sysTemperature = 0;
+
+    static void setupTask(void *pvParameter);
 
     IOT* _iot;
     SoilSensors* _soil;

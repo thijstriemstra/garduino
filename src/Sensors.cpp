@@ -15,9 +15,6 @@ Sensors::Sensors(
 ) {
   _interval = interval;
   _debug = debug;
-  _lastPublish = 0;
-
-  //enabled = false;
 
   SoilSensorsConfig soilCfg;
   soilCfg.sensor1_channel = SoilSensor1Channel;
@@ -63,39 +60,43 @@ void Sensors::reset() {
 void Sensors::startPublish(IOT* iot, float system_temperature) {
   _iot = iot;
   _sysTemperature = system_temperature;
-  _startPublishing = true;
-  //enabled = true;
+
+  // start task on core 1, otherwise it will corrupt the OLED display
+  // see https://github.com/ThingPulse/esp8266-oled-ssd1306/issues/326
+  xTaskCreatePinnedToCore(
+    &Sensors::setupTask,      // function that should be called
+    "sensorsTask",            // name of the task (for debugging)
+    2048,                     // stack size (bytes)
+    this,                     // passing instance pointer as function param
+    5,                        // task priority
+    NULL,                     // task handle
+    1                         // core to run the task on (0 or 1)
+  );
 }
 
-bool Sensors::shouldRun(unsigned long time) {
-  if (_startPublishing) {
+void Sensors::setupTask(void *pvParameter) {
+  // task requires infinite loop
+  for (;;) {
+    // obtain the instance pointer
+    Sensors* sensors = reinterpret_cast<Sensors*>(pvParameter);
 
-    _startPublishing = false;
+    // delay start of task
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
 
-    // save the current time
-    _lastPublish = (time ? time : millis());
+    // dispatch to the member function, now that we have an instance pointer
+    sensors->run();
 
-    // continuously publish data
-    publish();
+    // Pause the task
+    vTaskDelay(sensors->_interval / portTICK_PERIOD_MS);
   }
-
-  // let default method check for it
-  //return Thread::shouldRun(time);
-  return false;
 }
 
 void Sensors::run() {
-  // check if time elapsed since last publish
-  if (millis() > _lastPublish + _interval){
-    // exceeded time, disable it
-    _startPublishing = true;
-  }
+  // publish data
+  publish();
 
   // water flow
   _waterFlow->measure(1);
-
-  // run the thread
-  //Thread::run();
 }
 
 void Sensors::save() {
@@ -151,7 +152,7 @@ void Sensors::publish() {
   // OUTSIDE TEMPERATURE
   OutsideTemperatureResult outside = readOutsideTemperature();
 
-  float outsideTemp = outside.array[0];
+  float outsideTemp = outside.air;
   _iot->publish("/outside/temperature", outsideTemp);
 
   // WATER
@@ -163,7 +164,7 @@ void Sensors::publish() {
   // WATER
   double totalLiters = _waterFlow->getTotalVolume();
   double historicLiters = _waterFlow->getHistoricVolume();
-  float waterTemp = outside.array[1];
+  float waterTemp = outside.water;
   _iot->publish("/water/temperature", waterTemp);
   _iot->publish("/water/cycle_volume", totalLiters);
   _iot->publish("/water/historic_volume", historicLiters);
@@ -228,16 +229,13 @@ BME280_Result Sensors::readBarometer() {
 }
 
 OutsideTemperatureResult Sensors::readOutsideTemperature() {
-  float temperature1 = _temperature->getTemperatureByIndex(0);
-  float temperature2 = _temperature->getTemperatureByIndex(1);
-
   OutsideTemperatureResult result;
-  result.array[0] = temperature1;
-  result.array[1] = temperature2;
+  result.air = _temperature->getTemperatureByIndex(0);
+  result.water = _temperature->getTemperatureByIndex(1);
 
   if (_debug) {
     Serial.print(F("Temperature:\t\t"));
-    Serial.print(temperature1);
+    Serial.print(result.air);
     Serial.println(F(" °C"));
   }
   return result;
