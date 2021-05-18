@@ -48,10 +48,10 @@ Readings from the sensors are sent to a MQTT server over WiFi (if available).
 | Single Channel Relay | GPIO | `2` | Digital Output |
 | Manual Run Button | GPIO | `36` | Digital Input |
 | Power Button | GPIO | `39` | Digital Input |
-| Watering Indication LED | GPIO | `27` | Digital Output |
+| Watering Indication LED | GPIO | `25` | Digital Output |
 | Manual Run LED | GPIO | `26` | Digital Output |
-| Network LED | GPIO | `25` | Digital Output |
-| Power LED | GPIO | `33` | Digital Output |
+| Network LED | GPIO | `33` | Digital Output |
+| Power LED | GPIO | `27` | Digital Output |
 | Water Flow Sensor | `15` | Analog Input |
 
 ### TCA9548A
