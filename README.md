@@ -46,7 +46,7 @@ Readings from the sensors are sent to a MQTT server over WiFi (if available).
 | MCP3008 Analog Expander | CS | `5` | SS |
 | DS18B20 Temperature Sensors | GPIO | `13` | Digital Input |
 | Single Channel Relay | GPIO | `2` | Digital Output |
-| Water Flow Sensor | `15` | Analog Input |
+| Water Flow Sensor | GPIO | `15` | Analog Input |
 | Manual Run Button | GPIO | `36` | Digital Input |
 | Power Button | GPIO | `39` | Digital Input |
 | Watering Indication LED | GPIO | `25` | Digital Output |
