@@ -18,7 +18,7 @@
 class WateringTask {
   public:
     WateringTask(
-      long duration,
+      long task_duration,
       int valve_pin,
       int led_pin,
       const char* app_namespace,
@@ -27,7 +27,10 @@ class WateringTask {
       Method valveOpen_callback,
       Method valveClosed_callback
     );
+
+    long duration;
     bool active = false;
+
     void run();
     void begin();
     void start();
@@ -41,7 +44,6 @@ class WateringTask {
 
   private:
     bool _debug;
-    long _duration;
     const char* _namespace;
     LED* _waterLED;
     String _timestamp;

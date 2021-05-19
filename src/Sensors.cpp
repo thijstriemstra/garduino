@@ -75,7 +75,7 @@ void Sensors::startPublish(IOT* iot, float system_temperature) {
 }
 
 void Sensors::setupTask(void *pvParameter) {
-  // task requires infinite loop
+  // this task requires infinite loop
   for (;;) {
     // obtain the instance pointer
     Sensors* sensors = reinterpret_cast<Sensors*>(pvParameter);
@@ -83,7 +83,7 @@ void Sensors::setupTask(void *pvParameter) {
     // delay start of task
     vTaskDelay(1000 / portTICK_PERIOD_MS);
 
-    // dispatch to the member function, now that we have an instance pointer
+    // run forest, run
     sensors->run();
 
     // pause the task
@@ -161,7 +161,6 @@ void Sensors::publish() {
   Serial.println(F("-------"));
   Serial.println();
 
-  // WATER
   double totalLiters = _waterFlow->getTotalVolume();
   double historicLiters = _waterFlow->getHistoricVolume();
   float waterTemp = outside.water;

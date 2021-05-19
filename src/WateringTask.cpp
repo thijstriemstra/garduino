@@ -8,7 +8,7 @@
 #include <WateringTask.h>
 
 WateringTask::WateringTask(
-  long duration,
+  long task_duration,
   int valve_pin,
   int led_pin,
   const char* app_namespace,
@@ -17,7 +17,8 @@ WateringTask::WateringTask(
   Method valveOpen_callback,
   Method valveClosed_callback
 ) {
-  _duration = duration;
+  duration = task_duration;
+
   _namespace = app_namespace;
   _timestamp = timestamp;
   _finishedCallback = finished_callback;
@@ -59,18 +60,17 @@ void WateringTask::start() {
 }
 
 void WateringTask::setupTask(void *pvParameter) {
-  // task requires infinite loop
   // obtain the instance pointer
   WateringTask* task = reinterpret_cast<WateringTask*>(pvParameter);
 
   // delay start of task
   vTaskDelay(1000 / portTICK_PERIOD_MS);
 
-  // dispatch to the member function, now that we have an instance pointer
+  // run forest, run
   task->run();
 
   // pause the task and leave pump open
-  vTaskDelay(task->_duration * 1000 / portTICK_PERIOD_MS);
+  vTaskDelay(task->duration * 1000 / portTICK_PERIOD_MS);
 
   // done watering
   task->active = false;
@@ -88,7 +88,7 @@ void WateringTask::setupTask(void *pvParameter) {
 void WateringTask::run() {
   Serial.println();
   Serial.print("Started watering for ");
-  Serial.print(_duration);
+  Serial.print(duration);
   Serial.println(" seconds!");
   Serial.println("---------------------------------------");
   Serial.println();
