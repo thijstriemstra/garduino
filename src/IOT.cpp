@@ -1,3 +1,7 @@
+/*  Copyright (c) 2020-2021, Collab
+ *  All rights reserved
+*/
+
 #include "IOT.h"
 
 AsyncMqttClient _mqttClient;
@@ -15,16 +19,16 @@ Method _failedConnectionCb;
 void connectToWifi() {
   ++_totalConnectionAttempts;
 
-  Serial.print("WiFi - SSID: ");
+  Serial.print(F("WiFi - SSID: "));
   Serial.println(WIFI_SSID);
-  Serial.println("WiFi - Connecting...");
+  Serial.println(F("WiFi - Connecting..."));
 
   //WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 }
 
 void mqttConnect() {
-  Serial.print("MQTT - Connecting to ");
+  Serial.print(F("MQTT - Connecting to "));
   Serial.println(MQTT_HOST);
 
   _mqttClient.connect();
@@ -35,17 +39,17 @@ void WiFiEvent(WiFiEvent_t event) {
 
   switch (event) {
     case SYSTEM_EVENT_STA_GOT_IP:
-      Serial.println("WiFi - Connected.");
-      Serial.print("IP address: ");
+      Serial.println(F("WiFi - Connected."));
+      Serial.print(F("IP address: "));
       Serial.println(WiFi.localIP());
-      Serial.println("==============================");
+      Serial.println(F("=============================="));
 
       // connect to mqtt
       mqttConnect();
       break;
 
     case SYSTEM_EVENT_STA_DISCONNECTED:
-      Serial.println("WiFi - lost connection.");
+      Serial.println(F("WiFi - lost connection."));
 
       WiFi.disconnect(true);
 
@@ -56,8 +60,8 @@ void WiFiEvent(WiFiEvent_t event) {
 }
 
 void onMqttConnect(bool sessionPresent) {
-  Serial.println("Connected to MQTT.");
-  Serial.println("==============================");
+  Serial.println(F("Connected to MQTT."));
+  Serial.println(F("=============================="));
 
   // notify others
   _connectedCb.callback();
@@ -188,6 +192,6 @@ void IOT::publish(const char* sub_topic, double value) {
     }
   } else {
     // no connection
-    Serial.println("Cannot publish message: not connected to MQTT");
+    Serial.println(F("Cannot publish message: not connected to MQTT"));
   }
 }

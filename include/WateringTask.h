@@ -1,3 +1,6 @@
+/*  Copyright (c) 2020-2021, Collab
+ *  All rights reserved
+*/
 /*
   WateringTask.h
 */
@@ -5,20 +8,17 @@
 #define WateringTask_h
 
 #include <Arduino.h>
-#include <Thread.h>
 #include <Method.h>
-#include <RtcDS3231.h>
+#include <RTClib.h>
 #include <Preferences.h>
-
 #include <LED.h>
+#include <Utils.h>
 #include <SolenoidValve.h>
 
-#define countof(a) (sizeof(a) / sizeof(a[0]))
-
-class WateringTask: public Thread {
+class WateringTask {
   public:
     WateringTask(
-      long duration,
+      long task_duration,
       int valve_pin,
       int led_pin,
       const char* app_namespace,
@@ -27,28 +27,30 @@ class WateringTask: public Thread {
       Method valveOpen_callback,
       Method valveClosed_callback
     );
-    bool active;
+
+    long duration;
+    bool active = false;
+
     void run();
     void begin();
     void start();
     void open();
     void close();
-    RtcDateTime load();
-    void save(RtcDateTime timestamp);
+    DateTime load();
+    void save(DateTime timestamp);
     bool isWatering();
-    bool needsWatering(RtcDateTime now);
-    bool shouldRun(unsigned long time);
+    bool needsWatering(DateTime now);
     String getLastRunTime();
 
   private:
     bool _debug;
-    long _duration;
-    long _lastRun = 0;
     const char* _namespace;
     LED* _waterLED;
     String _timestamp;
     Preferences* _prefs;
     SolenoidValve* _waterValve;
+
+    static void setupTask(void *pvParameter);
 
     // callbacks
     Method _finishedCallback;

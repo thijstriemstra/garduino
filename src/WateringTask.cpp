@@ -1,26 +1,14 @@
+/*  Copyright (c) 2020-2021, Collab
+ *  All rights reserved
+*/
 /*
   WateringTask.cpp
 */
 
-#include "WateringTask.h"
-
-String getValue(String data, char separator, int index) {
-    int found = 0;
-    int strIndex[] = { 0, -1 };
-    int maxIndex = data.length() - 1;
-
-    for (int i = 0; i <= maxIndex && found <= index; i++) {
-        if (data.charAt(i) == separator || i == maxIndex) {
-            found++;
-            strIndex[0] = strIndex[1] + 1;
-            strIndex[1] = (i == maxIndex) ? i+1 : i;
-        }
-    }
-    return found > index ? data.substring(strIndex[0], strIndex[1]) : "";
-}
+#include <WateringTask.h>
 
 WateringTask::WateringTask(
-  long duration,
+  long task_duration,
   int valve_pin,
   int led_pin,
   const char* app_namespace,
@@ -28,16 +16,14 @@ WateringTask::WateringTask(
   Method finished_callback,
   Method valveOpen_callback,
   Method valveClosed_callback
-): Thread() {
-  _duration = duration;
+) {
+  duration = task_duration;
+
   _namespace = app_namespace;
   _timestamp = timestamp;
   _finishedCallback = finished_callback;
   _valveOpenCallback = valveOpen_callback;
   _valveClosedCallback = valveClosed_callback;
-
-  active = false;
-  enabled = false;
 
   // preferences storage
   _prefs = new Preferences();
@@ -58,8 +44,57 @@ void WateringTask::begin() {
 }
 
 void WateringTask::start() {
-    enabled = true;
-    active = true;
+  active = true;
+
+  // start task on core 1, otherwise it will corrupt the OLED display
+  // see https://github.com/ThingPulse/esp8266-oled-ssd1306/issues/326
+  xTaskCreatePinnedToCore(
+    &WateringTask::setupTask,  // function that should be called
+    "wateringTask",            // name of the task (for debugging)
+    2048,                      // stack size (bytes)
+    this,                      // passing instance pointer as function param
+    1,                         // task priority
+    NULL,                      // task handle
+    1                          // core to run the task on (0 or 1)
+  );
+}
+
+void WateringTask::setupTask(void *pvParameter) {
+  // obtain the instance pointer
+  WateringTask* task = reinterpret_cast<WateringTask*>(pvParameter);
+
+  // delay start of task
+  vTaskDelay(1000 / portTICK_PERIOD_MS);
+
+  // run forest, run
+  task->run();
+
+  // pause the task and leave pump open
+  vTaskDelay(task->duration * 1000 / portTICK_PERIOD_MS);
+
+  // done watering
+  task->active = false;
+
+  // close valve
+  task->close();
+
+  // notify others
+  task->_finishedCallback.callback();
+
+  // cleanup task
+  vTaskDelete(NULL);
+}
+
+void WateringTask::run() {
+  Serial.println();
+  Serial.print("Started watering for ");
+  Serial.print(duration);
+  Serial.println(" seconds!");
+  Serial.println("---------------------------------------");
+  Serial.println();
+
+  // open valve for x seconds
+  open();
 }
 
 void WateringTask::open() {
@@ -91,82 +126,41 @@ void WateringTask::close() {
 }
 
 bool WateringTask::isWatering() {
-    return enabled;
+  return active;
 }
 
-bool WateringTask::needsWatering(RtcDateTime now) {
-  String targetHour = getValue(_timestamp, ':', 0);
-  String targetMinute = getValue(_timestamp, ':', 1);
-  int currentHour = now.Hour();
-  int currentMinute = now.Minute();
+bool WateringTask::needsWatering(DateTime now) {
+  long targetHour = Utils::splitHourString(_timestamp, ':', 0);
+  long targetMinute = Utils::splitHourString(_timestamp, ':', 1);
+  int currentHour = now.hour();
+  int currentMinute = now.minute();
 
   // currently in part of hour for watering
-  if (currentHour == targetHour.toInt() && currentMinute >= targetMinute.toInt()) {
+  if (currentHour == targetHour && currentMinute >= targetMinute) {
     // compare timestamp, check if it's not today
-    RtcDateTime timestamp = load();
-    if (timestamp.Day() != now.Day()) {
+    DateTime timestamp = load();
+    if (timestamp.day() != now.day()) {
       // timestamp is not from today, overwrite timestamp
       // with current time and start watering
       save(now);
       return true;
     }
   }
+
   return false;
 }
 
-bool WateringTask::shouldRun(unsigned long time) {
-  if (active) {
-    active = false;
-
-    // save the current time
-    _lastRun = (time ? time : millis());
-
-    Serial.println();
-    Serial.print("Started watering for ");
-    Serial.print(_duration);
-    Serial.println(" seconds!");
-    Serial.println("---------------------------------------");
-    Serial.println();
-
-    // open valve for x seconds
-    open();
-  }
-
-  // let default method check for it
-  return Thread::shouldRun(time);
-}
-
-void WateringTask::run() {
-  // check if time elapsed since last publish
-  if (millis() > _lastRun + (_duration * 1000)) {
-    // done watering
-    active = false;
-    enabled = false;
-
-    // close valve
-    close();
-
-    // notify others
-    _finishedCallback.callback();
-  }
-
-  // run the thread
-  Thread::run();
-}
-
-void WateringTask::save(RtcDateTime timestamp) {
-  // Initialize NVS
-  //esp_err_t err = nvs_flash_init();
+void WateringTask::save(DateTime timestamp) {
   _prefs->begin(_namespace, false);
 
   // store the timestamp
-  _prefs->putUInt("timestamp", timestamp.TotalSeconds());
+  _prefs->putUInt("timestamp", timestamp.secondstime());
 
   // close the preferences
   _prefs->end();
 }
 
-RtcDateTime WateringTask::load() {
+DateTime WateringTask::load() {
   _prefs->begin(_namespace, true);
 
   // get the value, if the key does not exist,
@@ -177,22 +171,12 @@ RtcDateTime WateringTask::load() {
   // close the preferences
   _prefs->end();
 
-  return RtcDateTime(timestamp);
+  return DateTime(SECONDS_FROM_1970_TO_2000 + timestamp);
 }
 
 String WateringTask::getLastRunTime() {
-  RtcDateTime lastRun = load();
-  char datestring[20];
+  DateTime lastRun = load();
 
-  snprintf_P(datestring,
-    countof(datestring),
-    PSTR("%04u/%02u/%02u %02u:%02u:%02u"),
-    lastRun.Year(),
-    lastRun.Month(),
-    lastRun.Day(),
-    lastRun.Hour(),
-    lastRun.Minute(),
-    lastRun.Second()
-  );
-  return datestring;
+  return lastRun.timestamp(DateTime::TIMESTAMP_DATE) + " " +
+      lastRun.timestamp(DateTime::TIMESTAMP_TIME);
 }

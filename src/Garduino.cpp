@@ -1,3 +1,6 @@
+/*  Copyright (c) 2020-2021, Collab
+ *  All rights reserved
+*/
 /*
   Garduino.cpp - Library for monitoring a garden.
 */
@@ -5,334 +8,332 @@
 #include <Garduino.h>
 
 Garduino::Garduino() {
-  // scheduler
-  _scheduler = new ThreadController();
+    // controls
+    _controls = new Controls();
 
-  // controls
-  _manualBtn = new Button(ManualRunButtonPin);
-  _manualLED = new LED(ManualRunLEDPin);
-  _networkLED = new LED(NetworkLEDPin);
-  _powerBtn = new Button(PowerButtonPin);
-  _powerLED = new LED(PowerLEDPin);
+    // expander on 2nd I2C bus
+    Wire1.setPins(ExpanderSDAPin, ExpanderSCLPin);
+    _i2c = new MultiPlexer_TCA9548A(ExpanderAddress);
 
-  // wifi/mqtt
-  _iot = new IOT();
+    // wifi/mqtt
+    _iot = new IOT();
 
-  // watering task
-  Method wateringReadyCallback;
-  wateringReadyCallback.attachCallback(
-    makeFunctor((Functor0 *)0, *this, &Garduino::onWateringReady));
-  Method valveOpenCallback;
-  valveOpenCallback.attachCallback(
-    makeFunctor((Functor0 *)0, *this, &Garduino::onValveOpen));
-  Method valveClosedCallback;
-  valveClosedCallback.attachCallback(
-    makeFunctor((Functor0 *)0, *this, &Garduino::onValveClosed));
-  _wateringTask = new WateringTask(
-    WateringDuration,
-    WaterValvePin,
-    WateringIndicationLEDPin,
-    _namespace,
-    WateringSchedule,
-    wateringReadyCallback,
-    valveOpenCallback,
-    valveClosedCallback
-  );
+    // watering task
+    Method wateringReadyCallback;
+    wateringReadyCallback.attachCallback(
+        makeFunctor((Functor0 *)0, *this, &Garduino::onWateringReady));
+    Method valveOpenCallback;
+    valveOpenCallback.attachCallback(
+        makeFunctor((Functor0 *)0, *this, &Garduino::onValveOpen));
+    Method valveClosedCallback;
+    valveClosedCallback.attachCallback(
+        makeFunctor((Functor0 *)0, *this, &Garduino::onValveClosed));
+    _wateringTask = new WateringTask(
+        WateringDuration,
+        WaterValvePin,
+        WateringIndicationLEDPin,
+        _namespace,
+        WateringSchedule,
+        wateringReadyCallback,
+        valveOpenCallback,
+        valveClosedCallback
+    );
 
-  // system time
-  _clock = new SystemClock(ClockSCLPin, ClockSDAPin, NTP_HOST);
+    // system time
+    _clock = new SystemClock(ClockSCLPin, ClockSDAPin, NTP_HOST);
 
-  // power management
-  _power = new PowerManagement(WakeupSchedule);
+    // power management
+    _power = new PowerManagement(WakeupSchedule);
 
-  // display
-  _display = new SSD1306_OLEDDisplay(DisplaySDAPin, DisplaySCLPin);
+    // display
+    _display = new SSD1306_OLEDDisplay_Mux(
+        _i2c,
+        DisplayChannel,
+        DisplayAddress,
+        true
+    );
 
-  // sensors
-  int publishSchedule = SensorPublishSchedule * 1000;
-  _sensors = new Sensors(publishSchedule, _namespace);
+    // sensors
+    int publishSchedule = SensorPublishSchedule * 1000;
+    _sensors = new Sensors(publishSchedule, _i2c, true, _namespace);
 }
 
 void Garduino::begin() {
-  // print version
-  Serial.print(_namespace);
-  Serial.print(" ");
-  Serial.println(_version);
+    // print version
+    Serial.println(F("\n========================"));
+    Serial.print(F("  = "));
+    Serial.print(_namespace);
+    Serial.print(F(" v"));
+    Serial.print(_version);
+    Serial.println(F(" ="));
+    Serial.println(F("========================\n"));
 
-  // callbacks
-  Method manualBtnCallback;
-  manualBtnCallback.attachCallback(
-    makeFunctor((Functor0 *)0, *this, &Garduino::onManualButtonPush));
-  Method powerBtnCallback;
-  powerBtnCallback.attachCallback(
-    makeFunctor((Functor0 *)0, *this, &Garduino::onPowerButtonPush));
-  Method connectionReadyCallback;
-  connectionReadyCallback.attachCallback(
-    makeFunctor((Functor0 *)0, *this, &Garduino::onConnectionReady));
-  Method disconnectedCallback;
-  disconnectedCallback.attachCallback(
-    makeFunctor((Functor0 *)0, *this, &Garduino::onConnectionClosed));
-  Method failedConnectionCallback;
-  failedConnectionCallback.attachCallback(
-    makeFunctor((Functor0 *)0, *this, &Garduino::onConnectionFailed));
-  Method publishReadyCallback;
-  publishReadyCallback.attachCallback(
-    makeFunctor((Functor0 *)0, *this, &Garduino::onPublishReady));
-  Method systemWakeupCallback;
-  systemWakeupCallback.attachCallback(
-    makeFunctor((Functor0 *)0, *this, &Garduino::onSystemWakeup));
+    // board info
+    Serial.print(F("Board:\t\t"));
+    Serial.println(ARDUINO_BOARD);
 
-  // controls
-  _manualBtn->begin(manualBtnCallback);
-  _manualLED->begin();
-  _powerBtn->begin(powerBtnCallback);
-  _powerLED->begin();
-  _networkLED->begin();
+    // callbacks
+    Method manualBtnCallback;
+    manualBtnCallback.attachCallback(
+        makeFunctor((Functor0 *)0, *this, &Garduino::onManualButtonPush));
+    Method powerBtnCallback;
+    powerBtnCallback.attachCallback(
+        makeFunctor((Functor0 *)0, *this, &Garduino::onPowerButtonPush));
+    Method connectionReadyCallback;
+    connectionReadyCallback.attachCallback(
+        makeFunctor((Functor0 *)0, *this, &Garduino::onConnectionReady));
+    Method disconnectedCallback;
+    disconnectedCallback.attachCallback(
+        makeFunctor((Functor0 *)0, *this, &Garduino::onConnectionClosed));
+    Method failedConnectionCallback;
+    failedConnectionCallback.attachCallback(
+        makeFunctor((Functor0 *)0, *this, &Garduino::onConnectionFailed));
+    Method publishReadyCallback;
+    publishReadyCallback.attachCallback(
+        makeFunctor((Functor0 *)0, *this, &Garduino::onPublishReady));
+    Method systemWakeupCallback;
+    systemWakeupCallback.attachCallback(
+        makeFunctor((Functor0 *)0, *this, &Garduino::onSystemWakeup));
 
-  // watering task
-  _wateringTask->begin();
-  _scheduler->add(_wateringTask);
+    // i2c
+    _i2c->begin();
 
-  // system time
-  _clock->begin();
+    // system time
+    _clock->begin();
 
-  // display
-  _display->begin();
+    // controls
+    _controls->begin(manualBtnCallback, powerBtnCallback);
 
-  // sensors
-  _scheduler->add(_sensors);
-  _sensors->begin();
+    // watering task
+    _wateringTask->begin();
 
-  // power management
-  _power->init(systemWakeupCallback);
+    // display
+    _display->begin();
 
-  // connect to wifi/mqtt
-  _iot->begin(
-    _totalReadings,
-    connectionReadyCallback,
-    disconnectedCallback,
-    publishReadyCallback,
-    failedConnectionCallback
-  );
+    // sensors
+    _sensors->begin();
+
+    // power management
+    _power->init(systemWakeupCallback);
+
+    // connect to wifi/mqtt
+    _iot->begin(
+        _totalReadings,
+        connectionReadyCallback,
+        disconnectedCallback,
+        publishReadyCallback,
+        failedConnectionCallback
+    );
 }
 
 void Garduino::loop() {
-  // controls
-  _manualBtn->loop();
-  _manualLED->loop();
-  _powerBtn->loop();
-  _powerLED->loop();
-  _networkLED->loop();
-
-  // scheduler
-  _scheduler->run();
+    // controls
+    _controls->loop();
 }
 
 void Garduino::sleep(bool forced) {
-  // save total volume added
-  _sensors->save();
+    // display
+    _display->disable();
 
-  // uncomment this to reset stored memory
-  //_sensors->reset();
+    // save total volume added
+    _sensors->save();
 
-  // iot
-  _iot->disconnect();
-  delay(300);
+    // uncomment this to reset stored memory
+    //_sensors->reset();
 
-  Serial.println();
-  Serial.println("******************************");
-  Serial.print("**  ");
-  if (forced) {
-    Serial.print("Forced");
-  } else {
-    Serial.print("Going");
-  }
-  Serial.println(" to sleep... Bye.  **");
-  Serial.println("******************************");
+    // iot
+    _iot->disconnect();
+    delay(300);
 
-  // disable power led
-  _powerLED->disable();
+    Serial.println();
+    Serial.println(F("******************************"));
+    Serial.print(F("**  "));
+    if (forced) {
+        Serial.print(F("Forced"));
+    }
+    else
+    {
+        Serial.print(F("Going"));
+    }
+    Serial.println(F(" to sleep... Bye.  **"));
+    Serial.println(F("******************************"));
 
-  // put device to sleep
-  _power->sleep();
+    // disable power led
+    _controls->powerLED->disable();
+
+    // put device to sleep
+    _power->sleep();
 }
 
 void Garduino::openValve() {
-  started = true;
+    started = true;
 
-  // open valve
-  _wateringTask->open();
+    // open valve
+    _wateringTask->open();
 }
 
 void Garduino::closeValve() {
-  started = false;
+    started = false;
 
-  // close valve
-  _wateringTask->close();
+    // close valve
+    _wateringTask->close();
 }
 
 void Garduino::toggleValve() {
-  if (started == false) {
-    openValve();
-  } else {
-    closeValve();
-  }
+    if (started == false) {
+        openValve();
+    } else {
+        closeValve();
+    }
 }
 
 void Garduino::startManualMode() {
-  Serial.println();
-  Serial.println("===================");
-  Serial.println("==  Manual mode  ==");
-  Serial.println("===================");
-  Serial.println();
+    Serial.println();
+    Serial.println(F("==================="));
+    Serial.println(F("==  Manual mode  =="));
+    Serial.println(F("==================="));
+    Serial.println();
 
-  // now wait till user presses the manual button again to control the valve,
-  // and then eventually presses power button to put device back into deepsleep
+    // now wait till user presses the manual button again to control the valve,
+    // and then eventually presses power button to put device back into deepsleep
 }
 
 void Garduino::checkWatering() {
-  // check if garden needs watering right now
-  bool enableValve = _wateringTask->needsWatering(_clock->startupTime);
-  Serial.println();
-  Serial.println("************************************");
-  Serial.print("      Watering: ");
-  if (enableValve) {
-    Serial.println("Yes");
-  } else {
-    Serial.println("No");
-  }
-  Serial.print("        Period: ");
-  Serial.print(WateringDuration);
-  Serial.println(" sec");
-  Serial.print("Daily schedule: ");
-  Serial.print(WateringSchedule);
-  Serial.println(":00");
-  Serial.print("  Current time: ");
-  Serial.println(_clock->getStartupTime());
-  Serial.print("      Last run: ");
-  Serial.println(_wateringTask->getLastRunTime());
+    // check if garden needs watering right now
+    bool enableValve = _wateringTask->needsWatering(_clock->startupTime);
+    Serial.println();
+    Serial.println(F("************************************"));
+    Serial.print(F("      Watering: "));
+    Serial.println(Utils::BoolToString(enableValve));
+    Serial.print(F("        Period: "));
+    Serial.print(WateringDuration);
+    Serial.println(F(" sec"));
+    Serial.print(F("Daily schedule: "));
+    Serial.print(WateringSchedule);
+    Serial.println(F(":00"));
+    Serial.print(F("  Current time: "));
+    Serial.println(_clock->getStartupTime());
+    Serial.print(F("      Last run: "));
+    Serial.println(_wateringTask->getLastRunTime());
 
-  Serial.println("************************************");
-  Serial.println();
+    Serial.println(F("************************************"));
+    Serial.println();
 
-  if (enableValve) {
-    // start watering
-    // will put device back to sleep when done
-    _wateringTask->start();
-  } else {
-    // check if sensor publish is not already done
-    if (!connected) {
-      // go to sleep, everything is done
-      sleep();
+    if (enableValve) {
+        // start watering
+        // will put device back to sleep when done
+        _wateringTask->start();
+    } else {
+        // check if sensor publish is not already done
+        if (!connected) {
+            // go to sleep, everything is done
+            sleep();
+        }
     }
-  }
 }
 
 void Garduino::onPublishReady() {
-  // only shutdown when manual mode is not enabled and system is
-  // not watering at the moment
-  if (!_manualMode && !_wateringTask->isWatering()) {
-    // done, go into deepsleep and wait till woken up by button or timer
-    sleep();
-  }
+    // only shutdown when manual mode is not enabled and system is
+    // not watering at the moment
+    if (!_manualMode && !_wateringTask->isWatering()) {
+        // done, go into deepsleep and wait till woken up by button or timer
+        sleep();
+    }
 }
 
 void Garduino::onConnectionClosed() {
-  connected = false;
-  _networkLED->disable();
+    connected = false;
+    _controls->networkLED->disable();
 }
 
 void Garduino::onConnectionFailed() {
-  connected = false;
-  _networkLED->disable();
+    connected = false;
+    _controls->networkLED->disable();
 
-  Serial.println();
-  Serial.println("*** No WiFi connection available! ***");
+    Serial.println();
+    Serial.println(F("*** No WiFi connection available! ***"));
 
-  // no connection available to publish sensor data,
-  // only check for watering if not in manual mode
-  // or watering already
-  if (_manualMode) {
-    startManualMode();
-  } else if (!_manualMode && !_wateringTask->isWatering()) {
-    checkWatering();
-  }
+    // no connection available to publish sensor data,
+    // only check for watering if not in manual mode
+    // or watering already
+    if (_manualMode) {
+        startManualMode();
+    } else if (!_manualMode && !_wateringTask->isWatering()) {
+        checkWatering();
+    }
 }
 
 void Garduino::onConnectionReady() {
-  connected = true;
+    connected = true;
 
-  // network status LED
-  _networkLED->enable();
+    // network status LED
+    _controls->networkLED->enable();
 
-  // publish sensor data
-  _sensors->startPublish(_iot, _clock->getStartupTemperature());
+    // publish sensor data
+    _sensors->startPublish(_iot, _clock->getStartupTemperature());
 
-  // enter manual mode (if button was pressed) or check watering
-  if (_manualMode) {
-    // sync time only in manual mode
-    //_clock->sync();
+    // enter manual mode (if button was pressed) or check watering
+    if (_manualMode) {
+        // sync time only in manual mode
+        //_clock->sync();
 
-    startManualMode();
-  } else {
-    checkWatering();
-  }
+        startManualMode();
+    } else {
+        checkWatering();
+    }
 }
 
 void Garduino::onValveOpen() {
-  // publish
-  _iot->publish("/water/valve", 1);
+    // publish
+    _iot->publish("/water/valve", 1);
 
-  // display
-  _display->writeBig("Open");
+    // display
+    _display->writeBig(F("Open"));
 }
 
 void Garduino::onValveClosed() {
-  // publish
-  _iot->publish("/water/valve", 0);
+    // publish
+    _iot->publish("/water/valve", 0);
 
-  // display
-  _display->writeBig("Closed");
+    // display
+    _display->writeBig(F("Closed"));
 }
 
 void Garduino::onWateringReady() {
-  Serial.println();
-  Serial.println("**************************************");
-  Serial.println("* Watering finished! Back to sleep.  *");
-  Serial.println("**************************************");
+    Serial.println();
+    Serial.println(F("**************************************"));
+    Serial.println(F("* Watering finished! Back to sleep.  *"));
+    Serial.println(F("**************************************"));
 
-  // wait a while so IOT can complete
-  delay(300);
+    // wait a while so IOT can complete
+    delay(300);
 
-  sleep();
+    sleep();
 }
 
 void Garduino::onSystemWakeup() {
-  // enable power led
-  _powerLED->enable();
+    // enable power led
+    _controls->powerLED->enable();
 
-  if (_power->wakeup_reason == ESP_SLEEP_WAKEUP_EXT0) {
-    // manual button pressed
-    _manualMode = true;
+    if (_power->wakeup_reason == ESP_SLEEP_WAKEUP_EXT0) {
+        // manual button pressed
+        _manualMode = true;
 
-    // enable manual led
-    _manualLED->enable();
+        // enable manual led
+        _controls->manualLED->enable();
 
-    // display
-    _display->writeBig("Manual");
-  } else {
-    _manualMode = false;
-  }
+        // display
+        _display->writeBig(F("Manual"));
+    } else {
+        _manualMode = false;
+    }
 }
 
 void Garduino::onManualButtonPush() {
-  toggleValve();
+    toggleValve();
 }
 
 void Garduino::onPowerButtonPush() {
-  // display
-  _display->disable();
-
-  // forced to sleep
-  sleep(true);
+    // forced to sleep
+    sleep(true);
 }
