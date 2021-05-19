@@ -46,13 +46,13 @@ Readings from the sensors are sent to a MQTT server over WiFi (if available).
 | MCP3008 Analog Expander | CS | `5` | SS |
 | DS18B20 Temperature Sensors | GPIO | `13` | Digital Input |
 | Single Channel Relay | GPIO | `2` | Digital Output |
+| Water Flow Sensor | `15` | Analog Input |
 | Manual Run Button | GPIO | `36` | Digital Input |
 | Power Button | GPIO | `39` | Digital Input |
 | Watering Indication LED | GPIO | `25` | Digital Output |
 | Manual Run LED | GPIO | `26` | Digital Output |
 | Network LED | GPIO | `33` | Digital Output |
 | Power LED | GPIO | `27` | Digital Output |
-| Water Flow Sensor | `15` | Analog Input |
 
 ### TCA9548A
 
@@ -76,49 +76,24 @@ Readings from the sensors are sent to a MQTT server over WiFi (if available).
 | Capacitive Soil 5 | Analog Input | `4` |
 | YL-83 Rain Sensor | Analog Input | `5` |
 
-## Old Wiring
-
-| Sensor | ESP32 Pin |
-| --- | --- |
-| Network LED | 4 |
-| Power LED | 14 |
-| Power Button | 18 |
-| Manual Run LED | 2 |
-| Manual Run Button | 13 |
-| Watering Indication LED | 12 |
-| BH1750 Light Sensor SDA | 23 |
-| BH1750 Light Sensor SCL | 19 |
-| Single Channel Relay | 22 |
-| Water Flow Sensor | 16 |
-| Dual DS18B20 Temperature Sensors | 15 |
-| BME280 Barometer SDA | 0 |
-| BME280 Barometer SCL | 27 |
-| DS3231 Clock SDA | 17 |
-| DS3231 Clock SCL | 5 |
-| SSD1306 128x32 OLED SDA | 26 |
-| SSD1306 128x32 OLED SCL | 25 |
-| Capacitive Soil Sensor 1 | 39 |
-| Capacitive Soil Sensor 2 | 32 |
-| Capacitive Soil Sensor 3 | 34 |
-| Capacitive Soil Sensor 4 | 36 |
-| Capacitive Soil Sensor 5 | 33 |
-| YL-83 Rain Sensor | 35 |
-
 ## Output
 
 Example of cycle report on serial line:
 
 ```
-garduino 2.3.0
-Build date: 2020/05/02 16:30:31
-Local time: 2020/05/02 16:44:03
-******************************
-Wakeup reason: timer (40 sec)
-******************************
-WiFi - SSID: MyInternet
+========================
+  = garduino v3.0.0 =
+========================
+
+Board:          WEMOS LOLIN32 Lite
+Local time:     2021-05-19 01:53:16
+***********************************
+Wakeup reason: timer (60 sec)
+***********************************
+WiFi - SSID: snowblower
 WiFi - Connecting...
 WiFi - Connected.
-IP address: 10.42.0.158
+IP address: 10.42.1.158
 ==============================
 MQTT - Connecting to 10.42.0.1
 Connected to MQTT.
@@ -126,10 +101,10 @@ Connected to MQTT.
 
 ************************************
       Watering: No
-        Period: 180 sec
-Daily schedule: 14:00:00
-  Current time: 16:44:03
-      Last run: 2020/05/02 14:00:19
+        Period: 120 sec
+Daily schedule: 19:00:00
+  Current time: 01:53:16
+      Last run: 2021-05-19 19:00:59
 ************************************
 
 MQTT - Publishing sensor data...
@@ -137,29 +112,31 @@ MQTT - Publishing sensor data...
 Inside
 ------
 
-Light:                  120.83 lx
-Humidity:               45.62%
-Temperature:            22.09 °C
-Pressure:               1018.10 hPa
-Soil-1 moisture:        33%
-Soil-2 moisture:        51%
-System:                 22.00 °C
+Light:                  7.50 lx
+Humidity:               46.04%
+Temperature:            23.68 °C
+Pressure:               1015.73 hPa
+Soil-1 moisture:        51%
+Soil-2 moisture:        50%
+Soil-3 moisture:        48%
+Soil-4 moisture:        51%
+Soil-5 moisture:        51%
+System:                 24.00 °C
 
 Outside
 -------
 
 Rain:                   0%
-Temperature:            19.45 °C
+Temperature:            21.62 °C
 
 Water
 -------
 
-Temperature:            16.12 °C
+Temperature:            21.19 °C
 Current:                0.00 ltr
-Total:                  40.21 ltr
+Total:                  40.71 ltr
 
 **********************************************
-
 
 ******************************
 **  Going to sleep... Bye.  **

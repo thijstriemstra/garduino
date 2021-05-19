@@ -61,7 +61,7 @@ Garduinov3::Garduinov3() {
 void Garduinov3::begin() {
     // print version
     Serial.println(F("\n========================"));
-    Serial.print(F("= "));
+    Serial.print(F("  = "));
     Serial.print(_namespace);
     Serial.print(F(" v"));
     Serial.print(_version);
