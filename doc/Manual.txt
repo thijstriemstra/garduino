@@ -1,0 +1,30 @@
+GARDUINO MANUAL
+---------------
+
+De Garduino geeft dagelijks om 19:00 uur de planten 2 minuten water.
+
+
+HANDMATIGE BEDIENING
+--------------------
+
+Je kan met de MANUAL knop de planten handmatig water geven.
+
+Stappen:
+
+1. Druk op de MANUAL knop tot 'Manual' op het display te zien is.
+   Als het oranje licht op de voorzijde brandt, ga naar stap 2
+
+2. Druk nogmaals op de MANUAL knop om de waterpomp te starten.
+   Het witte licht op de voorzijde brandt nu en op het display
+   is 'Open' te zien.
+
+3. Druk nogmaals op de MANUAL knop om de waterpomp te stoppen.
+   Het witte licht op voorzijde zal uitgaan en op het display
+   is 'Closed' te zien.
+
+4. Druk nu op de SLEEP knop om de Garduino weer het automatische
+   programma te laten volgen. Op de voorzijde moeten nu alle lichten
+   en het display uit zijn.
+
+Vergeet nooit de SLEEP knop anders start de Garduino het automatische
+programma niet op (en zal er dagelijks dus geen water worden gegeven).
