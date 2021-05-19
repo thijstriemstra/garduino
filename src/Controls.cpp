@@ -27,8 +27,3 @@ void Controls::loop() {
   powerLED->loop();
   networkLED->loop();
 }
-
-void Controls::disable() {
-  //toggleLED->disable();
-  //powerLED->disable();
-}

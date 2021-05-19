@@ -15,7 +15,6 @@ class Controls
         Controls();
         void begin(Method manualBtnCallback, Method powerBtnCallback);
         void loop();
-        void disable();
 
         LED *powerLED;
         LED *manualLED;
