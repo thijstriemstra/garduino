@@ -236,7 +236,8 @@ void Garduino::onPublishReady() {
     // only shutdown when manual mode is not enabled and system is
     // not watering at the moment
     if (!_manualMode && !_wateringTask->isWatering()) {
-        // done, go into deepsleep and wait till woken up by button or timer
+        // done, go into deepsleep and wait till woken up by button
+        // or timer
         sleep();
     }
 }
