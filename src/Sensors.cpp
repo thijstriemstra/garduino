@@ -84,7 +84,7 @@ void Sensors::setupTask(void *pvParameter) {
     sensors->run();
 
     // pause the task
-    vTaskDelay(sensors->_interval / portTICK_PERIOD_MS);
+    vTaskDelay((sensors->_interval * 1000) / portTICK_PERIOD_MS);
   }
 }
 

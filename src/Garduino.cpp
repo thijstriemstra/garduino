@@ -54,8 +54,7 @@ Garduino::Garduino() {
     );
 
     // sensors
-    int publishSchedule = SensorPublishSchedule * 1000;
-    _sensors = new Sensors(publishSchedule, _i2c, true, _namespace);
+    _sensors = new Sensors(SensorPublishSchedule, _i2c, true, _namespace);
 }
 
 void Garduino::begin() {
