@@ -4,6 +4,12 @@
 */
 
 #include "Garduino.h"
+
+// *************************************************************************
+//  Uncomment line below to fully disable logging, and reduce project size
+// ************************************************************************
+//#define DISABLE_LOGGING
+
 #define SERIAL_BAUD_RATE 115200
 
 Garduino *app = new Garduino();
