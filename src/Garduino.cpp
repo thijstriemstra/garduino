@@ -59,18 +59,18 @@ Garduino::Garduino() {
 }
 
 void Garduino::begin() {
+    // logging
+    Log.setPrefix(printPrefix);
+    Log.begin(LOG_LEVEL_VERBOSE, &Serial);
+    Log.setShowLevel(false);
+
     // print version
-    Serial.println(F("\n========================"));
-    Serial.print(F("  = "));
-    Serial.print(_namespace);
-    Serial.print(F(" v"));
-    Serial.print(_version);
-    Serial.println(F(" ="));
-    Serial.println(F("========================\n"));
+    Log.info(F("========================" CR));
+    Log.info(F("  = %S v%S =" CR), _namespace, _version);
+    Log.info(F("========================" CR));
 
     // board info
-    Serial.print(F("Board:\t\t"));
-    Serial.println(ARDUINO_BOARD);
+    Log.info(F("Board:\t\t%S" CR), ARDUINO_BOARD);
 
     // callbacks
     Method manualBtnCallback;
@@ -100,6 +100,7 @@ void Garduino::begin() {
 
     // system time
     _clock->begin();
+    Log.info(F("Local time:\t%S" CR), _clock->getStartupTime());
 
     // controls
     _controls->begin(manualBtnCallback, powerBtnCallback);
@@ -145,18 +146,14 @@ void Garduino::sleep(bool forced) {
     _iot->disconnect();
     delay(300);
 
-    Serial.println();
-    Serial.println(F("******************************"));
-    Serial.print(F("**  "));
+    Log.info(CR);
+    Log.info(F("******************************" CR));
+    String target = "Going";
     if (forced) {
-        Serial.print(F("Forced"));
+        target = "Forced";
     }
-    else
-    {
-        Serial.print(F("Going"));
-    }
-    Serial.println(F(" to sleep... Bye.  **"));
-    Serial.println(F("******************************"));
+    Log.info(F("**  %S to sleep... Bye.  **" CR), target);
+    Log.info(F("******************************" CR));
 
     // disable power led
     _controls->powerLED->disable();
@@ -188,11 +185,11 @@ void Garduino::toggleValve() {
 }
 
 void Garduino::startManualMode() {
-    Serial.println();
-    Serial.println(F("==================="));
-    Serial.println(F("==  Manual mode  =="));
-    Serial.println(F("==================="));
-    Serial.println();
+    Log.info(CR);
+    Log.info(F("===================" CR));
+    Log.info(F("==  Manual mode  ==" CR));
+    Log.info(F("===================" CR));
+    Log.info(CR);
 
     // now wait till user presses the manual button again to control the valve,
     // and then eventually presses power button to put device back into deepsleep
@@ -201,23 +198,15 @@ void Garduino::startManualMode() {
 void Garduino::checkWatering() {
     // check if garden needs watering right now
     bool enableValve = _wateringTask->needsWatering(_clock->startupTime);
-    Serial.println();
-    Serial.println(F("************************************"));
-    Serial.print(F("      Watering: "));
-    Serial.println(Utils::BoolToString(enableValve));
-    Serial.print(F("        Period: "));
-    Serial.print(WateringDuration);
-    Serial.println(F(" sec"));
-    Serial.print(F("Daily schedule: "));
-    Serial.print(WateringSchedule);
-    Serial.println(F(":00"));
-    Serial.print(F("  Current time: "));
-    Serial.println(_clock->getStartupTime());
-    Serial.print(F("      Last run: "));
-    Serial.println(_wateringTask->getLastRunTime());
-
-    Serial.println(F("************************************"));
-    Serial.println();
+    Log.info(CR);
+    Log.info(F("************************************" CR));
+    Log.info(F("      Watering: %S" CR), Utils::BoolToString(enableValve));
+    Log.info(F("        Period: %d sec" CR), WateringDuration);
+    Log.info(F("Daily schedule: %S:00" CR), WateringSchedule);
+    Log.info(F("  Current time: %S" CR), _clock->getStartupTime());
+    Log.info(F("      Last run: %s" CR), _wateringTask->getLastRunTime().c_str());
+    Log.info(F("************************************" CR));
+    Log.info(CR);
 
     if (enableValve) {
         // start watering
@@ -251,8 +240,8 @@ void Garduino::onConnectionFailed() {
     connected = false;
     _controls->networkLED->disable();
 
-    Serial.println();
-    Serial.println(F("*** No WiFi connection available! ***"));
+    Log.info(CR);
+    Log.info(F("*** No WiFi connection available! ***" CR));
 
     // no connection available to publish sensor data,
     // only check for watering if not in manual mode
@@ -301,10 +290,10 @@ void Garduino::onValveClosed() {
 }
 
 void Garduino::onWateringReady() {
-    Serial.println();
-    Serial.println(F("**************************************"));
-    Serial.println(F("* Watering finished! Back to sleep.  *"));
-    Serial.println(F("**************************************"));
+    Log.info(CR);
+    Log.info(F("**************************************" CR));
+    Log.info(F("* Watering finished! Back to sleep.  *" CR));
+    Log.info(F("**************************************" CR));
 
     // wait a while so IOT can complete
     delay(300);
@@ -337,4 +326,31 @@ void Garduino::onManualButtonPush() {
 void Garduino::onPowerButtonPush() {
     // forced to sleep
     sleep(true);
+}
+
+void Garduino::printPrefix(Print* _logOutput, int logLevel) {
+    printTimestamp(_logOutput);
+}
+
+void Garduino::printTimestamp(Print* _logOutput) {
+    // Division constants
+    const unsigned long MSECS_PER_SEC       = 1000;
+    const unsigned long SECS_PER_MIN        = 60;
+    const unsigned long SECS_PER_HOUR       = 3600;
+    const unsigned long SECS_PER_DAY        = 86400;
+
+    // Total time
+    const unsigned long msecs               =  millis() ;
+    const unsigned long secs                =  msecs / MSECS_PER_SEC;
+
+    // Time in components
+    const unsigned long MiliSeconds         =  msecs % MSECS_PER_SEC;
+    const unsigned long Seconds             =  secs  % SECS_PER_MIN ;
+    const unsigned long Minutes             = (secs  / SECS_PER_MIN) % SECS_PER_MIN;
+    const unsigned long Hours               = (secs  % SECS_PER_DAY) / SECS_PER_HOUR;
+
+    // Time as string
+    char timestamp[20];
+    sprintf(timestamp, "%02d:%02d:%02d.%03d ", Hours, Minutes, Seconds, MiliSeconds);
+    _logOutput->print(timestamp);
 }

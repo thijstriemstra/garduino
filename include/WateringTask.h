@@ -9,6 +9,7 @@
 
 #include <Arduino.h>
 #include <Method.h>
+#include <ArduinoLog.h>
 #include <RTClib.h>
 #include <Preferences.h>
 #include <LED.h>

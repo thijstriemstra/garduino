@@ -7,8 +7,9 @@
 #ifndef PowerManagement_h
 #define PowerManagement_h
 
-#include "Arduino.h"
+#include <Arduino.h>
 #include <Method.h>
+#include <ArduinoLog.h>
 
 /* Conversion factor for micro seconds to seconds */
 #define uS_TO_S_FACTOR 1000000
@@ -20,6 +21,7 @@ class PowerManagement
     void init(Method wakeup_callback);
     void sleep();
     void wokeup();
+
     esp_sleep_wakeup_cause_t wakeup_reason;
 
   private:

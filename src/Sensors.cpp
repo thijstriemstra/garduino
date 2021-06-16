@@ -80,9 +80,6 @@ void Sensors::setupTask(void *pvParameter) {
     // obtain the instance pointer
     Sensors* sensors = reinterpret_cast<Sensors*>(pvParameter);
 
-    // delay start of task
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
-
     // run forest, run
     sensors->run();
 
@@ -99,19 +96,28 @@ void Sensors::run() {
   _waterFlow->measure(1);
 }
 
+void Sensors::wait() {
+  // delay start of task
+  vTaskDelay(500 / portTICK_PERIOD_MS);
+}
+
 void Sensors::save() {
   // water flow
   _waterFlow->saveHistoric();
 }
 
 void Sensors::publish() {
-  Serial.println(F("MQTT - Publishing sensor data..."));
-  Serial.println();
+  Log.info(F("MQTT - Publishing sensor data..." CR));
+  Log.info(CR);
+
+  if (!_iot->connected()) {
+    // no connection
+  }
 
   // INSIDE
-  Serial.println(F("Inside"));
-  Serial.println(F("------"));
-  Serial.println();
+  Log.info(F("Inside" CR));
+  Log.info(F("------" CR));
+  Log.info(CR);
 
   // LIGHT
   float lux = measureLight();
@@ -134,16 +140,14 @@ void Sensors::publish() {
   // SYSTEM TEMPERATURE
   _iot->publish("/system/temperature", _sysTemperature);
   if (_debug) {
-    Serial.print(F("System:\t\t\t"));
-    Serial.print(_sysTemperature);
-    Serial.println(F(" °C"));
+    Log.info(F("System:\t\t%F °C" CR), _sysTemperature);
   }
 
   // OUTSIDE
-  Serial.println();
-  Serial.println(F("Outside"));
-  Serial.println(F("-------"));
-  Serial.println();
+  Log.info(CR);
+  Log.info(F("Outside" CR));
+  Log.info(F("-------" CR));
+  Log.info(CR);
 
   // RAIN
   int rain = measureRain();
@@ -156,10 +160,10 @@ void Sensors::publish() {
   _iot->publish("/outside/temperature", outsideTemp);
 
   // WATER
-  Serial.println();
-  Serial.println(F("Water"));
-  Serial.println(F("-------"));
-  Serial.println();
+  Log.info(CR);
+  Log.info(F("Water" CR));
+  Log.info(F("-------" CR));
+  Log.info(CR);
 
   double totalLiters = _waterFlow->getTotalVolume();
   double historicLiters = _waterFlow->getHistoricVolume();
@@ -168,31 +172,21 @@ void Sensors::publish() {
   _iot->publish("/water/cycle_volume", totalLiters);
   _iot->publish("/water/historic_volume", historicLiters);
   if (_debug) {
-    Serial.print(F("Temperature:\t\t"));
-    Serial.print(waterTemp);
-    Serial.println(F(" °C"));
-
-    Serial.print(F("Current:\t\t"));
-    Serial.print(totalLiters);
-    Serial.println(F(" ltr"));
-
-    Serial.print(F("Total:\t\t\t"));
-    Serial.print(historicLiters);
-    Serial.println(F(" ltr"));
+    Log.info(F("Temperature:\t%F °C" CR), waterTemp);
+    Log.info(F("Current:\t\t%D ltr" CR), totalLiters);
+    Log.info(F("Total:\t\t%D ltr" CR), historicLiters);
   }
 
-  Serial.println();
-  Serial.println(F("**********************************************"));
-  Serial.println();
+  Log.info(CR);
+  Log.info(F("**********************************************" CR));
+  Log.info(CR);
 }
 
 float Sensors::measureLight() {
   float lux = _light->read();
 
   if (_debug) {
-    Serial.print(F("Light:\t\t\t"));
-    Serial.print(lux);
-    Serial.println(F(" lx"));
+    Log.info(F("Light:\t\t%F lx" CR), lux);
   }
   return lux;
 }
@@ -201,9 +195,7 @@ int Sensors::measureRain() {
   int rainSensorValue = _rain->measurePercentage();
 
   if (_debug) {
-    Serial.print(F("Rain:\t\t\t"));
-    Serial.print(rainSensorValue);
-    Serial.println(F("%"));
+    Log.info(F("Rain:\t\t%D%%" CR), rainSensorValue);
   }
   return rainSensorValue;
 }
@@ -212,17 +204,9 @@ BME280_Result Sensors::readBarometer() {
   BME280_Result result = _barometer->readAll();
 
   if (_debug) {
-    Serial.print(F("Humidity:\t\t"));
-    Serial.print(result.humidity);
-    Serial.println(F("%"));
-
-    Serial.print(F("Temperature:\t\t"));
-    Serial.print(result.temperature);
-    Serial.println(F(" °C"));
-
-    Serial.print(F("Pressure:\t\t"));
-    Serial.print(result.pressure);
-    Serial.println(F(" hPa"));
+    Log.info(F("Humidity:\t\t%F%%" CR), result.humidity);
+    Log.info(F("Temperature:\t%F °C" CR), result.temperature);
+    Log.info(F("Pressure:\t\t%F hPa" CR), result.pressure);
   }
   return result;
 }
@@ -233,9 +217,7 @@ OutsideTemperatureResult Sensors::readOutsideTemperature() {
   result.water = _temperature->getTemperatureByIndex(1);
 
   if (_debug) {
-    Serial.print(F("Temperature:\t\t"));
-    Serial.print(result.air);
-    Serial.println(F(" °C"));
+    Log.info(F("Temperature:\t%F °C" CR), result.air);
   }
   return result;
 }
@@ -244,25 +226,11 @@ SoilMoistureResult Sensors::readSoilMoisture() {
   SoilMoistureResult result = _soil->readAll();
 
   if (_debug) {
-    Serial.print(F("Soil-1 moisture:\t"));
-    Serial.print(result.sensor1);
-    Serial.println(F("%"));
-
-    Serial.print(F("Soil-2 moisture:\t"));
-    Serial.print(result.sensor2);
-    Serial.println(F("%"));
-
-    Serial.print(F("Soil-3 moisture:\t"));
-    Serial.print(result.sensor3);
-    Serial.println(F("%"));
-
-    Serial.print(F("Soil-4 moisture:\t"));
-    Serial.print(result.sensor4);
-    Serial.println(F("%"));
-
-    Serial.print(F("Soil-5 moisture:\t"));
-    Serial.print(result.sensor5);
-    Serial.println(F("%"));
+    Log.info(F("Soil-1 moisture:\t%d%%" CR), result.sensor1);
+    Log.info(F("Soil-2 moisture:\t%d%%" CR), result.sensor2);
+    Log.info(F("Soil-3 moisture:\t%d%%" CR), result.sensor3);
+    Log.info(F("Soil-4 moisture:\t%d%%" CR), result.sensor4);
+    Log.info(F("Soil-5 moisture:\t%d%%" CR), result.sensor5);
   }
 
   return result;

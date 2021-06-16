@@ -10,6 +10,7 @@
 #include <EEPROM.h>
 #include <WiFi.h>
 #include <Method.h>
+#include <ArduinoLog.h>
 #include <AsyncMqttClient.h>
 
 class IOT
@@ -27,6 +28,7 @@ class IOT
     void connect();
     void disconnect();
     void connectToMqtt();
+    bool connected();
 
   private:
     uint16_t _lastPacketIdPubSent;

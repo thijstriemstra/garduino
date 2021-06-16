@@ -19,37 +19,34 @@ Method _failedConnectionCb;
 void connectToWifi() {
   ++_totalConnectionAttempts;
 
-  Serial.print(F("WiFi - SSID: "));
-  Serial.println(WIFI_SSID);
-  Serial.println(F("WiFi - Connecting..."));
+  Log.info(F("WiFi - SSID: %S" CR), WIFI_SSID);
+  Log.info(F("WiFi - Connecting..." CR));
 
   //WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 }
 
 void mqttConnect() {
-  Serial.print(F("MQTT - Connecting to "));
-  Serial.println(MQTT_HOST);
+  Log.info(F("MQTT - Connecting to %S" CR), MQTT_HOST);
 
   _mqttClient.connect();
 }
 
 void WiFiEvent(WiFiEvent_t event) {
-  //Serial.printf("[WiFi-event] event: %d\n", event);
+  //Log.info(F("[WiFi-event] event: %d" CR), event);
 
   switch (event) {
     case SYSTEM_EVENT_STA_GOT_IP:
-      Serial.println(F("WiFi - Connected."));
-      Serial.print(F("IP address: "));
-      Serial.println(WiFi.localIP());
-      Serial.println(F("=============================="));
+      Log.info(F("WiFi - Connected." CR));
+      Log.info(F("IP address: %p" CR), WiFi.localIP());
+      Log.info(F("==============================" CR));
 
       // connect to mqtt
       mqttConnect();
       break;
 
     case SYSTEM_EVENT_STA_DISCONNECTED:
-      Serial.println(F("WiFi - lost connection."));
+      Log.info(F("WiFi - lost connection." CR));
 
       WiFi.disconnect(true);
 
@@ -60,15 +57,15 @@ void WiFiEvent(WiFiEvent_t event) {
 }
 
 void onMqttConnect(bool sessionPresent) {
-  Serial.println(F("Connected to MQTT."));
-  Serial.println(F("=============================="));
+  Log.info(F("Connected to MQTT." CR));
+  Log.info(F("==============================" CR));
 
   // notify others
   _connectedCb.callback();
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
-  //Serial.println("Disconnected from MQTT.");
+  //Log.info(F("Disconnected from MQTT."));
 
   // notify others
   _disconnectedCb.callback();
@@ -169,6 +166,10 @@ void IOT::connect() {
   connectToWifi();
 }
 
+bool IOT::connected() {
+  return _mqttClient.connected();
+}
+
 void IOT::disconnect() {
   _stopReconnect = true;
 
@@ -186,12 +187,13 @@ void IOT::publish(const char* sub_topic, double value) {
     _lastPacketIdPubSent = _mqttClient.publish(mainTopic, 1, true, String(value).c_str());
     bool debug = false;
     if (debug) {
-      Serial.printf("Publishing on topic %s at QoS 1, packetId: ", mainTopic);
-      Serial.println(_lastPacketIdPubSent);
-      Serial.printf("Message: %.2f \n", value);
+      Log.info(F("Publishing on topic %S at QoS 1, packetId: %d" CR),
+        mainTopic, _lastPacketIdPubSent
+      );
+      Log.info(F("Message: %D" CR), value);
     }
   } else {
     // no connection
-    Serial.println(F("Cannot publish message: not connected to MQTT"));
+    Log.warning(F("Cannot publish message: not connected to MQTT" CR));
   }
 }

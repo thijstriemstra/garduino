@@ -8,6 +8,7 @@
 #define Sensors_h
 
 #include <Arduino.h>
+#include <ArduinoLog.h>
 
 #include <IOT.h>
 #include <SoilSensors.h>
@@ -26,10 +27,16 @@ struct OutsideTemperatureResult {
 
 class Sensors {
   public:
-    Sensors(long interval, MultiPlexer_TCA9548A* i2c, bool debug = true, const char *ns = "garduino");
+    Sensors(
+      long interval,
+      MultiPlexer_TCA9548A* i2c,
+      bool debug = true,
+      const char *ns = "garduino"
+    );
     void begin();
     void run();
     void save();
+    void wait();
     void reset();
     void publish();
     void startPublish(IOT* iot, float system_temperature);

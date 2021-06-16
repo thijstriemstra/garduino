@@ -17,7 +17,7 @@ PowerManagement::PowerManagement(int wakeupTime) {
 void PowerManagement::init(Method wakeup_callback) {
   _wakeupCallback = wakeup_callback;
 
-  Serial.println(F("***********************************"));
+  Log.info(F("***********************************" CR));
 
   // print the wakeup reason
   wokeup();
@@ -28,7 +28,7 @@ void PowerManagement::init(Method wakeup_callback) {
   // wake up esp32 periodically
   esp_sleep_enable_timer_wakeup(_wakeupTime * uS_TO_S_FACTOR);
 
-  Serial.println(F("***********************************"));
+  Log.info(F("***********************************" CR));
 }
 
 void PowerManagement::sleep() {
@@ -39,33 +39,29 @@ void PowerManagement::sleep() {
 void PowerManagement::wokeup() {
   wakeup_reason = esp_sleep_get_wakeup_cause();
 
-  Serial.print(F("Wakeup reason: "));
-  switch (wakeup_reason)
-  {
+  switch (wakeup_reason) {
     case ESP_SLEEP_WAKEUP_EXT0:
-      Serial.println(F("external signal using RTC_IO"));
+      Log.info(F("Wakeup reason: external signal using RTC_IO" CR));
       break;
 
     case ESP_SLEEP_WAKEUP_EXT1:
-      Serial.println(F("external signal using RTC_CNTL"));
+      Log.info(F("Wakeup reason: external signal using RTC_CNTL" CR));
       break;
 
     case ESP_SLEEP_WAKEUP_TIMER:
-      Serial.print(F("timer ("));
-      Serial.print(_wakeupTime);
-      Serial.println(F(" sec)"));
+      Log.info(F("Wakeup reason: timer (%d sec)" CR), _wakeupTime);
       break;
 
     case ESP_SLEEP_WAKEUP_TOUCHPAD:
-      Serial.println(F("touchpad"));
+      Log.info(F("Wakeup reason: touchpad" CR));
       break;
 
     case ESP_SLEEP_WAKEUP_ULP:
-      Serial.println(F("ULP program"));
+      Log.info(F("Wakeup reason: ULP program" CR));
       break;
 
     default:
-      Serial.printf("not caused by deep sleep: %d\n", wakeup_reason);
+      Log.info(F("Wakeup reason: not caused by deep sleep: %d" CR), wakeup_reason);
       break;
   }
 

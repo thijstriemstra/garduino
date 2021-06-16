@@ -10,6 +10,7 @@
 #include <Arduino.h>
 #include <Functor.h>
 #include <Method.h>
+#include <ArduinoLog.h>
 
 #include <IOT.h>
 #include <Utils.h>
@@ -50,6 +51,10 @@ class Garduino {
       int _totalReadings = 15;
       const char *_namespace = "garduino";
       const char *_version = "3.0.0";
+
+      // logging
+      static void printPrefix(Print* _logOutput, int logLevel);
+      static void printTimestamp(Print* _logOutput);
 
       // callbacks
       void onSystemWakeup();

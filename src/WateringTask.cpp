@@ -86,20 +86,18 @@ void WateringTask::setupTask(void *pvParameter) {
 }
 
 void WateringTask::run() {
-  Serial.println();
-  Serial.print("Started watering for ");
-  Serial.print(duration);
-  Serial.println(" seconds!");
-  Serial.println("---------------------------------------");
-  Serial.println();
+  Log.info(CR);
+  Log.info(F("Started watering for %l seconds!" CR), duration);
+  Log.info(F("---------------------------------------" CR));
+  Log.info(CR);
 
   // open valve for x seconds
   open();
 }
 
 void WateringTask::open() {
-  Serial.println("-----------------------");
-  Serial.println("Water: valve open");
+  Log.info(F("-----------------------" CR));
+  Log.info(F("Water: valve open" CR));
 
   // notify others
   _valveOpenCallback.callback();
@@ -112,8 +110,8 @@ void WateringTask::open() {
 }
 
 void WateringTask::close() {
-  Serial.println("-----------------------");
-  Serial.println("Water: valve closed");
+  Log.info(F("-----------------------" CR));
+  Log.info(F("Water: valve closed" CR));
 
   // notify others
   _valveClosedCallback.callback();
@@ -178,5 +176,5 @@ String WateringTask::getLastRunTime() {
   DateTime lastRun = load();
 
   return lastRun.timestamp(DateTime::TIMESTAMP_DATE) + " " +
-      lastRun.timestamp(DateTime::TIMESTAMP_TIME);
+    lastRun.timestamp(DateTime::TIMESTAMP_TIME);
 }
