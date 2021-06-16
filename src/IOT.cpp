@@ -22,7 +22,6 @@ void connectToWifi() {
   Log.info(F("WiFi - SSID: %S" CR), WIFI_SSID);
   Log.info(F("WiFi - Connecting..." CR));
 
-  //WiFi.mode(WIFI_STA);
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 }
 
@@ -46,7 +45,7 @@ void WiFiEvent(WiFiEvent_t event) {
       break;
 
     case SYSTEM_EVENT_STA_DISCONNECTED:
-      Log.info(F("WiFi - lost connection." CR));
+      Log.info(F("WiFi - Lost connection." CR));
 
       WiFi.disconnect(true);
 
@@ -65,29 +64,12 @@ void onMqttConnect(bool sessionPresent) {
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
-  //Log.info(F("Disconnected from MQTT."));
-
   // notify others
   _disconnectedCb.callback();
 }
 
-void onMqttSubscribe(uint16_t packetId, uint8_t qos) {
-  /*
-  Serial.println("Subscribe acknowledged.");
-  Serial.print("  packetId: ");
-  Serial.println(packetId);
-  Serial.print("  qos: ");
-  Serial.println(qos);
-  */
-}
-
-void onMqttUnsubscribe(uint16_t packetId) {
-  /*
-  Serial.println("Unsubscribe acknowledged.");
-  Serial.print("  packetId: ");
-  Serial.println(packetId);
-  */
-}
+void onMqttSubscribe(uint16_t packetId, uint8_t qos) {}
+void onMqttUnsubscribe(uint16_t packetId) {}
 
 void onMqttMessage(
   char* topic,
@@ -96,39 +78,30 @@ void onMqttMessage(
   size_t len,
   size_t index,
   size_t total
-) {
-  /*
-  Serial.println("Publish received.");
-  Serial.print("  topic: ");
-  Serial.println(topic);
-  Serial.print("  qos: ");
-  Serial.println(properties.qos);
-  Serial.print("  dup: ");
-  Serial.println(properties.dup);
-  Serial.print("  retain: ");
-  Serial.println(properties.retain);
-  Serial.print("  len: ");
-  Serial.println(len);
-  Serial.print("  index: ");
-  Serial.println(index);
-  Serial.print("  total: ");
-  Serial.println(total);
-  */
-}
+) {}
 
 void onMqttPublish(uint16_t packetId) {
   _lastPacketIdPubAck = packetId;
 
-  //Serial.print("Publish acknowledged: ");
-  //Serial.println(_lastPacketIdPubAck);
+  //Log.info(F("MQTT - Publish acknowledged for packet %d" CR),
+  //  _lastPacketIdPubAck
+  //);
 
   if (_lastPacketIdPubAck == _totalReadings) {
+    Log.warning(F("MQTT - Published %d messages." CR), _totalReadings);
+
     // notify others
     _publishReadyCb.callback();
   }
 }
 
-IOT::IOT() {
+bool IOT::publishReady() {
+  return _lastPacketIdPubAck == _totalReadings;
+}
+
+void IOT::exit() {
+  // notify others
+  _publishReadyCb.callback();
 }
 
 void IOT::begin(
@@ -143,6 +116,9 @@ void IOT::begin(
   _connectedCb = connected_callback;
   _failedConnectionCb = connectionFailed_callback;
   _publishReadyCb = publishReady_callback;
+
+  // set initial so publishReady() is correct
+  _lastPacketIdPubAck = _totalReadings;
 
   // setup wifi
   WiFi.onEvent(WiFiEvent);
@@ -173,6 +149,8 @@ bool IOT::connected() {
 void IOT::disconnect() {
   _stopReconnect = true;
 
+  Log.info(F("WiFi - Disconnecting..." CR));
+
   WiFi.disconnect(true);
   _mqttClient.disconnect();
 }
@@ -184,16 +162,23 @@ void IOT::publish(const char* sub_topic, double value) {
     sprintf(mainTopic, "%s%s", MQTT_BASE_TOPIC, sub_topic);
 
     // publish
-    _lastPacketIdPubSent = _mqttClient.publish(mainTopic, 1, true, String(value).c_str());
+    bool retain = true;
+    _lastPacketIdPubSent = _mqttClient.publish(
+      mainTopic,
+      _qos,
+      retain,
+      String(value).c_str()
+    );
+
     bool debug = false;
     if (debug) {
-      Log.info(F("Publishing on topic %S at QoS 1, packetId: %d" CR),
-        mainTopic, _lastPacketIdPubSent
+      Log.info(F("Publishing on topic %S at QoS %d, packetId: %d" CR),
+        mainTopic, _qos, _lastPacketIdPubSent
       );
       Log.info(F("Message: %D" CR), value);
     }
   } else {
     // no connection
-    Log.warning(F("Cannot publish message: not connected to MQTT" CR));
+    Log.warning(F("MQTT - Cannot publish message: not connected" CR));
   }
 }

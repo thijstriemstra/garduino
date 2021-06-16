@@ -97,7 +97,7 @@ void Sensors::run() {
 }
 
 void Sensors::wait() {
-  // delay start of task
+  // delay task
   vTaskDelay(500 / portTICK_PERIOD_MS);
 }
 
@@ -107,12 +107,17 @@ void Sensors::save() {
 }
 
 void Sensors::publish() {
+  // previous publish session has not finished yet
+  if (!manualMode && !_iot->publishReady()) {
+      // previous publish didn't finish unfortunately
+      // but those can safely be ignored.
+      // exit and shutdown
+      _iot->exit();
+      return;
+  }
+
   Log.info(F("MQTT - Publishing sensor data..." CR));
   Log.info(CR);
-
-  if (!_iot->connected()) {
-    // no connection
-  }
 
   // INSIDE
   Log.info(F("Inside" CR));

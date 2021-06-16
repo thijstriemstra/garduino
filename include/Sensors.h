@@ -46,6 +46,8 @@ class Sensors {
     OutsideTemperatureResult readOutsideTemperature();
     SoilMoistureResult readSoilMoisture();
 
+    bool manualMode = false;
+
   private:
     bool _debug;
     long _interval;

@@ -61,7 +61,9 @@ void PowerManagement::wokeup() {
       break;
 
     default:
-      Log.info(F("Wakeup reason: not caused by deep sleep: %d" CR), wakeup_reason);
+      Log.info(F("Wakeup reason: not caused by deep sleep: %d" CR),
+        wakeup_reason
+      );
       break;
   }
 

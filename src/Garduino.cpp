@@ -198,6 +198,7 @@ void Garduino::startManualMode() {
 void Garduino::checkWatering() {
     // check if garden needs watering right now
     bool enableValve = _wateringTask->needsWatering(_clock->startupTime);
+
     Log.info(CR);
     Log.info(F("************************************" CR));
     Log.info(F("      Watering: %S" CR), Utils::BoolToString(enableValve));
@@ -259,9 +260,6 @@ void Garduino::onConnectionReady() {
     // network status LED
     _controls->networkLED->enable();
 
-    // publish sensor data
-    _sensors->startPublish(_iot, _clock->getStartupTemperature());
-
     // enter manual mode (if button was pressed) or check watering
     if (_manualMode) {
         // sync time only in manual mode
@@ -271,6 +269,9 @@ void Garduino::onConnectionReady() {
     } else {
         checkWatering();
     }
+
+    // publish sensor data
+    _sensors->startPublish(_iot, _clock->getStartupTemperature());
 }
 
 void Garduino::onValveOpen() {
@@ -317,6 +318,8 @@ void Garduino::onSystemWakeup() {
     } else {
         _manualMode = false;
     }
+
+    _sensors->manualMode = _manualMode;
 }
 
 void Garduino::onManualButtonPush() {
@@ -329,10 +332,6 @@ void Garduino::onPowerButtonPush() {
 }
 
 void Garduino::printPrefix(Print* _logOutput, int logLevel) {
-    printTimestamp(_logOutput);
-}
-
-void Garduino::printTimestamp(Print* _logOutput) {
     // Division constants
     const unsigned long MSECS_PER_SEC       = 1000;
     const unsigned long SECS_PER_MIN        = 60;
@@ -340,7 +339,7 @@ void Garduino::printTimestamp(Print* _logOutput) {
     const unsigned long SECS_PER_DAY        = 86400;
 
     // Total time
-    const unsigned long msecs               =  millis() ;
+    const unsigned long msecs               =  millis();
     const unsigned long secs                =  msecs / MSECS_PER_SEC;
 
     // Time in components

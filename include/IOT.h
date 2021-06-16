@@ -16,7 +16,7 @@
 class IOT
 {
   public:
-    IOT();
+    IOT() {};
     void begin(
       int totalReadings,
       Method connected_callback,
@@ -29,8 +29,11 @@ class IOT
     void disconnect();
     void connectToMqtt();
     bool connected();
+    bool publishReady();
+    void exit();
 
   private:
+    const uint8_t _qos = 2;
     uint16_t _lastPacketIdPubSent;
 };
 

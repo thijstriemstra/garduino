@@ -54,7 +54,6 @@ class Garduino {
 
       // logging
       static void printPrefix(Print* _logOutput, int logLevel);
-      static void printTimestamp(Print* _logOutput);
 
       // callbacks
       void onSystemWakeup();
