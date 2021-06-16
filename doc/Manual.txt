@@ -1,7 +1,7 @@
 GARDUINO MANUAL
 ---------------
 
-De Garduino geeft dagelijks om 19:00 uur de planten 2 minuten water.
+De Garduino geeft dagelijks om 19:00 uur de planten 3 minuten water.
 
 
 HANDMATIGE BEDIENING
@@ -11,7 +11,7 @@ Je kan met de MANUAL knop de planten handmatig water geven.
 
 Stappen:
 
-1. Druk op de MANUAL knop tot 'Manual' op het display te zien is.
+1. Druk op de MANUAL knop tot de temperatuur op het display te zien is.
    Als het oranje licht op de voorzijde brandt, ga naar stap 2
 
 2. Druk nogmaals op de MANUAL knop om de waterpomp te starten.
