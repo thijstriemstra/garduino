@@ -153,7 +153,7 @@ void WateringTask::save(DateTime timestamp) {
   _prefs->begin(_namespace, false);
 
   // store the timestamp
-  _prefs->putUInt("timestamp", timestamp.secondstime());
+  _prefs->putUInt(TIMESTAMP, timestamp.secondstime());
 
   // close the preferences
   _prefs->end();
@@ -165,7 +165,7 @@ DateTime WateringTask::load() {
   // get the value, if the key does not exist,
   // return a default value of 0
   // note: key name is limited to 15 chars
-  unsigned int timestamp = _prefs->getUInt("timestamp", 0);
+  unsigned int timestamp = _prefs->getUInt(TIMESTAMP, 0);
 
   // close the preferences
   _prefs->end();

@@ -53,6 +53,8 @@ class WateringTask {
 
     static void setupTask(void *pvParameter);
 
+    const char* TIMESTAMP = "timestamp";
+
     // callbacks
     Method _finishedCallback;
     Method _valveOpenCallback;
