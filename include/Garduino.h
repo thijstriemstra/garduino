@@ -17,6 +17,7 @@
 #include <Controls.h>
 #include <Sensors.h>
 #include <SystemClock.h>
+#include <DisplayTask.h>
 #include <WateringTask.h>
 #include <PowerManagement.h>
 #include <MultiPlexer_TCA9548A.h>
@@ -46,6 +47,7 @@ class Garduino {
     Controls* _controls;
     SystemClock* _clock;
     PowerManagement* _power;
+    DisplayTask* _displayTask;
     MultiPlexer_TCA9548A* _i2c;
     WateringTask* _wateringTask;
     SSD1306_OLEDDisplay_Mux* _display;

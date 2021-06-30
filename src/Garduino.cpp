@@ -53,6 +53,9 @@ Garduino::Garduino() {
     true
   );
 
+  // display task
+  _displayTask = new DisplayTask(_display);
+
   // sensors
   _sensors = new Sensors(SensorPublishSchedule, _i2c, true, _namespace);
 }
@@ -109,6 +112,9 @@ void Garduino::begin() {
 
   // display
   _display->begin();
+
+  // display task
+  _displayTask->begin();
 
   // sensors
   _sensors->begin();
@@ -301,12 +307,12 @@ void Garduino::onConnectionReady() {
 
 void Garduino::onValveOpen() {
   // display
-  _display->writeBig(F("Open"));
+  _displayTask->open();
 }
 
 void Garduino::onValveClosed() {
   // display
-  _display->writeBig(F("Closed"));
+  _displayTask->close();
 }
 
 void Garduino::onSystemWakeup() {
@@ -359,7 +365,10 @@ void Garduino::displayInfo(void *pvParameter) {
 
       // pause the task
       vTaskDelay(10000 / portTICK_PERIOD_MS);
+    }
 
+    // don't overwrite display when watering
+    if (!garduino->_wateringTask->isValveOpen()) {
       // display time
       garduino->displayTime();
 
@@ -373,23 +382,13 @@ void Garduino::displayInfo(void *pvParameter) {
 }
 
 void Garduino::displayTime() {
-  // display time
   DateTime now = _clock->now();
-  char timestamp[5];
-  sprintf(timestamp, "%02d:%02d", now.hour(), now.minute());
-
-  _display->writeBig(timestamp);
+  _displayTask->showTime(now);
 }
 
 void Garduino::displayTemperature() {
   BME280_Result tmp = _sensors->readBarometer();
-
-  char buffer[9];
-  char temperature[6];
-  dtostrf(tmp.temperature, 4, 2, temperature);
-  sprintf(buffer, "%s °C", temperature);
-
-  _display->writeBig(buffer);
+  _displayTask->showTemperature(tmp.temperature);
 }
 
 void Garduino::printPrefix(Print* _logOutput, int logLevel) {
