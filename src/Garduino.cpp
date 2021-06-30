@@ -69,7 +69,7 @@ void Garduino::begin() {
     Log.info(F("========================" CR));
 
     // board info
-    Log.info(F("Board:\t\t%S" CR), ARDUINO_BOARD);
+    Log.info(F("Board:\t  %S" CR), ARDUINO_BOARD);
 
     // callbacks
     Method manualBtnCallback;
@@ -99,7 +99,7 @@ void Garduino::begin() {
 
     // system time
     _clock->begin();
-    Log.info(F("Local time:\t%S" CR), _clock->getStartupTime());
+    Log.info(F("Local time:  %S" CR), _clock->getStartupTime());
 
     // controls
     _controls->begin(manualBtnCallback, powerBtnCallback);
@@ -263,6 +263,7 @@ void Garduino::onConnectionFailed() {
     // or watering already
     if (_manualMode) {
         startManualMode();
+
     } else if (!_manualMode && !_wateringTask->isWatering()) {
         checkWatering();
     }
@@ -289,17 +290,11 @@ void Garduino::onConnectionReady() {
 }
 
 void Garduino::onValveOpen() {
-    // publish
-    _iot->publish("/water/valve", 1);
-
     // display
     _display->writeBig(F("Open"));
 }
 
 void Garduino::onValveClosed() {
-    // publish
-    _iot->publish("/water/valve", 0);
-
     // display
     _display->writeBig(F("Closed"));
 }
@@ -315,8 +310,8 @@ void Garduino::onSystemWakeup() {
         // enable manual led
         _controls->manualLED->enable();
 
-        // display temperature
-        displayTemperature();
+        // display device info
+        displayInfo();
     } else {
         _manualMode = false;
     }
@@ -331,6 +326,14 @@ void Garduino::onManualButtonPush() {
 void Garduino::onPowerButtonPush() {
     // force to sleep
     sleep(true);
+}
+
+
+void Garduino::displayInfo() {
+    //displayTemperature();
+
+    // display time
+    _display->writeBig(_clock->getTime());
 }
 
 void Garduino::displayTemperature() {

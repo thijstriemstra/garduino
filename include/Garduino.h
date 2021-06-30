@@ -32,6 +32,7 @@ class Garduino {
       void toggleValve();
       void checkWatering();
       void startManualMode();
+      void displayInfo();
       void displayTemperature();
       void sleep(bool forced = false);
 
