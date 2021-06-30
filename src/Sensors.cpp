@@ -139,7 +139,7 @@ void Sensors::publish() {
   _iot->publish("/inside/light", lux);
 
   // BME280
-  BME280_Result barometer = readBarometer();
+  BME280_Result barometer = readBarometer(_debug);
   _iot->publish("/inside/temperature", barometer.temperature);
   _iot->publish("/inside/pressure", barometer.pressure);
   _iot->publish("/inside/humidity", barometer.humidity);
@@ -215,10 +215,10 @@ int Sensors::measureRain() {
   return rainSensorValue;
 }
 
-BME280_Result Sensors::readBarometer() {
+BME280_Result Sensors::readBarometer(bool debug) {
   BME280_Result result = _barometer->readAll();
 
-  if (_debug) {
+  if (debug) {
     Log.info(F("Humidity:\t\t%F%%" CR), result.humidity);
     Log.info(F("Temperature:\t%F °C" CR), result.temperature);
     Log.info(F("Pressure:\t\t%F hPa" CR), result.pressure);

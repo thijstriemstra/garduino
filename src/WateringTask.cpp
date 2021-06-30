@@ -128,6 +128,10 @@ bool WateringTask::isWatering() {
   return active;
 }
 
+bool WateringTask::isValveOpen() {
+  return _waterValve->active;
+}
+
 bool WateringTask::needsWatering(DateTime now) {
   long targetHour = Utils::splitHourString(_timestamp, ':', 0);
   long targetMinute = Utils::splitHourString(_timestamp, ':', 1);

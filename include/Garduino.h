@@ -32,9 +32,10 @@ class Garduino {
       void toggleValve();
       void checkWatering();
       void startManualMode();
-      void displayInfo();
+      void displayTime();
       void displayTemperature();
       void sleep(bool forced = false);
+      bool isWatering();
 
       bool started = false;
       bool connected = false;
@@ -53,6 +54,9 @@ class Garduino {
       int _totalReadings = 15;
       const char *_namespace = "garduino";
       const char *_version = "3.1.0";
+
+      // tasks
+      static void displayInfo(void *pvParameter);
 
       // logging
       static void printPrefix(Print* _logOutput, int logLevel);

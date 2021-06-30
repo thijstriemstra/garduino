@@ -39,6 +39,7 @@ class WateringTask {
     void close();
     DateTime load();
     void save(DateTime timestamp);
+    bool isValveOpen();
     bool isWatering();
     bool needsWatering(DateTime now);
     String getLastRunTime();

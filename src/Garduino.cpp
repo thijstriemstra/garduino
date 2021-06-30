@@ -194,6 +194,10 @@ void Garduino::startManualMode() {
     // and then eventually presses power button to put device back into deepsleep
 }
 
+bool Garduino::isWatering() {
+    return _wateringTask->isWatering();
+}
+
 void Garduino::checkWatering() {
     // check if garden needs watering right now
     bool enableValve = _wateringTask->needsWatering(_clock->startupTime);
@@ -237,7 +241,7 @@ void Garduino::onWateringReady() {
 void Garduino::onPublishReady() {
     // only shutdown when manual mode is not enabled and system is
     // not watering at the moment
-    if (!_manualMode && !_wateringTask->isWatering()) {
+    if (!_manualMode && !isWatering()) {
         // done, go into deepsleep and wait till woken up by button
         // or timer
         sleep();
@@ -270,7 +274,7 @@ void Garduino::onConnectionFailed(int connection_type) {
     if (_manualMode) {
         startManualMode();
 
-    } else if (!_manualMode && !_wateringTask->isWatering()) {
+    } else if (!_manualMode && !isWatering()) {
         checkWatering();
     }
 }
@@ -316,8 +320,16 @@ void Garduino::onSystemWakeup() {
         // enable manual led
         _controls->manualLED->enable();
 
-        // display device info
-        displayInfo();
+        // start display info task
+        xTaskCreatePinnedToCore(
+            &Garduino::displayInfo,    /* Task function. */
+            "displayInfoTask",         /* String with name of task. */
+            2048,                      /* Stack size in words. */
+            this,                      /* Parameter passed as input of the task */
+            8,                         /* Priority of the task. */
+            NULL,                       /* Task handle. */
+            1                           /* Core nr */
+        );
     } else {
         _manualMode = false;
     }
@@ -334,10 +346,33 @@ void Garduino::onPowerButtonPush() {
     sleep(true);
 }
 
-void Garduino::displayInfo() {
-    // display temperature
-    displayTemperature();
+void Garduino::displayInfo(void *pvParameter) {
+    // this task requires infinite loop
+    for (;;) {
+        // obtain the instance pointer
+        Garduino* garduino = reinterpret_cast<Garduino*>(pvParameter);
 
+        // don't overwrite display when watering
+        if (!garduino->_wateringTask->isValveOpen()) {
+            // display temperature
+            garduino->displayTemperature();
+
+            // pause the task
+            vTaskDelay(10000 / portTICK_PERIOD_MS);
+
+            // display time
+            garduino->displayTime();
+
+            // pause the task
+            vTaskDelay(10000 / portTICK_PERIOD_MS);
+        }
+
+        // pause the task
+        vTaskDelay(5000 / portTICK_PERIOD_MS);
+    }
+}
+
+void Garduino::displayTime() {
     // display time
     DateTime now = _clock->now();
     char timestamp[5];
