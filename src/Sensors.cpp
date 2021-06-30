@@ -8,12 +8,12 @@
 #include <Sensors.h>
 
 Sensors::Sensors(
-  long interval,
+  long interval_period,
   MultiPlexer_TCA9548A* i2c,
   bool debug,
   const char *ns
 ) {
-  _interval = interval;
+  interval = interval_period;
   _debug = debug;
 
   SoilSensorsConfig soilCfg;
@@ -84,7 +84,14 @@ void Sensors::setupTask(void *pvParameter) {
     sensors->run();
 
     // pause the task
-    vTaskDelay((sensors->_interval * 1000) / portTICK_PERIOD_MS);
+    vTaskDelay((sensors->interval * 1000) / portTICK_PERIOD_MS);
+
+    // previous publish didn't finish yet unfortunately but this
+    // can safely be ignored
+    if (!sensors->manualMode && !sensors->_iot->publishReady()) {
+      // exit and shutdown (will be ignored if watering)
+      sensors->_iot->exit();
+    }
   }
 }
 
@@ -107,9 +114,16 @@ void Sensors::save() {
 }
 
 void Sensors::publish() {
+  // no connection
   if (!_iot->connected()) {
     Log.warning(F("MQTT - No connection, cannot publish" CR));
     Log.warning(CR);
+
+    if (!manualMode) {
+      // exit and shutdown (will be ignored if watering)
+      _iot->exit();
+      return;
+    }
   }
 
   Log.info(F("MQTT - Publishing sensor data..." CR));

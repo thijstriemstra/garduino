@@ -9,6 +9,7 @@ uint16_t _lastPacketIdPubAck;
 bool _stopReconnect = false;
 int _totalConnectionAttempts = 0;
 int _totalReadings;
+int _completedReadings = 0;
 
 // callbacks
 Method _connectedCb;
@@ -82,21 +83,25 @@ void onMqttMessage(
 
 void onMqttPublish(uint16_t packetId) {
   _lastPacketIdPubAck = packetId;
+  _completedReadings++;
 
   //Log.verbose(F("MQTT - Publish acknowledged for packet %d" CR),
   //  _lastPacketIdPubAck
   //);
 
-  if (_lastPacketIdPubAck == _totalReadings) {
+  if (_completedReadings >= _totalReadings) {
     Log.warning(F("MQTT - Published %d messages." CR), _totalReadings);
 
     // notify others
     _publishReadyCb.callback();
+
+    // reset counter
+    _completedReadings = 0;
   }
 }
 
 bool IOT::publishReady() {
-  return _lastPacketIdPubAck == _totalReadings;
+  return _completedReadings == _totalReadings;
 }
 
 void IOT::exit() {
@@ -116,9 +121,6 @@ void IOT::begin(
   _connectedCb = connected_callback;
   _failedConnectionCb = connectionFailed_callback;
   _publishReadyCb = publishReady_callback;
-
-  // set initial so publishReady() is correct
-  _lastPacketIdPubAck = _totalReadings;
 
   // setup wifi
   WiFi.onEvent(WiFiEvent);

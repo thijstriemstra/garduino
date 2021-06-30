@@ -28,7 +28,7 @@ struct OutsideTemperatureResult {
 class Sensors {
   public:
     Sensors(
-      long interval,
+      long interval_period,
       MultiPlexer_TCA9548A* i2c,
       bool debug = true,
       const char *ns = "garduino"
@@ -46,16 +46,16 @@ class Sensors {
     OutsideTemperatureResult readOutsideTemperature();
     SoilMoistureResult readSoilMoisture();
 
+    IOT* _iot;
+    long interval;
     bool manualMode = false;
 
   private:
     bool _debug;
-    long _interval;
     float _sysTemperature = 0;
 
     static void setupTask(void *pvParameter);
 
-    IOT* _iot;
     SoilSensors* _soil;
     MultiPlexer_MCP3008* _adc;
     WaterFlowMeter* _waterFlow;
