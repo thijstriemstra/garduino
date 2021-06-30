@@ -65,7 +65,7 @@ void Garduino::begin() {
 
     // print version
     Log.info(F("========================" CR));
-    Log.info(F("  = %S v%S =" CR), _namespace, _version);
+    Log.info(F("=    %S v%S   =" CR), _namespace, _version);
     Log.info(F("========================" CR));
 
     // board info

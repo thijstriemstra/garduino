@@ -38,7 +38,7 @@ void WiFiEvent(WiFiEvent_t event) {
     case SYSTEM_EVENT_STA_GOT_IP:
       Log.info(F("WiFi - Connected." CR));
       Log.info(F("IP address: %p" CR), WiFi.localIP());
-      Log.info(F("==============================" CR));
+      Log.info(F("================================" CR));
 
       // connect to mqtt
       mqttConnect();
@@ -57,7 +57,7 @@ void WiFiEvent(WiFiEvent_t event) {
 
 void onMqttConnect(bool sessionPresent) {
   Log.info(F("Connected to MQTT." CR));
-  Log.info(F("==============================" CR));
+  Log.info(F("================================" CR));
 
   // notify others
   _connectedCb.callback();

@@ -87,8 +87,9 @@ void WateringTask::setupTask(void *pvParameter) {
 
 void WateringTask::run() {
   Log.info(CR);
-  Log.info(F("Started watering for %l seconds!" CR), duration);
-  Log.info(F("---------------------------------------" CR));
+  Log.info(F("**************************************" CR));
+  Log.info(F("* Started watering for %l seconds!   *" CR), duration);
+  Log.info(F("**************************************" CR));
   Log.info(CR);
 
   // open valve for x seconds
