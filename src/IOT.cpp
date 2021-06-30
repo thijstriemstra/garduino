@@ -149,10 +149,11 @@ bool IOT::connected() {
 void IOT::disconnect() {
   _stopReconnect = true;
 
-  Log.info(F("WiFi - Disconnecting..." CR));
-
-  WiFi.disconnect(true);
+  Log.info(F("MQTT - Disconnecting..." CR));
   _mqttClient.disconnect();
+
+  Log.info(F("WiFi - Disconnecting..." CR));
+  WiFi.disconnect(true);
 }
 
 void IOT::publish(const char* sub_topic, double value) {
