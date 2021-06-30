@@ -54,7 +54,7 @@ Garduino::Garduino() {
   );
 
   // display task
-  _displayTask = new DisplayTask(_display);
+  _displayTask = new DisplayTask(_display, _clock);
 
   // sensors
   _sensors = new Sensors(SensorPublishSchedule, _i2c, true, _namespace);
@@ -353,7 +353,6 @@ void Garduino::onPowerButtonPush() {
 }
 
 void Garduino::displayInfo(void *pvParameter) {
-  // this task requires infinite loop
   for (;;) {
     // obtain the instance pointer
     Garduino* garduino = reinterpret_cast<Garduino*>(pvParameter);
@@ -382,12 +381,12 @@ void Garduino::displayInfo(void *pvParameter) {
 }
 
 void Garduino::displayTime() {
-  DateTime now = _clock->now();
-  _displayTask->showTime(now);
+  _displayTask->showTime();
 }
 
 void Garduino::displayTemperature() {
   BME280_Result tmp = _sensors->readBarometer();
+
   _displayTask->showTemperature(tmp.temperature);
 }
 

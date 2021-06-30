@@ -75,7 +75,6 @@ void Sensors::startPublish(IOT* iot, float system_temperature) {
 }
 
 void Sensors::setupTask(void *pvParameter) {
-  // this task requires infinite loop
   for (;;) {
     // obtain the instance pointer
     Sensors* sensors = reinterpret_cast<Sensors*>(pvParameter);

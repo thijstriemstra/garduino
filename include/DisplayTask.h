@@ -9,12 +9,15 @@
 
 #include <Arduino.h>
 #include <RTClib.h>
+#include <ArduinoLog.h>
+#include <SystemClock.h>
 #include <SSD1306_OLEDDisplay_Mux.h>
 
 class DisplayTask {
   public:
     DisplayTask(
-      SSD1306_OLEDDisplay_Mux* display
+      SSD1306_OLEDDisplay_Mux* display,
+      SystemClock* clock
     );
 
     long duration;
@@ -23,12 +26,18 @@ class DisplayTask {
     void begin();
     void open();
     void close();
-    void showInfo();
-    void showTime(DateTime now);
+    void showTime();
     void showTemperature(float temperature);
 
   private:
+    DateTime _openStart;
+    bool _counting = false;
+
+    SystemClock* _clock;
     SSD1306_OLEDDisplay_Mux* _display;
+
+    // tasks
+    static void countdown(void *pvParameter);
 };
 
 #endif

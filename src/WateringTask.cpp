@@ -98,7 +98,7 @@ void WateringTask::run() {
 
 void WateringTask::open() {
   Log.info(F("-----------------------" CR));
-  Log.info(F("Water: valve open" CR));
+  Log.info(F("Water - Valve open" CR));
 
   // notify others
   _valveOpenCallback.callback();
@@ -112,7 +112,7 @@ void WateringTask::open() {
 
 void WateringTask::close() {
   Log.info(F("-----------------------" CR));
-  Log.info(F("Water: valve closed" CR));
+  Log.info(F("Water - Valve closed" CR));
 
   // notify others
   _valveClosedCallback.callback();
