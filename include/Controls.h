@@ -11,16 +11,16 @@
 
 class Controls
 {
-    public:
-        Controls();
-        void begin(Method manualBtnCallback, Method powerBtnCallback);
-        void loop();
+  public:
+    Controls();
+    void begin(Method manualBtnCallback, Method powerBtnCallback);
+    void loop();
 
-        LED *powerLED;
-        LED *manualLED;
-        LED *networkLED;
-        Button *powerBtn;
-        Button *manualBtn;
+    LED *powerLED;
+    LED *manualLED;
+    LED *networkLED;
+    Button *powerBtn;
+    Button *manualBtn;
 };
 
 #endif

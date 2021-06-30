@@ -24,54 +24,54 @@
 
 class Garduino {
   public:
-      Garduino();
-      void begin();
-      void loop();
-      void openValve();
-      void closeValve();
-      void toggleValve();
-      void checkWatering();
-      void startManualMode();
-      void displayTime();
-      void displayTemperature();
-      void sleep(bool forced = false);
-      bool isWatering();
+    Garduino();
+    void begin();
+    void loop();
+    void openValve();
+    void closeValve();
+    void toggleValve();
+    void checkWatering();
+    void startManualMode();
+    void displayTime();
+    void displayTemperature();
+    void sleep(bool forced = false);
+    bool isWatering();
 
-      bool started = false;
-      bool connected = false;
+    bool started = false;
+    bool connected = false;
 
   private:
-      IOT *_iot;
-      Sensors* _sensors;
-      Controls* _controls;
-      SystemClock* _clock;
-      PowerManagement* _power;
-      MultiPlexer_TCA9548A* _i2c;
-      WateringTask* _wateringTask;
-      SSD1306_OLEDDisplay_Mux* _display;
+    IOT *_iot;
+    Sensors* _sensors;
+    Controls* _controls;
+    SystemClock* _clock;
+    PowerManagement* _power;
+    MultiPlexer_TCA9548A* _i2c;
+    WateringTask* _wateringTask;
+    SSD1306_OLEDDisplay_Mux* _display;
 
-      bool _manualMode = false;
-      int _totalReadings = 15;
-      const char *_namespace = "garduino";
-      const char *_version = "3.2.0";
+    bool _manualMode = false;
+    int _totalReadings = 15;
+    const char *_namespace = "garduino";
+    const char *_version = "3.2.0";
 
-      // tasks
-      static void displayInfo(void *pvParameter);
+    // tasks
+    static void displayInfo(void *pvParameter);
 
-      // logging
-      static void printPrefix(Print* _logOutput, int logLevel);
+    // logging
+    static void printPrefix(Print* _logOutput, int logLevel);
 
-      // callbacks
-      void onSystemWakeup();
-      void onPowerButtonPush();
-      void onManualButtonPush();
-      void onConnectionReady();
-      void onConnectionClosed();
-      void onConnectionFailed(int connection_type);
-      void onPublishReady();
-      void onWateringReady();
-      void onValveOpen();
-      void onValveClosed();
+    // callbacks
+    void onSystemWakeup();
+    void onPowerButtonPush();
+    void onManualButtonPush();
+    void onConnectionReady();
+    void onConnectionClosed();
+    void onConnectionFailed(int connection_type);
+    void onPublishReady();
+    void onWateringReady();
+    void onValveOpen();
+    void onValveClosed();
 };
 
 #endif

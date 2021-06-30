@@ -11,7 +11,7 @@
  * Constructor.
  */
 PowerManagement::PowerManagement(int wakeupTime) {
-    _wakeupTime = wakeupTime;
+  _wakeupTime = wakeupTime;
 }
 
 void PowerManagement::init(Method wakeup_callback) {
@@ -32,8 +32,8 @@ void PowerManagement::init(Method wakeup_callback) {
 }
 
 void PowerManagement::sleep() {
-    // put esp32 into deepsleep
-    esp_deep_sleep_start();
+  // put esp32 into deepsleep
+  esp_deep_sleep_start();
 }
 
 void PowerManagement::wokeup() {

@@ -9,12 +9,12 @@
 #include <Capacitive_SoilSensor_MCP3008.h>
 
 struct SoilMoistureResult {
-    int sensor1;
-    int sensor2;
-    int sensor3;
-    int sensor4;
-    int sensor5;
-    int totalSensors = 5;
+  int sensor1;
+  int sensor2;
+  int sensor3;
+  int sensor4;
+  int sensor5;
+  int totalSensors = 5;
 };
 
 struct SoilSensorsConfig {
