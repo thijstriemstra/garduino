@@ -17,19 +17,52 @@ Method _disconnectedCb;
 Method _publishReadyCb;
 Method _failedConnectionCb;
 
+void mqttTimeOut(void * parameter) {
+  for (;;) {
+    // pause the task
+    vTaskDelay((MQTT_TIMEOUT * 1000) / portTICK_PERIOD_MS);
+
+    if (!_mqttClient.connected()) {
+      Log.warning(CR);
+      Log.warning(F("MQTT - Connection timeout!" CR));
+      Log.warning(F("==========================" CR));
+
+      // give up
+      _failedConnectionCb.callbackIntArg(1);
+
+      // cleanup task
+      vTaskDelete(NULL);
+    }
+  }
+}
+
 void connectToWifi() {
   ++_totalConnectionAttempts;
 
   Log.info(F("WiFi - SSID: %S" CR), WIFI_SSID);
   Log.info(F("WiFi - Connecting..." CR));
 
+  // connect to WIFI
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
 }
 
 void mqttConnect() {
+  Log.info(F("MQTT - Timeout set to %d seconds" CR), MQTT_TIMEOUT);
   Log.info(F("MQTT - Connecting to %S" CR), MQTT_HOST);
 
+  // connect to MQTT
+  // Note that this will hang forever if there is no MQTT broker running
   _mqttClient.connect();
+
+  // add timeout
+  xTaskCreate(
+    mqttTimeOut,               /* Task function. */
+    "mqttTimeOutTask",         /* String with name of task. */
+    10000,                     /* Stack size in words. */
+    NULL,                      /* Parameter passed as input of the task */
+    1,                         /* Priority of the task. */
+    NULL                       /* Task handle. */
+  );
 }
 
 void WiFiEvent(WiFiEvent_t event) {
@@ -51,7 +84,7 @@ void WiFiEvent(WiFiEvent_t event) {
       WiFi.disconnect(true);
 
       // notify others
-      _failedConnectionCb.callback();
+      _failedConnectionCb.callbackIntArg(0);
       break;
     }
 }
@@ -133,7 +166,6 @@ void IOT::begin(
   _mqttClient.onMessage(onMqttMessage);
   _mqttClient.onPublish(onMqttPublish);
   _mqttClient.setClientId(MQTT_CLIENT_ID);
-  _mqttClient.setKeepAlive(MQTT_TIMEOUT);
   _mqttClient.setServer(MQTT_HOST, MQTT_PORT);
   _mqttClient.setCredentials(MQTT_USER, MQTT_PASSWORD);
 

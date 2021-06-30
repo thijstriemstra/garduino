@@ -85,8 +85,8 @@ void Garduino::begin() {
     disconnectedCallback.attachCallback(
         makeFunctor((Functor0 *)0, *this, &Garduino::onConnectionClosed));
     Method failedConnectionCallback;
-    failedConnectionCallback.attachCallback(
-        makeFunctor((Functor0 *)0, *this, &Garduino::onConnectionFailed));
+    failedConnectionCallback.attachCallbackIntArg(
+        makeFunctor((Functor1<int> *)0, *this, &Garduino::onConnectionFailed));
     Method publishReadyCallback;
     publishReadyCallback.attachCallback(
         makeFunctor((Functor0 *)0, *this, &Garduino::onPublishReady));
@@ -250,13 +250,19 @@ void Garduino::onConnectionClosed() {
     _controls->networkLED->disable();
 }
 
-void Garduino::onConnectionFailed() {
+void Garduino::onConnectionFailed(int connection_type) {
     connected = false;
 
     _controls->networkLED->disable();
 
     Log.warning(CR);
-    Log.warning(F("*** No WiFi connection available. ***" CR));
+    Log.info(F("*************************************" CR));
+    if (connection_type == 0) {
+        Log.warning(F("*** No WiFi connection available. ***" CR));
+    } else {
+        Log.warning(F("*** No MQTT connection available. ***" CR));
+    }
+    Log.info(F("*************************************" CR));
 
     // no connection available to publish sensor data,
     // only check for watering if not in manual mode

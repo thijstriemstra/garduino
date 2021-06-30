@@ -63,7 +63,7 @@ class Garduino {
       void onManualButtonPush();
       void onConnectionReady();
       void onConnectionClosed();
-      void onConnectionFailed();
+      void onConnectionFailed(int connection_type);
       void onPublishReady();
       void onWateringReady();
       void onValveOpen();
