@@ -107,20 +107,6 @@ void Sensors::save() {
 }
 
 void Sensors::publish() {
-  // previous publish session has not finished yet
-  if (!manualMode && !_iot->publishReady()) {
-    // previous publish didn't finish unfortunately
-    // but those can safely be ignored.
-    Log.warning(F("MQTT - Publish did not complete within %l seconds" CR),
-      _interval
-    );
-    Log.warning(CR);
-
-    // exit and shutdown
-    _iot->exit();
-    return;
-  }
-
   if (!_iot->connected()) {
     Log.warning(F("MQTT - No connection, cannot publish" CR));
     Log.warning(CR);
