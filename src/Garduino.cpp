@@ -334,12 +334,16 @@ void Garduino::onPowerButtonPush() {
     sleep(true);
 }
 
-
 void Garduino::displayInfo() {
-    //displayTemperature();
+    // display temperature
+    displayTemperature();
 
     // display time
-    _display->writeBig(_clock->getTime());
+    DateTime now = _clock->now();
+    char timestamp[5];
+    sprintf(timestamp, "%02d:%02d", now.hour(), now.minute());
+
+    _display->writeBig(timestamp);
 }
 
 void Garduino::displayTemperature() {
