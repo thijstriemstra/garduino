@@ -260,13 +260,13 @@ void Garduino::onConnectionFailed(int connection_type) {
   _controls->networkLED->disable();
 
   Log.warning(CR);
-  Log.info(F("*************************************" CR));
+  Log.info(F("************************************" CR));
   if (connection_type == 0) {
-    Log.warning(F("*** No WiFi connection available. ***" CR));
+    Log.warning(F("*** No WiFi connection available ***" CR));
   } else {
-    Log.warning(F("*** No MQTT connection available. ***" CR));
+    Log.warning(F("*** No MQTT connection available ***" CR));
   }
-  Log.info(F("*************************************" CR));
+  Log.info(F("************************************" CR));
 
   // no connection available to publish sensor data,
   // only check for watering if not in manual mode
