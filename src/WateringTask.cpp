@@ -164,7 +164,6 @@ DateTime WateringTask::load() {
 
   // get the value, if the key does not exist,
   // return a default value of 0
-  // note: key name is limited to 15 chars
   unsigned int timestamp = _prefs->getUInt(TIMESTAMP, 0);
 
   // close the preferences

@@ -221,6 +221,19 @@ void Garduino::checkWatering() {
     }
 }
 
+void Garduino::onWateringReady() {
+    Log.info(CR);
+    Log.info(F("**************************************" CR));
+    Log.info(F("* Watering finished! Back to sleep.  *" CR));
+    Log.info(F("**************************************" CR));
+
+    // wait a while so IOT can complete
+    delay(300);
+
+    // shutdown
+    sleep();
+}
+
 void Garduino::onPublishReady() {
     // only shutdown when manual mode is not enabled and system is
     // not watering at the moment
@@ -233,15 +246,17 @@ void Garduino::onPublishReady() {
 
 void Garduino::onConnectionClosed() {
     connected = false;
+
     _controls->networkLED->disable();
 }
 
 void Garduino::onConnectionFailed() {
     connected = false;
+
     _controls->networkLED->disable();
 
-    Log.info(CR);
-    Log.info(F("*** No WiFi connection available! ***" CR));
+    Log.warning(CR);
+    Log.warning(F("*** No WiFi connection available. ***" CR));
 
     // no connection available to publish sensor data,
     // only check for watering if not in manual mode
@@ -289,18 +304,6 @@ void Garduino::onValveClosed() {
     _display->writeBig(F("Closed"));
 }
 
-void Garduino::onWateringReady() {
-    Log.info(CR);
-    Log.info(F("**************************************" CR));
-    Log.info(F("* Watering finished! Back to sleep.  *" CR));
-    Log.info(F("**************************************" CR));
-
-    // wait a while so IOT can complete
-    delay(300);
-
-    sleep();
-}
-
 void Garduino::onSystemWakeup() {
     // enable power led
     _controls->powerLED->enable();
@@ -326,16 +329,18 @@ void Garduino::onManualButtonPush() {
 }
 
 void Garduino::onPowerButtonPush() {
-    // forced to sleep
+    // force to sleep
     sleep(true);
 }
 
 void Garduino::displayTemperature() {
     BME280_Result tmp = _sensors->readBarometer();
+
     char buffer[9];
     char temperature[6];
     dtostrf(tmp.temperature, 4, 2, temperature);
     sprintf(buffer, "%s °C", temperature);
+
     _display->writeBig(buffer);
 }
 
@@ -353,5 +358,6 @@ void Garduino::printPrefix(Print* _logOutput, int logLevel) {
 
     char timestamp[20];
     sprintf(timestamp, "%02d:%02d:%02d.%03d ", Hours, Minutes, Seconds, MilliSeconds);
+
     _logOutput->print(timestamp);
 }

@@ -83,7 +83,7 @@ void onMqttMessage(
 void onMqttPublish(uint16_t packetId) {
   _lastPacketIdPubAck = packetId;
 
-  //Log.info(F("MQTT - Publish acknowledged for packet %d" CR),
+  //Log.verbose(F("MQTT - Publish acknowledged for packet %d" CR),
   //  _lastPacketIdPubAck
   //);
 

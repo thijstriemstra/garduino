@@ -53,6 +53,7 @@ class WateringTask {
 
     static void setupTask(void *pvParameter);
 
+    // key name for nvram storage (limited to 15 chars)
     const char* TIMESTAMP = "timestamp";
 
     // callbacks
