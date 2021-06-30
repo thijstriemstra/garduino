@@ -23,9 +23,7 @@ void mqttTimeOut(void * parameter) {
     vTaskDelay((MQTT_TIMEOUT * 1000) / portTICK_PERIOD_MS);
 
     if (!_mqttClient.connected()) {
-      Log.warning(CR);
       Log.warning(F("MQTT - Connection timeout!" CR));
-      Log.warning(F("==========================" CR));
 
       // give up
       _failedConnectionCb.callbackIntArg(1);
