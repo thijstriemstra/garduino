@@ -9,10 +9,13 @@ HANDMATIGE BEDIENING
 
 Je kan met de MANUAL knop de planten handmatig water geven.
 
-Stappen:
+In manual mode word er ook iedere 5 seconden op het display de huidige
+temperatuur en tijd weergegeven.
+
+Stappen voor handmatig watergeven:
 
 1. Druk op de MANUAL knop tot de temperatuur op het display te zien is.
-   Als het oranje licht op de voorzijde brandt, ga naar stap 2
+   Als het oranje licht op de voorzijde brandt, ga naar stap 2.
 
 2. Druk nogmaals op de MANUAL knop om de waterpomp te starten.
    Het witte licht op de voorzijde brandt nu en op het display
@@ -20,7 +23,7 @@ Stappen:
 
 3. Druk nogmaals op de MANUAL knop om de waterpomp te stoppen.
    Het witte licht op voorzijde zal uitgaan en op het display
-   is 'Closed' te zien.
+   is weer de temperatuur te zien.
 
 4. Druk nu op de SLEEP knop om de Garduino weer het automatische
    programma te laten volgen. Op de voorzijde moeten nu alle lichten
@@ -28,3 +31,5 @@ Stappen:
 
 Vergeet nooit de SLEEP knop anders start de Garduino het automatische
 programma niet op (en zal er dagelijks dus geen water worden gegeven).
+
+v3.2.0

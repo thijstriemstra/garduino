@@ -53,7 +53,7 @@ class Garduino {
       bool _manualMode = false;
       int _totalReadings = 15;
       const char *_namespace = "garduino";
-      const char *_version = "3.1.0";
+      const char *_version = "3.2.0";
 
       // tasks
       static void displayInfo(void *pvParameter);
