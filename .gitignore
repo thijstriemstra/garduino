@@ -8,4 +8,6 @@ __pycache__/
 .vscode/launch.json
 .vscode/ipch
 
+*.log
+
 secrets.ini
