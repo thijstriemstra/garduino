@@ -33,4 +33,4 @@ de huidige temperatuur en tijd weergegeven.
 Vergeet niet stap 4 anders start de Garduino het automatische programma
 niet op (en zal er dagelijks dus geen water worden gegeven).
 
-v3.2.0
+v3.3.0
