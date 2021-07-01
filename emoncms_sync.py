@@ -13,6 +13,7 @@ from datetime import timezone, datetime
 logger = logging.getLogger(__name__)
 
 
+
 def getKeys():
     return [
         {'local_feed': 1, 'remote_feed': 413104},
@@ -28,10 +29,18 @@ def getKeys():
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-        description='Post data to emoncms.org'
+    # logging
+    logging.basicConfig(
+        level=logging.DEBUG,
+        format='%(asctime)s %(levelname)-5s - %(message)s'
     )
+    # silence urllib3
+    urllib3_logger = logging.getLogger('urllib3')
+    urllib3_logger.setLevel(logging.CRITICAL)
+
+    desc = 'Post local emonpi data to emoncms.org'
+
+    parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter, description=desc)
     parser.add_argument('--emonpi', dest='local', default='http://127.0.0.1', type=str, help='Address of local emonpi')
     parser.add_argument('--emoncms', dest='remote', default='https://emoncms.org', type=str, help='Address of remote emoncms')
     parser.add_argument('--api-key-write', required=True, dest='writeKey', type=str, help='Write API key')
@@ -39,41 +48,46 @@ def main():
 
     args = parser.parse_args()
 
-    print()
-    print("Local:\t{}".format(args.local))
-    print("Remote:\t{}".format(args.remote))
-    print()
+    logger.info(desc)
+    logger.info(f"Local:\t{args.local}")
+    logger.info(f"Remote:\t{args.remote}")
+    logger.info("")
 
-    local_url = "{}/feed/value.json".format(args.local)
-    remote_url = "{}/feed/insert.json".format(args.remote)
+    local_url = f"{args.local}/feed/value.json"
+    remote_url = f"{args.remote}/feed/insert.json"
 
     # sync data
     result = []
     for feed in getKeys():
+        feed_id = feed.get('local_feed')
+
         # read
-        payload = {'id': feed.get('local_feed'), 'apikey': args.readKey}
+        payload = {'id': feed_id, 'apikey': args.readKey}
         r = requests.get(local_url, params=payload)
 
         try:
             val = r.json()
             result.append(val)
 
+            # timestamp
             dt = datetime.now()
             timestamp = dt.replace(tzinfo=timezone.utc).timestamp()
 
-            # send
+            # payload
             payload = {
                 'id': feed.get('remote_feed'),
                 'apikey': args.writeKey,
                 'time': timestamp,
                 'value': val
             }
+
+            # send it
             p = requests.post(remote_url, params=payload)
-            print("local: {} - remote: {} - value: {} - response: {}".format(
+            logger.info("local: {} - remote: {} - value: {} - response: {}".format(
                 feed.get("local_feed"), feed.get("remote_feed"), val, p.status_code))
 
         except json.decoder.JSONDecodeError as e:
-            print("Something went wrong with feed id {}".format(feed_id))
+            logger.error("Something went wrong with feed id {}".format(feed_id))
             raise e
 
 
