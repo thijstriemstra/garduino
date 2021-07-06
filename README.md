@@ -36,7 +36,7 @@ Readings from the sensors are sent to a MQTT server over WiFi (if available).
 | --- | --- | --- | --- |
 | TCA9548A I2C Expander | SDA | `4` | I2C (address: `0x70`) |
 | TCA9548A I2C Expander | SCL | `22` | I2C (address: `0x70`) |
-| DS3231 Realtime Clock | SDA | `16` | I2C (address: `0x68`,) |
+| DS3231 Realtime Clock | SDA | `16` | I2C (address: `0x68`) |
 | DS3231 Realtime Clock | SCL | `17` | I2C (address: `0x68`) |
 | AT24C32 EEPROM on DS3231 | SDA | `16` | I2C (address: `0x57`) |
 | AT24C32 EEPROM on DS3231 | SCL | `17` | I2C (address: `0x57`) |
