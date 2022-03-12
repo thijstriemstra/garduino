@@ -32,7 +32,7 @@ Readings from the sensors are sent to a MQTT server over WiFi (if available).
 
 ### Lolin32 Lite
 
-| Device | Pin Label | ESP8266 Pin | Type |
+| Device | Pin Label | ESP32 Pin | Type |
 | --- | --- | --- | --- |
 | TCA9548A I2C Expander | SDA | `4` | I2C bus 1 (address: `0x70`) |
 | TCA9548A I2C Expander | SCL | `22` | I2C bus 1 (address: `0x70`) |
