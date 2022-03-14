@@ -1,4 +1,4 @@
-/*  Copyright (c) 2020-2021, Collab
+/*  Copyright (c) 2020-2022, Collab
  *  All rights reserved
 */
 /*
@@ -55,7 +55,7 @@ class Garduino {
     bool _manualMode = false;
     int _totalReadings = 15;
     const char *_namespace = "garduino";
-    const char *_version = "3.3.0";
+    const char *_version = "3.4.0";
 
     // tasks
     static void displayInfo(void *pvParameter);
