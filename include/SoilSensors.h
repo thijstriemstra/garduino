@@ -1,3 +1,6 @@
+/*  Copyright (c) 2020-2022, Collab
+ *  All rights reserved
+*/
 /*
   SoilSensors.h - Read multiple Capacitive Soil Moisture Sensors.
 */

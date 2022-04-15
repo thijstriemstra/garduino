@@ -1,4 +1,4 @@
-/*  Copyright (c) 2021, Collab
+/*  Copyright (c) 2021-2022, Collab
  *  All rights reserved
 */
 #ifndef Utils_h
