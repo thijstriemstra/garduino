@@ -9,5 +9,6 @@ __pycache__/
 .vscode/ipch
 
 *.log
+*.blend1
 
 secrets.ini
