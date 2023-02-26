@@ -230,7 +230,7 @@ output:
 #  # The time duration to stay in deep sleep mode
 #  sleep_duration: 4min
 #  # A pin to wake up to once in deep sleep mode
-#  wakeup_pin: GPIO36
+#  wakeup_pin: GPIO39
 
 # ---------------------------
 # Schedule
