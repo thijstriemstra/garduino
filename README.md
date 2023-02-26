@@ -84,14 +84,14 @@ Readings from the sensors are sent to a MQTT server over WiFi (if available).
 | [Buck converter top](cad/buck-converter-top.stl) | 1 |
 | [Buck converter icon](cad/buck-converter-icon.stl) | 1 |
 | [Buck converter latch](cad/buck-converter-latch.stl) | 2 |
-| [Main panel top]((cad/Main-panel-top.stl)) | 1 |
-| [Main panel bottom]((cad/Main-panel-bottom.stl)) | 1 |
-| [Main panel clamp]((cad/Main-panel-clamp.stl)) | 1 |
-| [Main panel led cover]((cad/Main-panel-le-cover.stl)) | 1 |
-| [Main panel button]((cad/Main-panel-button.stl)) | 2 |
-| [Main panel button mount]((cad/Main-panel-button-mount.stl)) | 1 |
-| [Main panel manual icon]((cad/Main-panel-manual-icon.stl)) | 1 |
-| [Main panel sleep icon]((cad/Main-panel-sleep-icon.stl)) | 1 |
+| [Main panel top](cad/Main-panel-top.stl) | 1 |
+| [Main panel bottom](cad/Main-panel-bottom.stl) | 1 |
+| [Main panel clamp](cad/Main-panel-clamp.stl) | 1 |
+| [Main panel led cover](cad/Main-panel-le-cover.stl) | 1 |
+| [Main panel button](cad/Main-panel-button.stl) | 2 |
+| [Main panel button mount](cad/Main-panel-button-mount.stl) | 1 |
+| [Main panel manual icon](cad/Main-panel-manual-icon.stl) | 1 |
+| [Main panel sleep icon](cad/Main-panel-sleep-icon.stl) | 1 |
 | [BME280 Cover](https://www.printables.com/model/129341-bme280-hiletgo-33v-atmospheric-pressure-sensor-cov) | 1 |
 
 ## Output
