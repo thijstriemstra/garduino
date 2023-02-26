@@ -73,22 +73,6 @@ i2c:
     scl: GPIO22
     scan: true
 
-# DS3231 Realtime Clock
-time:
-  - platform: ds1307
-    address: 0x68
-    i2c_id: bus_0
-    timezone: "Europe/Amsterdam"
-    # repeated synchronization is not necessary unless the external RTC
-    # is much more accurate than the internal clock
-    update_interval: never
-  - platform: homeassistant
-    # instead try to synchronize via network repeatedly ...
-    on_time_sync:
-      then:
-        # ... and update the RTC when the synchronization was successful
-        ds1307.write_time:
-
 # I2C expander:
 #  - Channel 0: BH1750 light sensor (0x23)
 #  - Channel 1: BME280 barometer (0x76)
@@ -146,6 +130,26 @@ sensor:
 #  - platform: dallas
 #    address: 0xA40000031F055028
 #    name: "Temperature #1"
+
+  - platform: mcp3008             # Attached to pin 0 of the MCP3008.
+    reference_voltage: 3.19
+    update_interval: 1s
+    mcp3008_id: soil_mcp
+    id: freezer_temp_source
+    number: 0                     # MCP3008 pin number
+  - platform: resistance
+    id: freezer_resistance_sensor
+    sensor: freezer_temp_source
+    configuration: DOWNSTREAM
+    resistor: 10kOhm
+  - platform: ntc
+    id: freezer_temp
+    sensor: freezer_resistance_sensor
+    calibration:
+      b_constant: 3950
+      reference_temperature: 25°C
+      reference_resistance: 10kOhm
+    name: Freezer Temperature
 
 # ---------------------------
 # Display
@@ -216,3 +220,59 @@ output:
   - platform: gpio
     pin: GPIO27
     id: power_led
+
+# ---------------------------
+# Deep sleep
+# ---------------------------
+# Note: while in deep sleep mode, the node will not do any work and not
+# respond to any network traffic, even Over The Air updates.
+#deep_sleep:
+#  # The time duration to stay in deep sleep mode
+#  sleep_duration: 4min
+#  # A pin to wake up to once in deep sleep mode
+#  wakeup_pin: GPIO36
+
+# ---------------------------
+# Schedule
+# ---------------------------
+
+time:
+  # DS3231 Realtime Clock
+  - platform: ds1307
+    address: 0x68
+    i2c_id: bus_0
+    timezone: "Europe/Amsterdam"
+    # repeated synchronization is not necessary unless the external RTC
+    # is much more accurate than the internal clock
+    update_interval: never
+
+  - platform: homeassistant
+    # instead try to synchronize via network repeatedly ...
+    on_time_sync:
+      then:
+        # ... and update the RTC when the synchronization was successful
+        ds1307.write_time:
+
+  #- platform: sntp
+    # How often (in sec) the device should publish sensor data while it's
+    # powered on (e.g. during watering or manual mode)
+    # Recommended value: > 30 sec
+    #-D SensorPublishSchedule=35
+    # How long to water daily (in sec)
+    # Recommended value: 120 sec
+    #-D WateringDuration=60
+  #  on_time:
+      # How often (in sec) the device should wake up
+      # Recommended value: 240 sec
+  #    - seconds: 0
+  #      minutes: /4
+  #      then:
+  #        - light.turn_on: power_led
+  #
+  #    # Time to water daily
+  #    - seconds: 0
+  #      minutes: 0
+  #      hours: 19
+  #      days_of_week: "*"
+  #      then:
+  #        - light.turn_on: watering_led
