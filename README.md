@@ -1,11 +1,11 @@
 Garduino
 ========
 
-Arduino code for greenhouse monitoring using ESP32.
+Greenhouse monitoring using ESP32.
 
 ## Features
 
-Controls 12V water valve and water pump and starts them once a day
+Controls 24V water waterpump and starts them once a day
 to water the plants for a period of time. A water flow meter keeps
 track of how much water is used.
 
@@ -163,8 +163,51 @@ Total:                  40.71 ltr
 
 ## Development
 
-Checkout code and open the `garduino` project in VSCode with the PlatformIO
-IDE extension.
+Checkout the code:
+
+```console
+git clone https://github.com/thijstriemstra/garduino.git
+cd garduino
+```
+
+Create a [virtual environment](https://virtualenvwrapper.readthedocs.io/en/latest/index.html)
+called `garduino`:
+
+```console
+mkvirtualenv garduino
+```
+
+Install the dependencies:
+
+```console
+pip install -e .
+```
+
+Verify installation:
+
+```console
+esphome version
+```
+
+Create secrets.yaml in the repository root directory:
+
+```console
+touch secrets.yaml
+```
+
+And make sure to add all options marked with `!secret` in `garduino.yaml`.
+
+### Upload
+
+Plug in the device via USB and type the following command:
+
+```console
+esphome run garduino.yaml
+```
+
+You should see ESPHome validating the configuration and telling you about
+potential problems. Then ESPHome will proceed to compile and upload the
+custom firmware.
 
 ## Local NTP Server
 

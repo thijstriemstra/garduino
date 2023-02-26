@@ -1,0 +1,31 @@
+{
+  "storage_version": 1,
+  "name": "garduino",
+  "friendly_name": null,
+  "comment": null,
+  "esphome_version": "2023.2.4",
+  "src_version": 1,
+  "address": "garduino.local",
+  "web_port": null,
+  "esp_platform": "ESP32",
+  "build_path": ".esphome/build/garduino",
+  "firmware_bin_path": ".esphome/build/garduino\\.pioenvs\\garduino\\firmware.bin",
+  "loaded_integrations": [
+    "api",
+    "async_tcp",
+    "captive_portal",
+    "esp32",
+    "esphome",
+    "gpio",
+    "logger",
+    "md5",
+    "mdns",
+    "network",
+    "ota",
+    "preferences",
+    "socket",
+    "switch",
+    "web_server_base",
+    "wifi"
+  ]
+}
