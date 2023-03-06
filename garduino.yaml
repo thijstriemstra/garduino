@@ -93,16 +93,16 @@ tca9548a:
 # SPI
 # -----------------------------------
 #  - MCP3008 analog expander
-spi:
-  clk_pin: GPIO18
-  mosi_pin: GPIO23
-  miso_pin: GPIO19
+#spi:
+#  clk_pin: GPIO18
+#  mosi_pin: GPIO23
+#  miso_pin: GPIO19
 
 # Analog expander:
 #  - Capacitive Soil Sensor x 5
-mcp3008:
-  id: soil_mcp
-  cs_pin: GPIO5
+#mcp3008:
+#  id: soil_mcp
+#  cs_pin: GPIO5
 
 # ---------------------------
 # Sensors
@@ -131,25 +131,25 @@ sensor:
 #    address: 0xA40000031F055028
 #    name: "Temperature #1"
 
-  - platform: mcp3008             # Attached to pin 0 of the MCP3008.
-    reference_voltage: 3.19
-    update_interval: 1s
-    mcp3008_id: soil_mcp
-    id: freezer_temp_source
-    number: 0                     # MCP3008 pin number
-  - platform: resistance
-    id: freezer_resistance_sensor
-    sensor: freezer_temp_source
-    configuration: DOWNSTREAM
-    resistor: 10kOhm
-  - platform: ntc
-    id: freezer_temp
-    sensor: freezer_resistance_sensor
-    calibration:
-      b_constant: 3950
-      reference_temperature: 25°C
-      reference_resistance: 10kOhm
-    name: Freezer Temperature
+#  - platform: mcp3008             # Attached to pin 0 of the MCP3008.
+#    reference_voltage: 3.19
+#    update_interval: 1s
+#    mcp3008_id: soil_mcp
+#    id: freezer_temp_source
+#    number: 0                     # MCP3008 pin number
+#  - platform: resistance
+#    id: freezer_resistance_sensor
+#    sensor: freezer_temp_source
+#    configuration: DOWNSTREAM
+#    resistor: 10kOhm
+#  - platform: ntc
+#    id: freezer_temp
+#    sensor: freezer_resistance_sensor
+#    calibration:
+#      b_constant: 3950
+#      reference_temperature: 25°C
+#      reference_resistance: 10kOhm
+#    name: Freezer Temperature
 
 # ---------------------------
 # Display
@@ -176,20 +176,20 @@ switch:
 # Buttons
 # ---------------------------
 
-binary_sensor:
-  # Manual run button
-  - platform: gpio
-    pin: GPIO36
-    name: "Manual"
-    filters:
-      - delayed_on: 10ms
-
-  # Power button
-  - platform: gpio
-    pin: GPIO39
-    name: "Power"
-    filters:
-      - delayed_on: 10ms
+#binary_sensor:
+#  # Manual run button
+#  - platform: gpio
+#    pin: GPIO36
+#    name: "Manual"
+#    filters:
+#      - delayed_on: 10ms
+#
+#  # Power button
+#  - platform: gpio
+#    pin: GPIO39
+#    name: "Power"
+#    filters:
+#      - delayed_on: 10ms
 
 # ---------------------------
 # LED
