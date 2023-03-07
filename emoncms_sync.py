@@ -1,4 +1,4 @@
-# Copyright 2021-2022 Collab
+# Copyright 2021-2023 Collab
 
 """
 Post local emonpi data to emoncms.org

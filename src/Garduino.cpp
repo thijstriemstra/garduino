@@ -39,13 +39,13 @@ Garduino::Garduino() {
     valveClosedCallback
   );
 
-  // system time
+  // system time on 1st I2C bus
   _clock = new SystemClock(ClockSCLPin, ClockSDAPin, NTP_HOST);
 
   // power management
   _power = new PowerManagement(WakeupSchedule);
 
-  // display
+  // display on TCA9548A multiplexer
   _display = new SSD1306_OLEDDisplay_Mux(
     _i2c,
     DisplayChannel,
