@@ -15,4 +15,4 @@ __pycache__/
 .esphome/build
 .esphome/idedata
 
-secrets.yaml
+secrets.*
