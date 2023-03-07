@@ -1,4 +1,4 @@
-/*  Copyright (c) 2020-2022, Collab
+/*  Copyright (c) 2020-2023, Collab
  *  All rights reserved
 */
 
@@ -38,7 +38,11 @@ void connectToWifi() {
   ++_totalConnectionAttempts;
 
   Log.info(F("WiFi - SSID: %S" CR), WIFI_SSID);
+  Log.info(F("WiFi - Hostname: %S" CR), WIFI_HOSTNAME);
   Log.info(F("WiFi - Connecting..." CR));
+
+  // set hostname
+  WiFi.setHostname(WIFI_HOSTNAME);
 
   // connect to WIFI
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -49,7 +53,8 @@ void mqttConnect() {
   Log.info(F("MQTT - Connecting to %S" CR), MQTT_HOST);
 
   // connect to MQTT
-  // Note that this will hang forever if there is no MQTT broker running
+  // Note: this will hang forever (until timeout)
+  // if there is no MQTT broker running
   _mqttClient.connect();
 
   // add timeout
