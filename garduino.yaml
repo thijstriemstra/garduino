@@ -8,10 +8,10 @@ esphome:
   platformio_options:
     upload_speed: 115200
 
-  on_boot:
-    then:
-      # read the RTC time once when the system boots
-      ds1307.read_time:
+#  on_boot:
+#    then:
+#      # read the RTC time once when the system boots
+#      ds1307.read_time:
 
 esp32:
   board: az-delivery-devkit-v4
@@ -22,8 +22,8 @@ esp32:
 logger:
 
 # Enable Home Assistant API
-api:
-  password: ""
+#api:
+#  password: ""
 
 ota:
   password: ""
@@ -31,11 +31,15 @@ ota:
 wifi:
   ssid: !secret wifi_ssid
   password: !secret wifi_password
+  # The amount of time to wait before rebooting when no WiFi connection exists.
+  reboot_timeout: 15min
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
   ap:
     ssid: !secret hotspot_ssid
     password: !secret hotspot_password
+    # The time after which to enable the configured fallback hotspot
+    ap_timeout: 1min
 
 captive_portal:
 
@@ -54,8 +58,8 @@ font:
 # Dallas temperature sensor (DS18B20)
 # -----------------------------------
 
-dallas:
-  - pin: GPIO13
+#dallas:
+#  - pin: GPIO13
 
 # -----------------------------------
 # I2C
@@ -65,10 +69,12 @@ dallas:
 #  - Bus 1: TCA9548A I2C expander (0x70)
 i2c:
   - id: bus_0
+    frequency: 200kHz
     sda: GPIO16
     scl: GPIO17
     scan: true
   - id: bus_1
+    frequency: 200kHz
     sda: GPIO4
     scl: GPIO22
     scan: true
@@ -78,8 +84,8 @@ i2c:
 #  - Channel 1: BME280 barometer (0x76)
 #  - Channel 2: SSD1306 OLED (0x3C)
 tca9548a:
-  - address: 0x70
-    id: multiplex0
+  - id: multiplex0
+    address: 0x70
     i2c_id: bus_1
     channels:
       - bus_id: multiplex0channel0
@@ -108,24 +114,24 @@ tca9548a:
 # Sensors
 # ---------------------------
 
-sensor:
-  - platform: bh1750
-    name: "BH1750 Illuminance"
-    i2c_id: multiplex0channel0
-    address: 0x23
-    update_interval: 60s
-
-  - platform: bme280
-    temperature:
-      name: "BME280 Temperature"
-      oversampling: 16x
-    pressure:
-      name: "BME280 Pressure"
-    humidity:
-      name: "BME280 Humidity"
-    address: 0x76
-    update_interval: 60s
-    i2c_id: multiplex0channel1
+#sensor:
+#  - platform: bh1750
+#    name: "BH1750 Illuminance"
+#    i2c_id: multiplex0channel0
+#    address: 0x23
+#    update_interval: 60s
+#
+#  - platform: bme280
+#    temperature:
+#      name: "BME280 Temperature"
+#      oversampling: 16x
+#    pressure:
+#      name: "BME280 Pressure"
+#    humidity:
+#      name: "BME280 Humidity"
+#    address: 0x76
+#    update_interval: 60s
+#    i2c_id: multiplex0channel1
 
 #  - platform: dallas
 #    address: 0xA40000031F055028
@@ -158,19 +164,26 @@ sensor:
 display:
   - platform: ssd1306_i2c
     model: "SSD1306 128x32"
-    address: 0x3C
     i2c_id: multiplex0channel2
+    external_vcc: true
+    address: 0x3C
+    contrast: 100%
+    rotation: 0°
+    flip_x : true
+    flip_y: true
+    invert: false
+    update_interval: 1s
     lambda: |-
-      it.print(0, 0, id(arimo_regular_20), "Hello World!");
+      it.line(0, 0, 10, 20);
 
 # ---------------------------
 # Relay
 # ---------------------------
 
-switch:
-  - platform: gpio
-    name: "Relay"
-    pin: GPIO2
+#switch:
+#  - platform: gpio
+#    name: "Relay"
+#    pin: GPIO2
 
 # ---------------------------
 # Buttons
@@ -236,22 +249,22 @@ output:
 # Schedule
 # ---------------------------
 
-time:
-  # DS3231 Realtime Clock
-  - platform: ds1307
-    address: 0x68
-    i2c_id: bus_0
-    timezone: "Europe/Amsterdam"
-    # repeated synchronization is not necessary unless the external RTC
-    # is much more accurate than the internal clock
-    update_interval: never
-
-  - platform: homeassistant
-    # instead try to synchronize via network repeatedly ...
-    on_time_sync:
-      then:
-        # ... and update the RTC when the synchronization was successful
-        ds1307.write_time:
+#time:
+#  # DS3231 Realtime Clock
+#  - platform: ds1307
+#    address: 0x68
+#    i2c_id: bus_0
+#    timezone: "Europe/Amsterdam"
+#    # repeated synchronization is not necessary unless the external RTC
+#    # is much more accurate than the internal clock
+#    update_interval: never
+#
+##  - platform: homeassistant
+#    # instead try to synchronize via network repeatedly ...
+#    on_time_sync:
+#      then:
+#        # ... and update the RTC when the synchronization was successful
+#        ds1307.write_time:
 
   #- platform: sntp
     # How often (in sec) the device should publish sensor data while it's
