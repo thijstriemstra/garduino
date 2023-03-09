@@ -20,6 +20,7 @@
 #include <DisplayTask.h>
 #include <WateringTask.h>
 #include <PowerManagement.h>
+#include <MultiPlexer_PCF8574.h>
 #include <MultiPlexer_TCA9548A.h>
 #include <SSD1306_OLEDDisplay_Mux.h>
 
@@ -50,12 +51,13 @@ class Garduino {
     DisplayTask* _displayTask;
     MultiPlexer_TCA9548A* _i2c;
     WateringTask* _wateringTask;
+    MultiPlexer_PCF8574* _ioExpander;
     SSD1306_OLEDDisplay_Mux* _display;
 
     bool _manualMode = false;
     int _totalReadings = 15;
     const char *_namespace = "garduino";
-    const char *_version = "3.5.0";
+    const char *_version = "4.0.0";
 
     // tasks
     static void displayInfo(void *pvParameter);
