@@ -30,16 +30,18 @@ Readings from the sensors are sent to a MQTT server over WiFi (if available).
 
 ## Wiring
 
-### Lolin32 Lite
+### AZ-Delivery Devkit V4
 
 | Device | Pin Label | ESP32 Pin | Type |
 | --- | --- | --- | --- |
-| TCA9548A I2C Expander | SDA | `4` | I2C bus 1 (address: `0x70`) |
-| TCA9548A I2C Expander | SCL | `22` | I2C bus 1 (address: `0x70`) |
-| DS3231 Realtime Clock | SDA | `16` | I2C bus 0 (address: `0x68`) |
-| DS3231 Realtime Clock | SCL | `17` | I2C bus 0 (address: `0x68`) |
-| AT24C32 EEPROM on DS3231 | SDA | `16` |  I2C bus 0 (address: `0x57`) |
-| AT24C32 EEPROM on DS3231 | SCL | `17` |  I2C bus 0 (address: `0x57`) |
+| TCA9548A I2C Expander | SDA | `4` | I2C bus 0 (address: `0x70`) |
+| TCA9548A I2C Expander | SCL | `22` | I2C bus 0 (address: `0x70`) |
+| DS3231 Realtime Clock | SDA | `4` | I2C bus 0 (address: `0x68`) |
+| DS3231 Realtime Clock | SCL | `22` | I2C bus 0 (address: `0x68`) |
+| AT24C32 EEPROM on DS3231 | SDA | `4` |  I2C bus 0 (address: `0x57`) |
+| AT24C32 EEPROM on DS3231 | SCL | `22` |  I2C bus 0 (address: `0x57`) |
+| PCF8574 Digital Expander | SDA | `4` |  I2C bus 0 (address: `0x20`) |
+| PCF8574 Digital Expander | SCL | `22` |  I2C bus 0 (address: `0x20`) |
 | MCP3008 Analog Expander | CLK | `18` | SCK |
 | MCP3008 Analog Expander | DOUT | `19` | MISO |
 | MCP3008 Analog Expander | DIN | `23` | MOSI |
@@ -64,6 +66,15 @@ Readings from the sensors are sent to a MQTT server over WiFi (if available).
 | BME280 barometer | SCL | `SC1` | `0x76` |
 | 0.96" OLED Display | SDA | `SD2` | `0x3C` |
 | 0.96" OLED Display | SCL | `SC2` | `0x3C` |
+
+### PCF8574
+
+| Device | Type | PCF8574 Pin |
+| --- | --- | --- |
+| Watering Indication LED | Digital Output | `0` |
+| Manual Run LED  | Digital Output | `1` |
+| Network LED | Digital Output | `2` |
+| Power LED | Digital Output | `3` |
 
 ### MCP3008
 
