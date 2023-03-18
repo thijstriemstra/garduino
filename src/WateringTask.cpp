@@ -11,6 +11,7 @@ WateringTask::WateringTask(
   long task_duration,
   int valve_pin,
   int led_pin,
+  MultiPlexer_PCF8574* mcp,
   const char* app_namespace,
   String timestamp,
   Method finished_callback,
@@ -19,6 +20,7 @@ WateringTask::WateringTask(
 ) {
   duration = task_duration;
 
+  _mcp = mcp;
   _namespace = app_namespace;
   _timestamp = timestamp;
   _finishedCallback = finished_callback;
@@ -29,7 +31,7 @@ WateringTask::WateringTask(
   _prefs = new Preferences();
 
   // indication LED
-  _waterLED = new LED(led_pin);
+  _waterLED = new LED_PCF8574(led_pin, _mcp);
 
   // water valve
   _waterValve = new SolenoidValve(valve_pin);

@@ -12,9 +12,10 @@
 #include <ArduinoLog.h>
 #include <RTClib.h>
 #include <Preferences.h>
-#include <LED.h>
+#include <LED_PCF8574.h>
 #include <Utils.h>
 #include <SolenoidValve.h>
+#include <MultiPlexer_PCF8574.h>
 
 class WateringTask {
   public:
@@ -22,6 +23,7 @@ class WateringTask {
       long task_duration,
       int valve_pin,
       int led_pin,
+      MultiPlexer_PCF8574* mcp,
       const char* app_namespace,
       String timestamp,
       Method finished_callback,
@@ -47,9 +49,10 @@ class WateringTask {
   private:
     bool _debug;
     const char* _namespace;
-    LED* _waterLED;
+    LED_PCF8574* _waterLED;
     String _timestamp;
     Preferences* _prefs;
+    MultiPlexer_PCF8574* _mcp;
     SolenoidValve* _waterValve;
 
     static void setupTask(void *pvParameter);

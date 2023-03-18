@@ -50,6 +50,8 @@ void Sensors::begin() {
   _barometer->begin();
   _light->begin();
   _waterFlow->begin();
+
+  readBarometer(true);
 }
 
 void Sensors::reset() {

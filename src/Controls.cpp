@@ -4,12 +4,14 @@
 
 #include <Controls.h>
 
-Controls::Controls() {
+Controls::Controls(MultiPlexer_PCF8574* mcp) {
+  _mcp = mcp;
+
   manualBtn = new Button(ManualRunButtonPin);
-  manualLED = new LED(ManualRunLEDPin);
-  networkLED = new LED(NetworkLEDPin);
+  manualLED = new LED_PCF8574(ManualRunLEDPin, _mcp);
+  networkLED = new LED_PCF8574(NetworkLEDPin, _mcp);
   powerBtn = new Button(PowerButtonPin);
-  powerLED = new LED(PowerLEDPin);
+  powerLED = new LED_PCF8574(PowerLEDPin, _mcp);
 }
 
 void Controls::begin(Method manualBtnCallback, Method powerBtnCallback) {
@@ -22,8 +24,11 @@ void Controls::begin(Method manualBtnCallback, Method powerBtnCallback) {
 
 void Controls::loop() {
   manualBtn->loop();
-  manualLED->loop();
   powerBtn->loop();
-  powerLED->loop();
-  networkLED->loop();
+}
+
+void Controls::disableLEDs() {
+  manualLED->disable();
+  powerLED->disable();
+  networkLED->disable();
 }

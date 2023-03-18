@@ -1,4 +1,4 @@
-/*  Copyright (c) 2020-2022, Collab
+/*  Copyright (c) 2020-2023, Collab
  *  All rights reserved
 */
 /*
@@ -8,12 +8,17 @@
 #include <Garduino.h>
 
 Garduino::Garduino() {
-  // controls
-  _controls = new Controls();
+  // I2C
+  Wire1.setPins(I2CSDAPin, I2CSCLPin);
 
-  // expander on 2nd I2C bus
-  Wire1.setPins(ExpanderSDAPin, ExpanderSCLPin);
-  _i2c = new MultiPlexer_TCA9548A(ExpanderAddress);
+  // I2C multiplexer
+  _i2c = new MultiPlexer_TCA9548A(I2CExpanderAddress);
+
+  // IO expander
+  _ioExpander = new MultiPlexer_PCF8574(IOExpanderAddress, &Wire1);
+
+  // controls
+  _controls = new Controls(_ioExpander);
 
   // wifi/mqtt
   _iot = new IOT();
@@ -32,6 +37,7 @@ Garduino::Garduino() {
     WateringDuration,
     WaterValvePin,
     WateringIndicationLEDPin,
+    _ioExpander,
     _namespace,
     WateringSchedule,
     wateringReadyCallback,
@@ -39,18 +45,18 @@ Garduino::Garduino() {
     valveClosedCallback
   );
 
-  // system time on 1st I2C bus
-  _clock = new SystemClock(ClockSCLPin, ClockSDAPin, NTP_HOST);
+  // system time
+  _clock = new SystemClock(&Wire1, NTP_HOST);
 
   // power management
   _power = new PowerManagement(WakeupSchedule);
 
-  // display on TCA9548A multiplexer
+  // display on I2C multiplexer
   _display = new SSD1306_OLEDDisplay_Mux(
     _i2c,
     DisplayChannel,
     DisplayAddress,
-    true
+    false
   );
 
   // display task
@@ -73,6 +79,7 @@ void Garduino::begin() {
 
   // board info
   Log.info(F("Board:\t  %S" CR), ARDUINO_BOARD);
+  Log.info(F("ESP-IDF:\t  %S" CR), ESP.getSdkVersion());
 
   // callbacks
   Method manualBtnCallback;
@@ -97,12 +104,16 @@ void Garduino::begin() {
   systemWakeupCallback.attachCallback(
     makeFunctor((Functor0 *)0, *this, &Garduino::onSystemWakeup));
 
-  // i2c
-  _i2c->begin();
-
   // system time
   _clock->begin();
   Log.info(F("Local time:  %S" CR), _clock->getStartupTime());
+
+  // I2C multiplexer
+  _i2c->begin();
+  //_i2c->scanAll();
+
+  // expander
+  _ioExpander->begin();
 
   // controls
   _controls->begin(manualBtnCallback, powerBtnCallback);
@@ -160,8 +171,8 @@ void Garduino::sleep(bool forced) {
   Log.info(F("**  %S to sleep... Bye.  **" CR), target);
   Log.info(F("******************************" CR));
 
-  // disable power led
-  _controls->powerLED->disable();
+  // disable leds
+  _controls->disableLEDs();
 
   // put device to sleep
   _power->sleep();

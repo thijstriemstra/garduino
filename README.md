@@ -49,12 +49,8 @@ Readings from the sensors are sent to a MQTT server over WiFi (if available).
 | DS18B20 Temperature Sensors | GPIO | `13` | Digital Input |
 | Single Channel Relay | GPIO | `2` | Digital Output |
 | Water Flow Sensor | GPIO | `15` | Analog Input |
-| Manual Run Button | GPIO | `36` | Digital Input |
-| Power Button | GPIO | `39` | Digital Input |
-| Watering Indication LED | GPIO | `25` | Digital Output |
-| Manual Run LED | GPIO | `26` | Digital Output |
-| Network LED | GPIO | `33` | Digital Output |
-| Power LED | GPIO | `27` | Digital Output |
+| Manual Run Button | GPIO | `39` | Digital Input |
+| Power Button | GPIO | `36` | Digital Input |
 
 ### TCA9548A
 
@@ -71,10 +67,10 @@ Readings from the sensors are sent to a MQTT server over WiFi (if available).
 
 | Device | Type | PCF8574 Pin |
 | --- | --- | --- |
-| Watering Indication LED | Digital Output | `0` |
-| Manual Run LED  | Digital Output | `1` |
-| Network LED | Digital Output | `2` |
-| Power LED | Digital Output | `3` |
+| Watering Indication LED (White) | Digital Output | `0` |
+| Manual Run LED (Blue) | Digital Output | `1` |
+| Network LED (Yellow) | Digital Output | `2` |
+| Power LED (Red) | Digital Output | `3` |
 
 ### MCP3008
 
