@@ -20,11 +20,10 @@ Time is stored in a battery-powered DS3231 realtime clock.
 | Target | Sensor | Location | Amount |
 | --- | --- | --- | --- |
 | Light | BH1750 | Inside | 1 |
-| Soil moisture | Capacitive Soil Moisture Sensor v2.0 | Inside | 5 |
+| Soil moisture | Capacitive Soil Moisture Sensor v2.0 | Inside | 8 |
 | Temperature/pressure/humidity | BME280 | Inside | 1 |
 | Air temperature | DS18B20 | Outside | 1 |
 | Water temperature | DS18B20 | Outside | 1 |
-| Rain | YL-83 | Outside | 1 |
 
 Readings from the sensors are sent to a MQTT server over WiFi (if available).
 
@@ -47,8 +46,9 @@ Readings from the sensors are sent to a MQTT server over WiFi (if available).
 | MCP3008 Analog Expander | DIN | `23` | MOSI |
 | MCP3008 Analog Expander | CS | `5` | SS |
 | DS18B20 Temperature Sensors | GPIO | `13` | Digital Input |
-| Single Channel Relay | GPIO | `2` | Digital Output |
-| Water Flow Sensor | GPIO | `15` | Analog Input |
+| Buzzer | GPIO | `25` | Digital Output |
+| Single Channel Relay | GPIO | `26` | Digital Output |
+| Water Flow Sensor | GPIO | `27` | Analog Input |
 | Manual Run Button | GPIO | `39` | Digital Input |
 | Power Button | GPIO | `36` | Digital Input |
 
@@ -60,16 +60,16 @@ Readings from the sensors are sent to a MQTT server over WiFi (if available).
 | BH1750 light sensor | SCL | `SC0` | `0x23` |
 | BME280 barometer | SDA | `SD1` | `0x76` |
 | BME280 barometer | SCL | `SC1` | `0x76` |
-| 0.96" OLED Display | SDA | `SD2` | `0x3C` |
-| 0.96" OLED Display | SCL | `SC2` | `0x3C` |
+| 0.91" OLED Display | SDA | `SD2` | `0x3C` |
+| 0.91" OLED Display | SCL | `SC2` | `0x3C` |
 
 ### PCF8574
 
 | Device | Type | PCF8574 Pin |
 | --- | --- | --- |
 | Watering Indication LED (White) | Digital Output | `0` |
-| Manual Run LED (Blue) | Digital Output | `1` |
-| Network LED (Yellow) | Digital Output | `2` |
+| Manual Run LED (Yellow) | Digital Output | `2` |
+| Network LED (Blue) | Digital Output | `1` |
 | Power LED (Red) | Digital Output | `3` |
 
 ### MCP3008
@@ -81,7 +81,9 @@ Readings from the sensors are sent to a MQTT server over WiFi (if available).
 | Capacitive Soil 3 | Analog Input | `2` |
 | Capacitive Soil 4 | Analog Input | `3` |
 | Capacitive Soil 5 | Analog Input | `4` |
-| YL-83 Rain Sensor | Analog Input | `5` |
+| Capacitive Soil 6 | Analog Input | `5` |
+| Capacitive Soil 7 | Analog Input | `6` |
+| Capacitive Soil 8 | Analog Input | `7` |
 
 ## 3D Printable Parts
 

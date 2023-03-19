@@ -38,7 +38,6 @@ void connectToWifi() {
   ++_totalConnectionAttempts;
 
   Log.info(F("WiFi - SSID: %S" CR), WIFI_SSID);
-  Log.info(F("WiFi - Hostname: %S" CR), WIFI_HOSTNAME);
   Log.info(F("WiFi - Connecting..." CR));
 
   // set hostname
@@ -74,6 +73,7 @@ void WiFiEvent(WiFiEvent_t event) {
   switch (event) {
     case SYSTEM_EVENT_STA_GOT_IP:
       Log.info(F("WiFi - Connected." CR));
+      Log.info(F("WiFi - Hostname: %S" CR), WIFI_HOSTNAME);
       Log.info(F("Wifi - IP address: %p" CR), WiFi.localIP());
       Log.info(F("================================" CR));
 

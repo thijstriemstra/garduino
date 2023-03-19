@@ -32,10 +32,18 @@ Sensors::Sensors(
   soilCfg.sensor5_channel = SoilSensor5Channel;
   soilCfg.sensor5_wet = SoilSensor5Wet;
   soilCfg.sensor5_dry = SoilSensor5Dry;
+  soilCfg.sensor6_channel = SoilSensor6Channel;
+  soilCfg.sensor6_wet = SoilSensor6Wet;
+  soilCfg.sensor6_dry = SoilSensor6Dry;
+  soilCfg.sensor7_channel = SoilSensor7Channel;
+  soilCfg.sensor7_wet = SoilSensor7Wet;
+  soilCfg.sensor7_dry = SoilSensor7Dry;
+  soilCfg.sensor8_channel = SoilSensor8Channel;
+  soilCfg.sensor8_wet = SoilSensor8Wet;
+  soilCfg.sensor8_dry = SoilSensor8Dry;
 
   _adc = new MultiPlexer_MCP3008(AnalogExpanderCSPin);
   _soil = new SoilSensors(soilCfg, _adc);
-  _rain = new YL83_RainSensor_MCP3008(_adc, RainSensorChannel);
   _waterFlow = new WaterFlowMeter(WaterFlowMeterPin, ns);
   _temperature = new DS18B20_TemperatureSensors(TemperatureSensorsPin);
   _light = new BH1750_LightSensor_Mux(i2c, LightSensorChannel, LightSensorAddress);
@@ -44,14 +52,11 @@ Sensors::Sensors(
 
 void Sensors::begin() {
   _adc->begin();
-  _rain->begin();
   _soil->begin();
   _temperature->begin();
   _barometer->begin();
   _light->begin();
   _waterFlow->begin();
-
-  readBarometer(true);
 }
 
 void Sensors::reset() {
@@ -152,6 +157,9 @@ void Sensors::publish() {
   _iot->publish("/inside/soil_3", soil.sensor3);
   _iot->publish("/inside/soil_4", soil.sensor4);
   _iot->publish("/inside/soil_5", soil.sensor5);
+  _iot->publish("/inside/soil_6", soil.sensor6);
+  _iot->publish("/inside/soil_7", soil.sensor7);
+  _iot->publish("/inside/soil_8", soil.sensor8);
 
   // SYSTEM TEMPERATURE
   _iot->publish("/system/temperature", _sysTemperature);
@@ -164,10 +172,6 @@ void Sensors::publish() {
   Log.info(F("Outside" CR));
   Log.info(F("-------" CR));
   Log.info(CR);
-
-  // RAIN
-  int rain = measureRain();
-  _iot->publish("/outside/rain", rain);
 
   // OUTSIDE TEMPERATURE
   OutsideTemperatureResult outside = readOutsideTemperature();
@@ -207,15 +211,6 @@ float Sensors::measureLight() {
   return lux;
 }
 
-int Sensors::measureRain() {
-  int rainSensorValue = _rain->measurePercentage();
-
-  if (_debug) {
-    Log.info(F("Rain:\t\t%D%%" CR), rainSensorValue);
-  }
-  return rainSensorValue;
-}
-
 BME280_Result Sensors::readBarometer(bool debug) {
   BME280_Result result = _barometer->readAll();
 
@@ -247,6 +242,9 @@ SoilMoistureResult Sensors::readSoilMoisture() {
     Log.info(F("Soil-3 moisture:\t%d%%" CR), result.sensor3);
     Log.info(F("Soil-4 moisture:\t%d%%" CR), result.sensor4);
     Log.info(F("Soil-5 moisture:\t%d%%" CR), result.sensor5);
+    Log.info(F("Soil-6 moisture:\t%d%%" CR), result.sensor6);
+    Log.info(F("Soil-7 moisture:\t%d%%" CR), result.sensor7);
+    Log.info(F("Soil-8 moisture:\t%d%%" CR), result.sensor8);
   }
 
   return result;

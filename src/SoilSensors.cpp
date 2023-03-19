@@ -12,6 +12,9 @@ SoilSensors::SoilSensors(SoilSensorsConfig cfg, MultiPlexer_MCP3008 *adc) {
   _soil3 = new Capacitive_SoilSensor_MCP3008(adc, cfg.sensor3_channel, cfg.sensor3_wet, cfg.sensor3_dry);
   _soil4 = new Capacitive_SoilSensor_MCP3008(adc, cfg.sensor4_channel, cfg.sensor4_wet, cfg.sensor4_dry);
   _soil5 = new Capacitive_SoilSensor_MCP3008(adc, cfg.sensor5_channel, cfg.sensor5_wet, cfg.sensor5_dry);
+  _soil6 = new Capacitive_SoilSensor_MCP3008(adc, cfg.sensor6_channel, cfg.sensor6_wet, cfg.sensor6_dry);
+  _soil7 = new Capacitive_SoilSensor_MCP3008(adc, cfg.sensor7_channel, cfg.sensor7_wet, cfg.sensor7_dry);
+  _soil8 = new Capacitive_SoilSensor_MCP3008(adc, cfg.sensor8_channel, cfg.sensor8_wet, cfg.sensor8_dry);
 }
 
 void SoilSensors::begin() {
@@ -24,6 +27,9 @@ SoilMoistureResult SoilSensors::readAll() {
   result.sensor3 = _soil3->measurePercentage();
   result.sensor4 = _soil4->measurePercentage();
   result.sensor5 = _soil5->measurePercentage();
+  result.sensor6 = _soil6->measurePercentage();
+  result.sensor7 = _soil7->measurePercentage();
+  result.sensor8 = _soil8->measurePercentage();
 
   return result;
 }

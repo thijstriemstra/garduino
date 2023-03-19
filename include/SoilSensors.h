@@ -17,7 +17,10 @@ struct SoilMoistureResult {
   int sensor3;
   int sensor4;
   int sensor5;
-  int totalSensors = 5;
+  int sensor6;
+  int sensor7;
+  int sensor8;
+  int totalSensors = 8;
 };
 
 struct SoilSensorsConfig {
@@ -36,6 +39,15 @@ struct SoilSensorsConfig {
   int sensor5_channel;
   int sensor5_wet;
   int sensor5_dry;
+  int sensor6_channel;
+  int sensor6_wet;
+  int sensor6_dry;
+  int sensor7_channel;
+  int sensor7_wet;
+  int sensor7_dry;
+  int sensor8_channel;
+  int sensor8_wet;
+  int sensor8_dry;
 };
 
 class SoilSensors {
@@ -50,6 +62,9 @@ class SoilSensors {
     Capacitive_SoilSensor_MCP3008* _soil3;
     Capacitive_SoilSensor_MCP3008* _soil4;
     Capacitive_SoilSensor_MCP3008* _soil5;
+    Capacitive_SoilSensor_MCP3008* _soil6;
+    Capacitive_SoilSensor_MCP3008* _soil7;
+    Capacitive_SoilSensor_MCP3008* _soil8;
 };
 
 #endif

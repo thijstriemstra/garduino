@@ -15,6 +15,7 @@
 #include <LED_PCF8574.h>
 #include <Utils.h>
 #include <SolenoidValve.h>
+#include <Buzzer.h>
 #include <MultiPlexer_PCF8574.h>
 
 class WateringTask {
@@ -23,6 +24,7 @@ class WateringTask {
       long task_duration,
       int valve_pin,
       int led_pin,
+      int buzzer_pin,
       MultiPlexer_PCF8574* mcp,
       const char* app_namespace,
       String timestamp,
@@ -39,6 +41,7 @@ class WateringTask {
     void start();
     void open();
     void close();
+    void disableLEDs();
     DateTime load();
     void save(DateTime timestamp);
     bool isValveOpen();
@@ -51,6 +54,7 @@ class WateringTask {
     const char* _namespace;
     LED_PCF8574* _waterLED;
     String _timestamp;
+    Buzzer* _buzzer;
     Preferences* _prefs;
     MultiPlexer_PCF8574* _mcp;
     SolenoidValve* _waterValve;

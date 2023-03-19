@@ -37,6 +37,7 @@ Garduino::Garduino() {
     WateringDuration,
     WaterValvePin,
     WateringIndicationLEDPin,
+    BuzzerPin,
     _ioExpander,
     _namespace,
     WateringSchedule,
@@ -173,6 +174,7 @@ void Garduino::sleep(bool forced) {
 
   // disable leds
   _controls->disableLEDs();
+  _wateringTask->disableLEDs();
 
   // put device to sleep
   _power->sleep();

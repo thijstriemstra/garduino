@@ -16,7 +16,6 @@
 #include <MultiPlexer_MCP3008.h>
 #include <MultiPlexer_TCA9548A.h>
 #include <BH1750_LightSensor_Mux.h>
-#include <YL83_RainSensor_MCP3008.h>
 #include <BME280_BarometerSensor_Mux.h>
 #include <DS18B20_TemperatureSensors.h>
 
@@ -60,7 +59,6 @@ class Sensors {
     MultiPlexer_MCP3008* _adc;
     WaterFlowMeter* _waterFlow;
     BH1750_LightSensor_Mux* _light;
-    YL83_RainSensor_MCP3008* _rain;
     BME280_BarometerSensor_Mux* _barometer;
     DS18B20_TemperatureSensors* _temperature;
 };

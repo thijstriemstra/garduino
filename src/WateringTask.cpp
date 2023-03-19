@@ -11,6 +11,7 @@ WateringTask::WateringTask(
   long task_duration,
   int valve_pin,
   int led_pin,
+  int buzzer_pin,
   MultiPlexer_PCF8574* mcp,
   const char* app_namespace,
   String timestamp,
@@ -35,6 +36,9 @@ WateringTask::WateringTask(
 
   // water valve
   _waterValve = new SolenoidValve(valve_pin);
+
+  // buzzer
+  _buzzer = new Buzzer(BuzzerPin);
 }
 
 void WateringTask::begin() {
@@ -110,6 +114,9 @@ void WateringTask::open() {
 
   // open valve
   _waterValve->start();
+
+  // enable buzzer
+  _buzzer->enable();
 }
 
 void WateringTask::close() {
@@ -124,6 +131,9 @@ void WateringTask::close() {
 
   // close valve
   _waterValve->stop();
+
+  // enable buzzer
+  _buzzer->enable();
 }
 
 bool WateringTask::isWatering() {
@@ -163,6 +173,10 @@ void WateringTask::save(DateTime timestamp) {
 
   // close the preferences
   _prefs->end();
+}
+
+void WateringTask::disableLEDs() {
+  _waterLED->disable();
 }
 
 DateTime WateringTask::load() {
