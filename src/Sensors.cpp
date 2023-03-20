@@ -44,7 +44,6 @@ Sensors::Sensors(
 
   _adc = new MultiPlexer_MCP3008(AnalogExpanderCSPin);
   _soil = new SoilSensors(soilCfg, _adc);
-  _waterFlow = new WaterFlowMeter(WaterFlowMeterPin, ns);
   _temperature = new DS18B20_TemperatureSensors(TemperatureSensorsPin);
   _light = new BH1750_LightSensor_Mux(i2c, LightSensorChannel, LightSensorAddress);
   _barometer = new BME280_BarometerSensor_Mux(i2c, BarometerChannel);
@@ -56,12 +55,9 @@ void Sensors::begin() {
   _temperature->begin();
   _barometer->begin();
   _light->begin();
-  _waterFlow->begin();
 }
 
 void Sensors::reset() {
-  // water flow
-  _waterFlow->reset();
 }
 
 void Sensors::startPublish(IOT* iot, float system_temperature) {
@@ -104,9 +100,6 @@ void Sensors::setupTask(void *pvParameter) {
 void Sensors::run() {
   // publish data
   publish();
-
-  // water flow
-  _waterFlow->measure(1);
 }
 
 void Sensors::wait() {
@@ -115,8 +108,6 @@ void Sensors::wait() {
 }
 
 void Sensors::save() {
-  // water flow
-  _waterFlow->saveHistoric();
 }
 
 void Sensors::publish() {
@@ -185,16 +176,10 @@ void Sensors::publish() {
   Log.info(F("-------" CR));
   Log.info(CR);
 
-  double totalLiters = _waterFlow->getTotalVolume();
-  double historicLiters = _waterFlow->getHistoricVolume();
   float waterTemp = outside.water;
   _iot->publish("/water/temperature", waterTemp);
-  _iot->publish("/water/cycle_volume", totalLiters);
-  _iot->publish("/water/historic_volume", historicLiters);
   if (_debug) {
     Log.info(F("Temperature:\t%F °C" CR), waterTemp);
-    Log.info(F("Current:\t\t%D ltr" CR), totalLiters);
-    Log.info(F("Total:\t\t%D ltr" CR), historicLiters);
   }
 
   Log.info(CR);

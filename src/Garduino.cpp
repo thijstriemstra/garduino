@@ -79,8 +79,8 @@ void Garduino::begin() {
   Log.info(F("========================" CR));
 
   // board info
-  Log.info(F("Board:\t  %S" CR), ARDUINO_BOARD);
-  Log.info(F("ESP-IDF:\t  %S" CR), ESP.getSdkVersion());
+  Log.info(F("Board:\t   %S" CR), ARDUINO_BOARD);
+  Log.info(F("ESP-IDF:\t   %S" CR), ESP.getSdkVersion());
 
   // callbacks
   Method manualBtnCallback;
@@ -150,9 +150,6 @@ void Garduino::loop() {
 }
 
 void Garduino::sleep(bool forced) {
-  // display
-  _display->disable();
-
   // save total volume added
   _sensors->save();
 
@@ -175,6 +172,9 @@ void Garduino::sleep(bool forced) {
   // disable leds
   _controls->disableLEDs();
   _wateringTask->disableLEDs();
+
+   // display
+  _display->disable();
 
   // put device to sleep
   _power->sleep();
@@ -369,6 +369,7 @@ void Garduino::displayInfo(void *pvParameter) {
   for (;;) {
     // obtain the instance pointer
     Garduino* garduino = reinterpret_cast<Garduino*>(pvParameter);
+    int pausedMs = 0;
 
     // don't overwrite display when watering
     if (!garduino->_wateringTask->isValveOpen()) {
@@ -376,7 +377,18 @@ void Garduino::displayInfo(void *pvParameter) {
       garduino->displayTemperature();
 
       // pause the task
-      vTaskDelay(10000 / portTICK_PERIOD_MS);
+      pausedMs = 4000;
+      vTaskDelay(pausedMs / portTICK_PERIOD_MS);
+    }
+
+    // don't overwrite display when watering
+    if (!garduino->_wateringTask->isValveOpen()) {
+      // display humidity
+      garduino->displayHumidity();
+
+      // pause the task
+      pausedMs = 4000;
+      vTaskDelay(pausedMs / portTICK_PERIOD_MS);
     }
 
     // don't overwrite display when watering
@@ -385,11 +397,13 @@ void Garduino::displayInfo(void *pvParameter) {
       garduino->displayTime();
 
       // pause the task
-      vTaskDelay(10000 / portTICK_PERIOD_MS);
+      pausedMs = 4000;
+      vTaskDelay(pausedMs / portTICK_PERIOD_MS);
     }
 
     // pause the task
-    vTaskDelay(5000 / portTICK_PERIOD_MS);
+    pausedMs = 1000;
+    vTaskDelay(pausedMs / portTICK_PERIOD_MS);
   }
 }
 
@@ -401,6 +415,12 @@ void Garduino::displayTemperature() {
   BME280_Result tmp = _sensors->readBarometer();
 
   _displayTask->showTemperature(tmp.temperature);
+}
+
+void Garduino::displayHumidity() {
+  BME280_Result tmp = _sensors->readBarometer();
+
+  _displayTask->showHumidity(tmp.humidity);
 }
 
 void Garduino::printPrefix(Print* _logOutput, int logLevel) {
@@ -416,7 +436,7 @@ void Garduino::printPrefix(Print* _logOutput, int logLevel) {
   const unsigned long Hours = (secs % SECS_PER_DAY) / SECS_PER_HOUR;
 
   char timestamp[20];
-  sprintf(timestamp, "%02d:%02d:%02d.%03d ", Hours, Minutes, Seconds, MilliSeconds);
+  sprintf(timestamp, "%02d:%02d:%02d.%03d  ", Hours, Minutes, Seconds, MilliSeconds);
 
   _logOutput->print(timestamp);
 }

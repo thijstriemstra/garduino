@@ -35,6 +35,7 @@ class Garduino {
     void checkWatering();
     void startManualMode();
     void displayTime();
+    void displayHumidity();
     void displayTemperature();
     void sleep(bool forced = false);
     bool isWatering();

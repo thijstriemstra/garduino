@@ -48,8 +48,17 @@ void DisplayTask::showTime() {
 void DisplayTask::showTemperature(float temperature) {
   char buffer[9];
   char tmp[6];
-  dtostrf(temperature, 4, 2, tmp);
+  dtostrf(temperature, 4, 1, tmp);
   sprintf(buffer, "%s °C", tmp);
+
+  _display->writeBig(buffer);
+}
+
+void DisplayTask::showHumidity(float humidity) {
+  char buffer[9];
+  char tmp[6];
+  dtostrf(humidity, 4, 0, tmp);
+  sprintf(buffer, "%s%%", tmp);
 
   _display->writeBig(buffer);
 }

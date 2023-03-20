@@ -12,7 +12,6 @@
 
 #include <IOT.h>
 #include <SoilSensors.h>
-#include <WaterFlowMeter.h>
 #include <MultiPlexer_MCP3008.h>
 #include <MultiPlexer_TCA9548A.h>
 #include <BH1750_LightSensor_Mux.h>
@@ -57,7 +56,6 @@ class Sensors {
 
     SoilSensors* _soil;
     MultiPlexer_MCP3008* _adc;
-    WaterFlowMeter* _waterFlow;
     BH1750_LightSensor_Mux* _light;
     BME280_BarometerSensor_Mux* _barometer;
     DS18B20_TemperatureSensors* _temperature;

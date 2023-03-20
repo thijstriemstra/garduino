@@ -5,15 +5,11 @@ Greenhouse monitoring using ESP32.
 
 ## Features
 
-Controls 24V water waterpump and starts it once a day
-to water the plants for a period of time. A water flow meter keeps
-track of how much water is used.
-
-Device status is displayed on a small 0.91 inch OLED screen.
-
-Includes a manual mode button to enable/disable the water valve manually.
-
-Time is stored in a battery-powered DS3231 realtime clock.
+- Controls 24V water waterpump and starts it once a day to water the plants for
+  a period of time
+- Device status is displayed on a small 0.91 inch OLED screen
+- Includes a manual mode button to enable/disable the water valve manually
+- Time is stored in a battery-powered DS3231 realtime clock
 
 ### Sensors
 
@@ -48,7 +44,6 @@ Readings from the sensors are sent to a MQTT server over WiFi (if available).
 | DS18B20 Temperature Sensors | GPIO | `13` | Digital Input |
 | Buzzer | GPIO | `25` | Digital Output |
 | Single Channel Relay | GPIO | `26` | Digital Output |
-| Water Flow Sensor | GPIO | `27` | Analog Input |
 | Manual Run Button | GPIO | `39` | Digital Input |
 | Power Button | GPIO | `36` | Digital Input |
 

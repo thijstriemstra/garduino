@@ -175,10 +175,6 @@ void WateringTask::save(DateTime timestamp) {
   _prefs->end();
 }
 
-void WateringTask::disableLEDs() {
-  _waterLED->disable();
-}
-
 DateTime WateringTask::load() {
   _prefs->begin(_namespace, true);
 
@@ -197,4 +193,8 @@ String WateringTask::getLastRunTime() {
 
   return lastRun.timestamp(DateTime::TIMESTAMP_DATE) + " " +
     lastRun.timestamp(DateTime::TIMESTAMP_TIME);
+}
+
+void WateringTask::disableLEDs() {
+  _waterLED->disable();
 }

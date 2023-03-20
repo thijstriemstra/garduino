@@ -17,7 +17,7 @@ PowerManagement::PowerManagement(int wakeupTime) {
 void PowerManagement::init(Method wakeup_callback) {
   _wakeupCallback = wakeup_callback;
 
-  Log.info(F("***********************************" CR));
+  Log.info(F("*******************************************" CR));
 
   // print the wakeup reason
   wokeup();
@@ -28,7 +28,7 @@ void PowerManagement::init(Method wakeup_callback) {
   // wake up esp32 periodically
   esp_sleep_enable_timer_wakeup(_wakeupTime * uS_TO_S_FACTOR);
 
-  Log.info(F("***********************************" CR));
+  Log.info(F("*******************************************" CR));
 }
 
 void PowerManagement::sleep() {
