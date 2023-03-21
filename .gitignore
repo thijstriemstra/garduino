@@ -12,7 +12,7 @@ __pycache__/
 *.blend1
 *.egg-info
 
-.esphome/build
-.esphome/idedata
+esphome/.esphome/
+esphome/.esphome/idedata
 
 secrets.*
