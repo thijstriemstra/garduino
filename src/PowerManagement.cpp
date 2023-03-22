@@ -61,9 +61,13 @@ void PowerManagement::wokeup() {
       break;
 
     default:
-      Log.info(F("Wakeup reason: not caused by deep sleep: %d" CR),
-        wakeup_reason
-      );
+      if (wakeup_reason == 0) {
+        Log.info(F("Wakeup reason: USB Serial" CR));
+      } else {
+        Log.info(F("Wakeup reason: not caused by deep sleep: %d" CR),
+          wakeup_reason
+        );
+      }
       break;
   }
 
