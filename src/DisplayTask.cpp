@@ -42,16 +42,30 @@ void DisplayTask::showTime() {
   char timestamp[5];
   sprintf(timestamp, "%02d:%02d", now.hour(), now.minute());
 
-  _display->writeBig(timestamp);
+  _display->writeBig(timestamp, 78);
+
+  _display->drawImage(0, 5,
+    clock_width,
+    clock_height,
+    clock_bits,
+    false
+  );
 }
 
 void DisplayTask::showTemperature(float temperature) {
   char buffer[9];
   char tmp[6];
   dtostrf(temperature, 4, 1, tmp);
-  sprintf(buffer, "%s °C", tmp);
+  sprintf(buffer, "%s°", tmp);
 
-  _display->writeBig(buffer);
+  _display->writeBig(buffer, 70);
+
+  _display->drawImage(2, 2,
+    temperature_three_quarters_width,
+    temperature_three_quarters_height,
+    temperature_three_quarters_bits,
+    false
+  );
 }
 
 void DisplayTask::showHumidity(float humidity) {
@@ -61,6 +75,13 @@ void DisplayTask::showHumidity(float humidity) {
   sprintf(buffer, "%s%%", tmp);
 
   _display->writeBig(buffer);
+
+  _display->drawImage(0, 2,
+    droplet_width,
+    droplet_height,
+    droplet_bits,
+    false
+  );
 }
 
 void DisplayTask::countdown(void *pvParameter) {
@@ -73,7 +94,14 @@ void DisplayTask::countdown(void *pvParameter) {
       char timestamp[8];
       sprintf(timestamp, "%02d:%02d", elapsed.minutes(), elapsed.seconds());
 
-      task->_display->writeBig(timestamp);
+      task->_display->writeBig(timestamp, 72);
+
+      task->_display->drawImage(0, 4,
+        shower_width,
+        shower_height,
+        shower_bits,
+        false
+      );
 
       // pause the task
       vTaskDelay(1000 / portTICK_PERIOD_MS);

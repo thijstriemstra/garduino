@@ -111,7 +111,7 @@ Example of cycle report on serial line:
 00:00:00.709  Wifi - IP address: 192.168.8.155
 00:00:00.710  ================================
 00:00:00.721  MQTT - Timeout set to 30 seconds
-00:00:00.721  MQTT - Broker: octopi.local:1883
+00:00:00.721  MQTT - Broker: 192.168.8.2:1883
 00:00:00.722  MQTT - Connecting...
 00:00:00.775  MQTT - Connected.
 00:00:00.776  ================================
@@ -129,8 +129,8 @@ Example of cycle report on serial line:
 00:00:00.814  Inside
 00:00:00.814  ------
 00:00:00.814
-00:00:00.815  Light:            1.67 lx
-00:00:00.821  Humidity:         100.00%
+00:00:00.815  Light:            350.67 lx
+00:00:00.821  Humidity:         44.5%
 00:00:00.822  Temperature:      25.14 °C
 00:00:00.822  Pressure:         1002.44 hPa
 00:00:00.824  Soil-1 moisture:  153%

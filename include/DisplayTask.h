@@ -11,6 +11,7 @@
 #include <RTClib.h>
 #include <ArduinoLog.h>
 #include <SystemClock.h>
+#include <images.h>
 #include <SSD1306_OLEDDisplay_Mux.h>
 
 class DisplayTask {
