@@ -133,14 +133,14 @@ Example of cycle report on serial line:
 00:00:00.821  Humidity:         44.5%
 00:00:00.822  Temperature:      25.14 °C
 00:00:00.822  Pressure:         1002.44 hPa
-00:00:00.824  Soil-1 moisture:  153%
-00:00:00.825  Soil-2 moisture:  151%
-00:00:00.836  Soil-3 moisture:  149%
-00:00:00.836  Soil-4 moisture:  152%
-00:00:00.837  Soil-5 moisture:  152%
-00:00:00.847  Soil-6 moisture:  152%
-00:00:00.848  Soil-7 moisture:  152%
-00:00:00.848  Soil-8 moisture:  152%
+00:00:00.824  Soil-1 moisture:  50%
+00:00:00.825  Soil-2 moisture:  51%
+00:00:00.836  Soil-3 moisture:  49%
+00:00:00.836  Soil-4 moisture:  52%
+00:00:00.837  Soil-5 moisture:  52%
+00:00:00.847  Soil-6 moisture:  58%
+00:00:00.848  Soil-7 moisture:  53%
+00:00:00.848  Soil-8 moisture:  42%
 00:00:00.854  System:           23.75 °C
 00:00:00.854
 00:00:00.854  Outside

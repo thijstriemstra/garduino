@@ -37,6 +37,15 @@ void DisplayTask::close() {
   //_display->writeBig(F("Closed"));
 }
 
+void DisplayTask::showLogo() {
+  _display->drawImage(0, 0,
+    logo_width,
+    logo_height,
+    logo_bits,
+    false
+  );
+}
+
 void DisplayTask::showTime() {
   DateTime now = _clock->now();
   char timestamp[5];
@@ -60,7 +69,7 @@ void DisplayTask::showTemperature(float temperature) {
 
   _display->writeBig(buffer, 70);
 
-  _display->drawImage(2, 2,
+  _display->drawImage(2, 5,
     temperature_three_quarters_width,
     temperature_three_quarters_height,
     temperature_three_quarters_bits,

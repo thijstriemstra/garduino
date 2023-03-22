@@ -343,6 +343,10 @@ void Garduino::onSystemWakeup() {
     // enable manual led
     _controls->manualLED->enable();
 
+    // show logo
+    _displayTask->showLogo();
+    delay(1800);
+
     // start display info task
     xTaskCreatePinnedToCore(
       &Garduino::displayInfo,    /* Task function. */
