@@ -377,7 +377,7 @@ void Garduino::displayInfo(void *pvParameter) {
   for (;;) {
     // obtain the instance pointer
     Garduino* garduino = reinterpret_cast<Garduino*>(pvParameter);
-    int pausedMs = 0;
+    int pausedMs = 3500;
 
     // don't overwrite display when watering
     if (!garduino->_wateringTask->isValveOpen()) {
@@ -385,7 +385,6 @@ void Garduino::displayInfo(void *pvParameter) {
       garduino->displayTemperature();
 
       // pause the task
-      pausedMs = 4000;
       vTaskDelay(pausedMs / portTICK_PERIOD_MS);
     }
 
@@ -395,7 +394,6 @@ void Garduino::displayInfo(void *pvParameter) {
       garduino->displayHumidity();
 
       // pause the task
-      pausedMs = 4000;
       vTaskDelay(pausedMs / portTICK_PERIOD_MS);
     }
 
@@ -405,17 +403,6 @@ void Garduino::displayInfo(void *pvParameter) {
       garduino->displayLux();
 
       // pause the task
-      pausedMs = 4000;
-      vTaskDelay(pausedMs / portTICK_PERIOD_MS);
-    }
-
-    // don't overwrite display when watering
-    if (!garduino->_wateringTask->isValveOpen()) {
-      // display time
-      garduino->displayTime();
-
-      // pause the task
-      pausedMs = 4000;
       vTaskDelay(pausedMs / portTICK_PERIOD_MS);
     }
 
@@ -425,7 +412,15 @@ void Garduino::displayInfo(void *pvParameter) {
       garduino->displaySignalStrength();
 
       // pause the task
-      pausedMs = 4000;
+      vTaskDelay(pausedMs / portTICK_PERIOD_MS);
+    }
+
+    // don't overwrite display when watering
+    if (!garduino->_wateringTask->isValveOpen()) {
+      // display time
+      garduino->displayTime();
+
+      // pause the task
       vTaskDelay(pausedMs / portTICK_PERIOD_MS);
     }
 

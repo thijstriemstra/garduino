@@ -143,7 +143,7 @@ void DisplayTask::countdown(void *pvParameter) {
       char timestamp[8];
       sprintf(timestamp, "%02d:%02d", elapsed.minutes(), elapsed.seconds());
 
-      task->_display->writeBig(timestamp, 74);
+      task->_display->writeBig(timestamp, 76);
 
       task->_display->drawImage(0, 6,
         shower_width,
