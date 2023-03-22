@@ -94,66 +94,77 @@ Readings from the sensors are sent to a MQTT server over WiFi (if available).
 Example of cycle report on serial line:
 
 ```
-========================
-  = garduino v3.0.0 =
-========================
-
-Board:          WEMOS LOLIN32 Lite
-Local time:     2021-05-19 01:53:16
-***********************************
-Wakeup reason: timer (60 sec)
-***********************************
-WiFi - SSID: snowblower
-WiFi - Connecting...
-WiFi - Connected.
-IP address: 10.42.1.158
-==============================
-MQTT - Connecting to 10.42.0.1
-Connected to MQTT.
-==============================
-
-************************************
-      Watering: No
-        Period: 120 sec
-Daily schedule: 19:00:00
-  Current time: 01:53:16
-      Last run: 2021-05-19 19:00:59
-************************************
-
-MQTT - Publishing sensor data...
-
-Inside
-------
-
-Light:                  7.50 lx
-Humidity:               46.04%
-Temperature:            23.68 °C
-Pressure:               1015.73 hPa
-Soil-1 moisture:        51%
-Soil-2 moisture:        50%
-Soil-3 moisture:        48%
-Soil-4 moisture:        51%
-Soil-5 moisture:        51%
-System:                 24.00 °C
-
-Outside
--------
-
-Rain:                   0%
-Temperature:            21.62 °C
-
-Water
--------
-
-Temperature:            21.19 °C
-Current:                0.00 ltr
-Total:                  40.71 ltr
-
-**********************************************
-
-******************************
-**  Going to sleep... Bye.  **
-******************************
+00:00:00.063  ========================
+00:00:00.064  =    garduino v4.0.0   =
+00:00:00.064  ========================
+00:00:00.065  Board:       AZ-Delivery ESP-32 Dev Kit C V4
+00:00:00.075  ESP-IDF:     v4.4.4
+00:00:00.080  Local time:  17:46:17
+00:00:00.485  *******************************************
+00:00:00.486  Wakeup reason: timer (60 sec)
+00:00:00.487  *******************************************
+00:00:00.488  WiFi - SSID: Boat
+00:00:00.499  WiFi - Connecting...
+00:00:00.708  WiFi - Connected.
+00:00:00.709  WiFi - Hostname: garduino
+00:00:00.709  Wifi - IP address: 192.168.8.155
+00:00:00.710  ================================
+00:00:00.721  MQTT - Timeout set to 30 seconds
+00:00:00.721  MQTT - Broker: octopi.local:1883
+00:00:00.722  MQTT - Connecting...
+00:00:00.775  MQTT - Connected.
+00:00:00.776  ================================
+00:00:00.777
+00:00:00.777  ************************************
+00:00:00.778        Watering: No
+00:00:00.788          Period: 60 sec
+00:00:00.789  Daily schedule: 19:00:00
+00:00:00.789    Current time: 17:46:17
+00:00:00.791        Last run: 2023-03-21 19:08:11
+00:00:00.802  ************************************
+00:00:00.802
+00:00:00.803  MQTT - Publishing sensor data...
+00:00:00.813
+00:00:00.814  Inside
+00:00:00.814  ------
+00:00:00.814
+00:00:00.815  Light:            1.67 lx
+00:00:00.821  Humidity:         100.00%
+00:00:00.822  Temperature:      25.14 °C
+00:00:00.822  Pressure:         1002.44 hPa
+00:00:00.824  Soil-1 moisture:  153%
+00:00:00.825  Soil-2 moisture:  151%
+00:00:00.836  Soil-3 moisture:  149%
+00:00:00.836  Soil-4 moisture:  152%
+00:00:00.837  Soil-5 moisture:  152%
+00:00:00.847  Soil-6 moisture:  152%
+00:00:00.848  Soil-7 moisture:  152%
+00:00:00.848  Soil-8 moisture:  152%
+00:00:00.854  System:           23.75 °C
+00:00:00.854
+00:00:00.854  Outside
+00:00:00.855  -------
+00:00:00.865
+00:00:00.962  Temperature:      17.75 °C
+00:00:00.967
+00:00:00.967  Water
+00:00:00.967  -----
+00:00:00.967
+00:00:00.968  Temperature:      18.25 °C
+00:00:00.968
+00:00:00.968  WIFI
+00:00:00.969  ----
+00:00:00.979
+00:00:00.981  RSSI:             -70 dBm
+00:00:00.981
+00:00:00.981  **********************************************
+00:00:00.982
+00:00:16.558  MQTT - Published 16 messages.
+00:00:16.559  MQTT - Disconnecting...
+00:00:16.863
+00:00:16.864  ******************************
+00:00:16.865  **  Going to sleep... Bye.  **
+00:00:16.866  ******************************
 ```
 
 ## Local NTP Server
