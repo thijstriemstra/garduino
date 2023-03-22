@@ -80,6 +80,10 @@ void Garduino::begin() {
 
   // board info
   Log.info(F("Board:\t   %S" CR), ARDUINO_BOARD);
+  Log.info(F("Arduino:\t   %d.%d.%d" CR),
+    ESP_ARDUINO_VERSION_MAJOR, ESP_ARDUINO_VERSION_MINOR,
+    ESP_ARDUINO_VERSION_PATCH
+  );
   Log.info(F("ESP-IDF:\t   %S" CR), ESP.getSdkVersion());
 
   // callbacks

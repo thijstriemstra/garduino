@@ -98,6 +98,7 @@ Example of cycle report on serial line:
 00:00:00.064  =    garduino v4.0.0   =
 00:00:00.064  ========================
 00:00:00.065  Board:       AZ-Delivery ESP-32 Dev Kit C V4
+00:00:00.075  Arduino:     2.0.7
 00:00:00.075  ESP-IDF:     v4.4.4
 00:00:00.080  Local time:  17:46:17
 00:00:00.485  *******************************************
