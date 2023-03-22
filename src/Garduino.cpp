@@ -405,6 +405,16 @@ void Garduino::displayInfo(void *pvParameter) {
       vTaskDelay(pausedMs / portTICK_PERIOD_MS);
     }
 
+    // don't overwrite display when watering
+    if (!garduino->_wateringTask->isValveOpen()) {
+      // display signal strength
+      garduino->displaySignalStrength();
+
+      // pause the task
+      pausedMs = 4000;
+      vTaskDelay(pausedMs / portTICK_PERIOD_MS);
+    }
+
     // pause the task
     pausedMs = 1000;
     vTaskDelay(pausedMs / portTICK_PERIOD_MS);
@@ -425,6 +435,12 @@ void Garduino::displayHumidity() {
   BME280_Result tmp = _sensors->readBarometer();
 
   _displayTask->showHumidity(tmp.humidity);
+}
+
+void Garduino::displaySignalStrength() {
+  int signal_strength = _iot->getSignalStrength();
+
+  _displayTask->showSignalStrength(signal_strength);
 }
 
 void Garduino::printPrefix(Print* _logOutput, int logLevel) {

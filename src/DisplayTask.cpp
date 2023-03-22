@@ -84,6 +84,22 @@ void DisplayTask::showHumidity(float humidity) {
   );
 }
 
+void DisplayTask::showSignalStrength(int signal_strength) {
+  char buffer[8];
+  char tmp[6];
+  dtostrf(signal_strength, 4, 0, tmp);
+  sprintf(buffer, "%s dBm", tmp);
+
+  _display->writeSmall(buffer, 70);
+
+  _display->drawImage(0, 5,
+    wifi_width,
+    wifi_height,
+    wifi_bits,
+    false
+  );
+}
+
 void DisplayTask::countdown(void *pvParameter) {
   for (;;) {
     // obtain the instance pointer

@@ -37,6 +37,7 @@ class Garduino {
     void displayTime();
     void displayHumidity();
     void displayTemperature();
+    void displaySignalStrength();
     void sleep(bool forced = false);
     bool isWatering();
 

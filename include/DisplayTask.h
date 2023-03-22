@@ -30,6 +30,7 @@ class DisplayTask {
     void showTime();
     void showHumidity(float humidity);
     void showTemperature(float temperature);
+    void showSignalStrength(int signal_strength);
 
   private:
     DateTime _openStart;
