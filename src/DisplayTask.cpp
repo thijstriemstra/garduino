@@ -76,7 +76,7 @@ void DisplayTask::showHumidity(float humidity) {
 
   _display->writeBig(buffer);
 
-  _display->drawImage(0, 2,
+  _display->drawImage(0, 4,
     droplet_width,
     droplet_height,
     droplet_bits,
@@ -85,17 +85,41 @@ void DisplayTask::showHumidity(float humidity) {
 }
 
 void DisplayTask::showSignalStrength(int signal_strength) {
-  char buffer[8];
-  char tmp[6];
-  dtostrf(signal_strength, 4, 0, tmp);
-  sprintf(buffer, "%s dBm", tmp);
+  if (signal_strength == 0) {
+    _display->writeBig("None", 72);
+  } else {
+    char buffer[8];
+    char tmp[6];
+    dtostrf(signal_strength, 4, 0, tmp);
+    sprintf(buffer, "%s dBm", tmp);
 
-  _display->writeSmall(buffer, 70, 6);
+    _display->writeSmall(buffer, 70, 6);
+  }
 
   _display->drawImage(0, 7,
     wifi_width,
     wifi_height,
     wifi_bits,
+    false
+  );
+}
+
+void DisplayTask::showLux(float lux) {
+  char buffer[8];
+  char tmp[6];
+  dtostrf(lux, 4, 0, tmp);
+  sprintf(buffer, "%s lx", tmp);
+
+  if (lux > 999) {
+    _display->writeSmall(buffer, 74, 6);
+  } else {
+    _display->writeBig(buffer, 74);
+  }
+
+  _display->drawImage(0, 4,
+    sun_width,
+    sun_height,
+    sun_bits,
     false
   );
 }
@@ -110,7 +134,7 @@ void DisplayTask::countdown(void *pvParameter) {
       char timestamp[8];
       sprintf(timestamp, "%02d:%02d", elapsed.minutes(), elapsed.seconds());
 
-      task->_display->writeBig(timestamp, 72);
+      task->_display->writeBig(timestamp, 74);
 
       task->_display->drawImage(0, 6,
         shower_width,

@@ -37,9 +37,9 @@ class Sensors {
     void wait();
     void reset();
     void publish();
-    void startPublish(IOT* iot, float system_temperature);
-    float measureLight();
     int measureRain();
+    void startPublish(IOT* iot, float system_temperature);
+    float measureLight(bool debug = false);
     BME280_Result readBarometer(bool debug = false);
     OutsideTemperatureResult readOutsideTemperature();
     SoilMoistureResult readSoilMoisture();

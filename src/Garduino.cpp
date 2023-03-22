@@ -397,6 +397,16 @@ void Garduino::displayInfo(void *pvParameter) {
 
     // don't overwrite display when watering
     if (!garduino->_wateringTask->isValveOpen()) {
+      // display lux
+      garduino->displayLux();
+
+      // pause the task
+      pausedMs = 4000;
+      vTaskDelay(pausedMs / portTICK_PERIOD_MS);
+    }
+
+    // don't overwrite display when watering
+    if (!garduino->_wateringTask->isValveOpen()) {
       // display time
       garduino->displayTime();
 
@@ -441,6 +451,12 @@ void Garduino::displaySignalStrength() {
   int signal_strength = _iot->getSignalStrength();
 
   _displayTask->showSignalStrength(signal_strength);
+}
+
+void Garduino::displayLux() {
+  float lux = _sensors->measureLight();
+
+  _displayTask->showLux(lux);
 }
 
 void Garduino::printPrefix(Print* _logOutput, int logLevel) {

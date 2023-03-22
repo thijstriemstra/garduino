@@ -132,7 +132,7 @@ void Sensors::publish() {
   Log.info(CR);
 
   // LIGHT
-  float lux = measureLight();
+  float lux = measureLight(true);
   _iot->publish("/inside/light", lux);
 
   // BME280
@@ -199,10 +199,10 @@ void Sensors::publish() {
   Log.info(CR);
 }
 
-float Sensors::measureLight() {
+float Sensors::measureLight(bool debug) {
   float lux = _light->read();
 
-  if (_debug) {
+  if (debug) {
     Log.info(F("Light:\t\t%F lx" CR), lux);
   }
   return lux;

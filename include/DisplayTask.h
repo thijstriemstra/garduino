@@ -28,6 +28,7 @@ class DisplayTask {
     void open();
     void close();
     void showTime();
+    void showLux(float lux);
     void showHumidity(float humidity);
     void showTemperature(float temperature);
     void showSignalStrength(int signal_strength);
