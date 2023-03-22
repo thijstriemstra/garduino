@@ -173,13 +173,25 @@ void Sensors::publish() {
   // WATER
   Log.info(CR);
   Log.info(F("Water" CR));
-  Log.info(F("-------" CR));
+  Log.info(F("-----" CR));
   Log.info(CR);
 
   float waterTemp = outside.water;
   _iot->publish("/water/temperature", waterTemp);
   if (_debug) {
     Log.info(F("Temperature:\t%F °C" CR), waterTemp);
+  }
+
+  // WIFI
+  Log.info(CR);
+  Log.info(F("WIFI" CR));
+  Log.info(F("----" CR));
+  Log.info(CR);
+
+  int8_t signalStrength = _iot->getSignalStrength();
+  _iot->publish("/wifi/rssi", signalStrength);
+  if (_debug) {
+    Log.info(F("RSSI:\t\t%d dBm" CR), signalStrength);
   }
 
   Log.info(CR);

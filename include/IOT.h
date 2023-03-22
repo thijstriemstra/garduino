@@ -30,6 +30,7 @@ class IOT
     void connectToMqtt();
     bool connected();
     bool publishReady();
+    int8_t getSignalStrength();
     void exit();
 
   private:

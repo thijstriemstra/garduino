@@ -156,6 +156,14 @@ bool IOT::publishReady() {
   return _completedReadings == _totalReadings;
 }
 
+/**
+ * Return the current network RSSI.
+ * @return  RSSI value
+ */
+int8_t IOT::getSignalStrength() {
+  return WiFi.RSSI();
+}
+
 void IOT::exit() {
   // notify others
   _publishReadyCb.callback();
