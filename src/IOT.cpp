@@ -10,6 +10,8 @@ bool _stopReconnect = false;
 int _totalConnectionAttempts = 0;
 int _totalReadings;
 int _completedReadings = 0;
+bool _wifiConnected = false;
+bool _mqttConnected = false;
 
 // callbacks
 Method _connectedCb;
@@ -25,6 +27,8 @@ void mqttTimeOut(void * parameter) {
     if (!_mqttClient.connected()) {
       Log.warning(F("MQTT - Connection timeout!" CR));
 
+      _mqttConnected = false;
+
       // give up
       _failedConnectionCb.callbackIntArg(1);
 
@@ -36,6 +40,9 @@ void mqttTimeOut(void * parameter) {
 
 void connectToWifi() {
   ++_totalConnectionAttempts;
+
+  _wifiConnected = false;
+  _mqttConnected = false;
 
   Log.info(F("WiFi - SSID: %S" CR), WIFI_SSID);
   Log.info(F("WiFi - Connecting..." CR));
@@ -49,7 +56,10 @@ void connectToWifi() {
 
 void mqttConnect() {
   Log.info(F("MQTT - Timeout set to %d seconds" CR), MQTT_TIMEOUT);
-  Log.info(F("MQTT - Connecting to %S" CR), MQTT_HOST);
+  Log.info(F("MQTT - Broker: %S:%d" CR), MQTT_HOST, MQTT_PORT);
+  Log.info(F("MQTT - Connecting..." CR));
+
+  _mqttConnected = false;
 
   // connect to MQTT
   // Note: this will hang forever (until timeout)
@@ -86,6 +96,8 @@ void WiFiEvent(WiFiEvent_t event) {
 
       WiFi.disconnect(true);
 
+      _wifiConnected = false;
+
       // notify others
       _failedConnectionCb.callbackIntArg(0);
       break;
@@ -93,14 +105,18 @@ void WiFiEvent(WiFiEvent_t event) {
 }
 
 void onMqttConnect(bool sessionPresent) {
-  Log.info(F("MQTT - Connection ready." CR));
+  Log.info(F("MQTT - Connected." CR));
   Log.info(F("================================" CR));
+
+  _mqttConnected = true;
 
   // notify others
   _connectedCb.callback();
 }
 
 void onMqttDisconnect(AsyncMqttClientDisconnectReason reason) {
+  _mqttConnected = false;
+
   // notify others
   _disconnectedCb.callback();
 }
@@ -187,11 +203,19 @@ bool IOT::connected() {
 void IOT::disconnect() {
   _stopReconnect = true;
 
-  Log.info(F("MQTT - Disconnecting..." CR));
-  _mqttClient.disconnect();
+  if (_mqttConnected) {
+    _mqttConnected = false;
 
-  Log.info(F("WiFi - Disconnecting..." CR));
-  WiFi.disconnect(true);
+    Log.info(F("MQTT - Disconnecting..." CR));
+    _mqttClient.disconnect();
+  }
+
+  if (_wifiConnected) {
+    _wifiConnected = false;
+
+    Log.info(F("WiFi - Disconnecting..." CR));
+    WiFi.disconnect(true);
+  }
 }
 
 void IOT::publish(const char* sub_topic, double value) {
