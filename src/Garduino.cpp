@@ -50,7 +50,7 @@ Garduino::Garduino() {
   _clock = new SystemClock(&Wire1, NTP_HOST);
 
   // power management
-  _power = new PowerManagement(WakeupSchedule);
+  _power = new PowerManagement(ManualRunButtonPin, WakeupSchedule);
 
   // display on I2C multiplexer
   _display = new SSD1306_OLEDDisplay_Mux(

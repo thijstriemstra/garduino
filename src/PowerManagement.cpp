@@ -10,8 +10,9 @@
 /**
  * Constructor.
  */
-PowerManagement::PowerManagement(int wakeupTime) {
+PowerManagement::PowerManagement(int wakeupPin, int wakeupTime) {
   _wakeupTime = wakeupTime;
+  _wakeupPin = wakeupPin;
 }
 
 void PowerManagement::init(Method wakeup_callback) {
@@ -23,7 +24,7 @@ void PowerManagement::init(Method wakeup_callback) {
   wokeup();
 
   // configure the wake up sources
-  esp_sleep_enable_ext0_wakeup((gpio_num_t) ManualRunButtonPin, 1);
+  esp_sleep_enable_ext0_wakeup((gpio_num_t) _wakeupPin, 1);
 
   // wake up esp32 periodically
   esp_sleep_enable_timer_wakeup(_wakeupTime * uS_TO_S_FACTOR);
