@@ -90,9 +90,9 @@ void DisplayTask::showSignalStrength(int signal_strength) {
   dtostrf(signal_strength, 4, 0, tmp);
   sprintf(buffer, "%s dBm", tmp);
 
-  _display->writeSmall(buffer, 70);
+  _display->writeSmall(buffer, 70, 6);
 
-  _display->drawImage(0, 5,
+  _display->drawImage(0, 7,
     wifi_width,
     wifi_height,
     wifi_bits,
@@ -112,7 +112,7 @@ void DisplayTask::countdown(void *pvParameter) {
 
       task->_display->writeBig(timestamp, 72);
 
-      task->_display->drawImage(0, 4,
+      task->_display->drawImage(0, 6,
         shower_width,
         shower_height,
         shower_bits,
