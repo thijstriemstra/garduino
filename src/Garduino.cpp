@@ -80,7 +80,7 @@ void Garduino::begin() {
 
   // board info
   Log.info(F("Board:\t   %S" CR), ARDUINO_BOARD);
-  Log.info(F("Arduino:\t   %d.%d.%d" CR),
+  Log.info(F("Arduino:\t   v%d.%d.%d" CR),
     ESP_ARDUINO_VERSION_MAJOR, ESP_ARDUINO_VERSION_MINOR,
     ESP_ARDUINO_VERSION_PATCH
   );
@@ -345,7 +345,7 @@ void Garduino::onSystemWakeup() {
 
     // show logo
     _displayTask->showLogo();
-    delay(1800);
+    delay(1500);
 
     // start display info task
     xTaskCreatePinnedToCore(

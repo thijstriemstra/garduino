@@ -62,10 +62,10 @@ void PowerManagement::wokeup() {
       break;
 
     default:
-      if (wakeup_reason == 0) {
+      if (wakeup_reason == ESP_SLEEP_WAKEUP_UNDEFINED) {
         Log.info(F("Wakeup reason: USB Serial" CR));
       } else {
-        Log.info(F("Wakeup reason: not caused by deep sleep: %d" CR),
+        Log.info(F("Wakeup reason - not caused by deep sleep: %d" CR),
           wakeup_reason
         );
       }

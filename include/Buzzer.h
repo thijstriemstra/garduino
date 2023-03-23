@@ -9,6 +9,7 @@
 
 #include <Arduino.h>
 #include <pitches.h>
+#include <ArduinoLog.h>
 
 class Buzzer {
   public:
