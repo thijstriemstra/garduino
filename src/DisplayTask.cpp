@@ -121,16 +121,34 @@ void DisplayTask::showLux(float lux) {
 
   if (lux > 999) {
     _display->writeSmall(buffer, 74, 6);
-  } else {
-    _display->writeBig(buffer, 74);
-  }
 
-  _display->drawImage(0, 4,
-    sun_width,
-    sun_height,
-    sun_bits,
-    false
-  );
+    _display->drawImage(0, 4,
+      sun_width,
+      sun_height,
+      sun_bits,
+      false
+    );
+  } else {
+    if (lux < 50) {
+      _display->writeBig(buffer, 62);
+
+      _display->drawImage(0, 7,
+        moon_width,
+        moon_height,
+        moon_bits,
+        false
+      );
+    } else {
+      _display->writeBig(buffer, 74);
+
+      _display->drawImage(0, 7,
+        cloud_width,
+        cloud_height,
+        cloud_bits,
+        false
+      );
+    }
+  }
 }
 
 void DisplayTask::countdown(void *pvParameter) {
