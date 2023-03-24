@@ -5,19 +5,20 @@
 #include <Controls.h>
 
 Method _manualBtnCallback;
+Method _longBtnCallback;
 
 void btnCallback(Button2& btn) {
   int id = btn.getID();
-
   if (id == 0) {
     _manualBtnCallback.callback();
   }
 }
 
 void longClickCallback(Button2& btn) {
-  Serial.print("long click #");
-  Serial.print(btn.getLongClickCount());
-  Serial.println(" detected");
+  int id = btn.getID();
+  if (id == 0) {
+    _longBtnCallback.callback();
+  }
 }
 
 Controls::Controls(MultiPlexer_PCF8574* mcp) {
@@ -36,8 +37,13 @@ Controls::Controls(MultiPlexer_PCF8574* mcp) {
   powerLED = new LED_PCF8574(PowerLEDPin, _mcp);
 }
 
-void Controls::begin(Method manualBtnCallback, Method powerBtnCallback) {
+void Controls::begin(
+  Method manualBtnCallback,
+  Method powerBtnCallback,
+  Method longBtnCallback
+) {
   _manualBtnCallback = manualBtnCallback;
+  _longBtnCallback = longBtnCallback;
 
   manualBtn->begin(ManualRunButtonPin, INPUT, false);
   manualLED->begin();

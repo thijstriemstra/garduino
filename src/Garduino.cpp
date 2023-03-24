@@ -93,6 +93,9 @@ void Garduino::begin() {
   Method powerBtnCallback;
   powerBtnCallback.attachCallback(
     makeFunctor((Functor0 *)0, *this, &Garduino::onPowerButtonPush));
+  Method longBtnCallback;
+  longBtnCallback.attachCallback(
+    makeFunctor((Functor0 *)0, *this, &Garduino::onLongButtonPush));
   Method connectionReadyCallback;
   connectionReadyCallback.attachCallback(
     makeFunctor((Functor0 *)0, *this, &Garduino::onConnectionReady));
@@ -121,7 +124,7 @@ void Garduino::begin() {
   _ioExpander->begin();
 
   // controls
-  _controls->begin(manualBtnCallback, powerBtnCallback);
+  _controls->begin(manualBtnCallback, powerBtnCallback, longBtnCallback);
 
   // watering task
   _wateringTask->begin();
@@ -375,6 +378,10 @@ void Garduino::onManualButtonPush() {
 void Garduino::onPowerButtonPush() {
   // force to sleep
   sleep(true);
+}
+
+void Garduino::onLongButtonPush() {
+  Log.info(F("** LooooONNNNNGGGG **" CR));
 }
 
 void Garduino::displayInfo(void *pvParameter) {

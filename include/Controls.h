@@ -15,7 +15,11 @@ class Controls
 {
   public:
     Controls(MultiPlexer_PCF8574* mcp);
-    void begin(Method manualBtnCallback, Method powerBtnCallback);
+    void begin(
+      Method manualBtnCallback,
+      Method powerBtnCallback,
+      Method longBtnCallback
+    );
     void loop();
     void disableLEDs();
 
