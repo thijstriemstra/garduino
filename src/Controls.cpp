@@ -5,15 +5,12 @@
 #include <Controls.h>
 
 Method _manualBtnCallback;
-Method _powerBtnCallback;
 
 void btnCallback(Button2& btn) {
   int id = btn.getID();
 
   if (id == 0) {
     _manualBtnCallback.callback();
-  } else if (id == 1) {
-     _powerBtnCallback.callback();
   }
 }
 
@@ -29,15 +26,11 @@ Controls::Controls(MultiPlexer_PCF8574* mcp) {
   manualBtn = new Button2();
   manualBtn->setID(0);
   manualBtn->setDebounceTime(50);
-  manualBtn->setLongClickTime(1000);
+  manualBtn->setLongClickTime(800);
   manualBtn->setClickHandler(btnCallback);
   manualBtn->setLongClickDetectedHandler(longClickCallback);
 
-  powerBtn = new Button2();
-  powerBtn->setID(1);
-  powerBtn->setDebounceTime(50);
-  powerBtn->setClickHandler(btnCallback);
-
+  powerBtn = new Button(PowerButtonPin);
   manualLED = new LED_PCF8574(ManualRunLEDPin, _mcp);
   networkLED = new LED_PCF8574(NetworkLEDPin, _mcp);
   powerLED = new LED_PCF8574(PowerLEDPin, _mcp);
@@ -45,11 +38,10 @@ Controls::Controls(MultiPlexer_PCF8574* mcp) {
 
 void Controls::begin(Method manualBtnCallback, Method powerBtnCallback) {
   _manualBtnCallback = manualBtnCallback;
-  _powerBtnCallback = powerBtnCallback;
 
   manualBtn->begin(ManualRunButtonPin, INPUT, false);
   manualLED->begin();
-  powerBtn->begin(PowerButtonPin, INPUT, false);
+  powerBtn->begin(powerBtnCallback);
   powerLED->begin();
   networkLED->begin();
 }
