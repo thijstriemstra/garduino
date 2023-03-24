@@ -1,18 +1,16 @@
-GARDUINO MANUAL
-===============
+# Garduino Manual
 
-De Garduino geeft dagelijks om 19:00 uur de planten enkele minuten water.
+De Garduino geeft dagelijks om 19:00 uur de planten enige tijd water.
 
 
-HANDMATIGE BEDIENING
---------------------
+## Handmatige bediening
 
 Je kan met de MANUAL knop de planten handmatig water geven.
 
-In manual mode word er ook iedere 5 seconden op het display afwisselend
-de huidige temperatuur en tijd weergegeven.
+In manual mode word er ook iedere 4 seconden op het display afwisselend
+verschillende data weergegeven, zoals de huidige temperatuur en tijd.
 
-**Stappen voor handmatig watergeven:**
+### Stappen voor handmatig watergeven
 
 1. Druk op de MANUAL knop tot de temperatuur op het display te zien is.
    Als het oranje licht op de voorzijde brandt, ga naar stap 2.
@@ -33,4 +31,7 @@ de huidige temperatuur en tijd weergegeven.
 Vergeet niet stap 4 anders start de Garduino het automatische programma
 niet op (en zal er dagelijks dus geen water worden gegeven).
 
-v3.3.0
+
+---
+
+v4.0.0
