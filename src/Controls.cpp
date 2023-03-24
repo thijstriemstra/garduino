@@ -60,7 +60,7 @@ void Controls::begin(
   pinMode(ManualRunButtonPin, INPUT);
 
   // configure buttons
-  _manualBtnConfig.setLongPressDelay(800);
+  _manualBtnConfig.setLongPressDelay(600);
   _manualBtnConfig.setEventHandler(handleEvent);
   _manualBtnConfig.setFeature(ButtonConfig::kFeatureLongPress);
   _manualBtnConfig.setFeature(ButtonConfig::kFeatureSuppressAfterLongPress);

@@ -22,7 +22,7 @@ class DisplayTask {
       SystemClock* clock
     );
 
-    long duration;
+    unsigned long duration;
     bool active = false;
 
     void begin();

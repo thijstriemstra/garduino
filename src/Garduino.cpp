@@ -381,8 +381,20 @@ void Garduino::onLongButtonPush() {
 
   if (_menuMode == MENU_DEFAULT) {
     _menuMode = MENU_SOIL;
+
+    // don't overwrite display when watering
+    if (!_wateringTask->isValveOpen()) {
+      // display soil
+      displaySoilMoisture();
+    }
   } else {
     _menuMode = MENU_DEFAULT;
+
+    // don't overwrite display when watering
+    if (!_wateringTask->isValveOpen()) {
+      // display temperature
+      displayTemperature();
+    }
   }
 
   Log.info(F("** Menu mode: %S **" CR), _menuMode);
@@ -461,7 +473,6 @@ void Garduino::displayInfo(void *pvParameter) {
       // pause the task
       vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
-
 
     // pause the task
     pausedMs = 500;

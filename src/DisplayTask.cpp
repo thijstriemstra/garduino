@@ -53,7 +53,7 @@ void DisplayTask::showTime() {
 
   _display->writeBig(timestamp, 78);
 
-  _display->drawImage(0, 5,
+  _display->drawImage(0, 6,
     clock_width,
     clock_height,
     clock_bits,
@@ -179,7 +179,7 @@ void DisplayTask::showSoilMoisture(SoilMoistureResult result) {
       moisture = result.sensor8;
       break;
   }
-  moisture = 1024;
+
   char buffer[9];
   char tmp[7];
   dtostrf(moisture, 4, 0, tmp);
