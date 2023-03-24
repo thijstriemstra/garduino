@@ -45,7 +45,7 @@ class Sensors {
     SoilMoistureResult readSoilMoisture();
 
     IOT* _iot;
-    long interval;
+    unsigned long interval;
     bool manualMode = false;
 
   private:

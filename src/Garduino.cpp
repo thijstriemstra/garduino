@@ -138,6 +138,10 @@ void Garduino::begin() {
   // power management
   _power->init(systemWakeupCallback);
 
+  // blink network led
+  _controls->networkLED->interval = 400;
+  _controls->networkLED->blink = true;
+
   // connect to wifi/mqtt
   _iot->begin(
     _totalReadings,

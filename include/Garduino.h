@@ -58,7 +58,7 @@ class Garduino {
     SSD1306_OLEDDisplay_Mux* _display;
 
     bool _manualMode = false;
-    int _totalReadings = 16;
+    const int _totalReadings = 16;
     const char *_namespace = "garduino";
     const char *_version = "4.0.0";
 

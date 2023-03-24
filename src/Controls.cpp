@@ -25,10 +25,15 @@ void Controls::begin(Method manualBtnCallback, Method powerBtnCallback) {
 void Controls::loop() {
   manualBtn->loop();
   powerBtn->loop();
+
+  // enable loop for led because it can blink
+  networkLED->loop();
 }
 
 void Controls::disableLEDs() {
   manualLED->disable();
   powerLED->disable();
+
+  networkLED->blink = false;
   networkLED->disable();
 }
