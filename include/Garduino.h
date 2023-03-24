@@ -14,6 +14,7 @@
 
 #include <IOT.h>
 #include <Utils.h>
+#include <Buzzer.h>
 #include <Controls.h>
 #include <Sensors.h>
 #include <SystemClock.h>
@@ -47,6 +48,7 @@ class Garduino {
 
   private:
     IOT *_iot;
+    Buzzer* _buzzer;
     Sensors* _sensors;
     Controls* _controls;
     SystemClock* _clock;
@@ -56,7 +58,6 @@ class Garduino {
     WateringTask* _wateringTask;
     MultiPlexer_PCF8574* _ioExpander;
     SSD1306_OLEDDisplay_Mux* _display;
-
 
     bool _manualMode = false;
     bool _showBootScreen = true;

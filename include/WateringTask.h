@@ -24,7 +24,7 @@ class WateringTask {
       long task_duration,
       int valve_pin,
       int led_pin,
-      int buzzer_pin,
+      Buzzer* buzzer,
       MultiPlexer_PCF8574* mcp,
       const char* app_namespace,
       String timestamp,

@@ -23,6 +23,9 @@ Garduino::Garduino() {
   // wifi/mqtt
   _iot = new IOT();
 
+  // buzzer
+  _buzzer = new Buzzer(BuzzerPin);
+
   // watering task
   Method wateringReadyCallback;
   wateringReadyCallback.attachCallback(
@@ -37,7 +40,7 @@ Garduino::Garduino() {
     WateringDuration,
     WaterValvePin,
     WateringIndicationLEDPin,
-    BuzzerPin,
+    _buzzer,
     _ioExpander,
     _namespace,
     WateringSchedule,
@@ -350,6 +353,9 @@ void Garduino::onSystemWakeup() {
     // enable manual led
     _controls->manualLED->enable();
 
+    // enable buzzer
+    _buzzer->enable(NOTE_E7);
+
     // start display info task
     xTaskCreatePinnedToCore(
       &Garduino::displayInfo,    /* Task function. */
@@ -357,8 +363,8 @@ void Garduino::onSystemWakeup() {
       2048,                      /* Stack size in words. */
       this,                      /* Parameter passed as input of the task */
       8,                         /* Priority of the task. */
-      NULL,                       /* Task handle. */
-      1                           /* Core nr */
+      NULL,                      /* Task handle. */
+      1                          /* Core nr */
     );
   } else {
     _manualMode = false;
@@ -380,6 +386,10 @@ void Garduino::onManualButtonPush() {
       } else {
         _displayTask->currentSoilSensor++;
       }
+
+      // enable buzzer
+      _buzzer->enable(NOTE_E4);
+
       // display soil
       displaySoilMoisture();
     }
@@ -387,6 +397,9 @@ void Garduino::onManualButtonPush() {
 }
 
 void Garduino::onPowerButtonPush() {
+  // enable buzzer
+  _buzzer->enable(NOTE_E3);
+
   // force to sleep
   sleep(true);
 }
@@ -396,6 +409,10 @@ void Garduino::onManualButtonLongPush() {
   if (!_wateringTask->isValveOpen()) {
     Log.info(F("** Long pressed manual button **" CR));
 
+    // enable buzzer
+    _buzzer->enable(NOTE_E4);
+
+    // switch menu
     if (_menuMode == MENU_DEFAULT) {
         _menuMode = MENU_SOIL;
 
@@ -408,7 +425,7 @@ void Garduino::onManualButtonLongPush() {
       displayTemperature();
     }
 
-    Log.info(F("** Menu mode: %S **" CR), _menuMode);
+    Log.info(F("** Menu: %S **" CR), _menuMode);
   }
 }
 
@@ -426,7 +443,7 @@ void Garduino::displayInfo(void *pvParameter) {
       garduino->_displayTask->showLogo();
 
       // pause the task
-      vTaskDelay(1800 / portTICK_PERIOD_MS);
+      vTaskDelay(1500 / portTICK_PERIOD_MS);
     }
 
     // DEFAULT MENU
