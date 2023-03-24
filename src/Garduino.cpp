@@ -354,7 +354,7 @@ void Garduino::onSystemWakeup() {
     _controls->manualLED->enable();
 
     // enable buzzer
-    _buzzer->enable(NOTE_E7);
+    _buzzer->enable(NOTE_E5);
 
     // start display info task
     xTaskCreatePinnedToCore(
