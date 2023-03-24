@@ -13,12 +13,13 @@
 
 class Buzzer {
   public:
-    Buzzer(int pin);
-    void enable();
+    Buzzer(int pin, int channel = 0);
     void disable();
+    void enable(int note = NOTE_C4, int duration = 100);
 
   private:
     int _buzzerPin;
+    int _channel;
 };
 
 #endif

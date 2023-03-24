@@ -4,29 +4,17 @@
 
 #include <Buzzer.h>
 
-Buzzer::Buzzer(int pin) {
+Buzzer::Buzzer(int pin, int channel) {
   _buzzerPin = pin;
+  _channel = channel;
+
+  setToneChannel(channel);
 
   disable();
 }
 
-void Buzzer::enable() {
-  int melody[] = {
-    NOTE_C4
-  };
-
-  int noteDurations[] = {
-    4
-  };
-
-  for (int thisNote = 0; thisNote < 1; thisNote++) {
-    int noteDuration = 1000 / noteDurations[thisNote];
-    tone(_buzzerPin, melody[thisNote], noteDuration);
-
-    int pauseBetweenNotes = noteDuration * 1.30;
-    delay(pauseBetweenNotes);
-    noTone(_buzzerPin);
-  }
+void Buzzer::enable(int note, int duration) {
+  tone(_buzzerPin, note, duration);
 
   disable();
 }
