@@ -153,7 +153,7 @@ void DisplayTask::showLux(float lux) {
 
 void DisplayTask::showSoilMoisture(SoilMoistureResult result) {
   int moisture = 0;
-  switch (_currentSoilSensor) {
+  switch (currentSoilSensor) {
     case 0:
       moisture = result.sensor1;
       break;
@@ -185,7 +185,7 @@ void DisplayTask::showSoilMoisture(SoilMoistureResult result) {
   dtostrf(moisture, 4, 0, tmp);
   sprintf(buffer, "%s", tmp);
 
-  _display->writeSmall(String(_currentSoilSensor + 1), 36, 10);
+  _display->writeSmall(String(currentSoilSensor + 1), 36, 10);
 
   _display->setTextAlignment(TEXT_ALIGN_LEFT);
   _display->writeBig(buffer, 60, 0, false);
@@ -197,12 +197,6 @@ void DisplayTask::showSoilMoisture(SoilMoistureResult result) {
     soil_bits,
     false
   );
-
-  if (_currentSoilSensor == 7) {
-    _currentSoilSensor = 0;
-  } else {
-    _currentSoilSensor++;
-  }
 }
 
 void DisplayTask::countdown(void *pvParameter) {

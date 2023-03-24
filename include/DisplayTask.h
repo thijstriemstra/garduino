@@ -22,6 +22,7 @@ class DisplayTask {
       SystemClock* clock
     );
 
+    int currentSoilSensor = 0;
     unsigned long duration;
     bool active = false;
 
@@ -39,7 +40,6 @@ class DisplayTask {
   private:
     DateTime _openStart;
     bool _counting = false;
-    int _currentSoilSensor = 0;
 
     SystemClock* _clock;
     SSD1306_OLEDDisplay_Mux* _display;

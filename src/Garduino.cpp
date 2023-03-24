@@ -368,7 +368,22 @@ void Garduino::onSystemWakeup() {
 }
 
 void Garduino::onManualButtonPush() {
-  toggleValve();
+  if (_menuMode == MENU_DEFAULT) {
+    toggleValve();
+
+  } else if (_menuMode == MENU_SOIL) {
+    // don't overwrite display when watering
+    if (!_wateringTask->isValveOpen()) {
+      // toggle soil sensors on display
+      if (_displayTask->currentSoilSensor == 7) {
+        _displayTask->currentSoilSensor = 0;
+      } else {
+        _displayTask->currentSoilSensor++;
+      }
+      // display soil
+      displaySoilMoisture();
+    }
+  }
 }
 
 void Garduino::onPowerButtonPush() {
@@ -377,27 +392,24 @@ void Garduino::onPowerButtonPush() {
 }
 
 void Garduino::onLongButtonPush() {
-  Log.info(F("** Long pressed manual button **" CR));
+  // don't overwrite display when watering
+  if (!_wateringTask->isValveOpen()) {
+    Log.info(F("** Long pressed manual button **" CR));
 
-  if (_menuMode == MENU_DEFAULT) {
-    _menuMode = MENU_SOIL;
+    if (_menuMode == MENU_DEFAULT) {
+        _menuMode = MENU_SOIL;
 
-    // don't overwrite display when watering
-    if (!_wateringTask->isValveOpen()) {
-      // display soil
-      displaySoilMoisture();
-    }
-  } else {
-    _menuMode = MENU_DEFAULT;
+        // display soil
+        displaySoilMoisture();
+    } else {
+      _menuMode = MENU_DEFAULT;
 
-    // don't overwrite display when watering
-    if (!_wateringTask->isValveOpen()) {
       // display temperature
       displayTemperature();
     }
-  }
 
-  Log.info(F("** Menu mode: %S **" CR), _menuMode);
+    Log.info(F("** Menu mode: %S **" CR), _menuMode);
+  }
 }
 
 void Garduino::displayInfo(void *pvParameter) {
@@ -471,7 +483,7 @@ void Garduino::displayInfo(void *pvParameter) {
       garduino->displaySoilMoisture();
 
       // pause the task
-      vTaskDelay(1000 / portTICK_PERIOD_MS);
+      vTaskDelay(1500 / portTICK_PERIOD_MS);
     }
 
     // pause the task
