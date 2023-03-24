@@ -6,7 +6,7 @@
 
 #include <Arduino.h>
 #include <Method.h>
-#include <Button.h>
+#include <Button2.h>
 #include <LED_PCF8574.h>
 #include <MultiPlexer_PCF8574.h>
 
@@ -18,11 +18,11 @@ class Controls
     void loop();
     void disableLEDs();
 
+    Button2 *powerBtn;
+    Button2 *manualBtn;
     LED_PCF8574 *powerLED;
     LED_PCF8574 *manualLED;
     LED_PCF8574 *networkLED;
-    Button *powerBtn;
-    Button *manualBtn;
 
   private:
     MultiPlexer_PCF8574* _mcp;
