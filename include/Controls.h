@@ -6,10 +6,11 @@
 
 #include <Arduino.h>
 #include <Method.h>
-#include <Button.h>
-#include <Button2.h>
+#include <AceButton.h>
 #include <LED_PCF8574.h>
 #include <MultiPlexer_PCF8574.h>
+
+using namespace ace_button;
 
 class Controls
 {
@@ -23,8 +24,8 @@ class Controls
     void loop();
     void disableLEDs();
 
-    Button *powerBtn;
-    Button2 *manualBtn;
+    AceButton *powerBtn;
+    AceButton *manualBtn;
     LED_PCF8574 *powerLED;
     LED_PCF8574 *manualLED;
     LED_PCF8574 *networkLED;

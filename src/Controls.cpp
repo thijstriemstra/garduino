@@ -5,36 +5,45 @@
 #include <Controls.h>
 
 Method _manualBtnCallback;
+Method _powerBtnCallback;
 Method _longBtnCallback;
+ButtonConfig _powerBtnConfig;
+ButtonConfig _manualBtnConfig;
 
-void btnCallback(Button2& btn) {
-  int id = btn.getID();
-  if (id == 0) {
-    _manualBtnCallback.callback();
-  }
-}
+void handleEvent(AceButton* button, uint8_t eventType, uint8_t buttonState) {
+  uint8_t btnId = button->getId();
 
-void longClickCallback(Button2& btn) {
-  int id = btn.getID();
-  if (id == 0) {
-    _longBtnCallback.callback();
+  if (btnId == 0) {
+    switch (eventType) {
+      case AceButton::kEventPressed:
+        _powerBtnCallback.callback();
+        break;
+    }
+
+  } else if (btnId == 1) {
+    switch (eventType) {
+      // interpret a Released event as a Pressed event, to distinguish it
+      // from a LongPressed event
+      case AceButton::kEventReleased:
+        _manualBtnCallback.callback();
+        break;
+
+      case AceButton::kEventLongPressed:
+        _longBtnCallback.callback();
+        break;
+    }
   }
 }
 
 Controls::Controls(MultiPlexer_PCF8574* mcp) {
   _mcp = mcp;
 
-  manualBtn = new Button2();
-  manualBtn->setID(0);
-  manualBtn->setDebounceTime(50);
-  manualBtn->setLongClickTime(800);
-  manualBtn->setClickHandler(btnCallback);
-  manualBtn->setLongClickDetectedHandler(longClickCallback);
+  powerBtn = new AceButton(&_powerBtnConfig, PowerButtonPin, LOW, 0);
+  manualBtn = new AceButton(&_manualBtnConfig, ManualRunButtonPin, LOW, 1);
 
-  powerBtn = new Button(PowerButtonPin);
-  manualLED = new LED_PCF8574(ManualRunLEDPin, _mcp);
-  networkLED = new LED_PCF8574(NetworkLEDPin, _mcp);
   powerLED = new LED_PCF8574(PowerLEDPin, _mcp);
+  networkLED = new LED_PCF8574(NetworkLEDPin, _mcp);
+  manualLED = new LED_PCF8574(ManualRunLEDPin, _mcp);
 }
 
 void Controls::begin(
@@ -43,18 +52,29 @@ void Controls::begin(
   Method longBtnCallback
 ) {
   _manualBtnCallback = manualBtnCallback;
+  _powerBtnCallback = powerBtnCallback;
   _longBtnCallback = longBtnCallback;
 
-  manualBtn->begin(ManualRunButtonPin, INPUT, false);
+  // initialize buttons
+  pinMode(PowerButtonPin, INPUT);
+  pinMode(ManualRunButtonPin, INPUT);
+
+  // configure buttons
+  _manualBtnConfig.setLongPressDelay(800);
+  _manualBtnConfig.setEventHandler(handleEvent);
+  _manualBtnConfig.setFeature(ButtonConfig::kFeatureLongPress);
+  _manualBtnConfig.setFeature(ButtonConfig::kFeatureSuppressAfterLongPress);
+  _powerBtnConfig.setEventHandler(handleEvent);
+
+  // configure leds
   manualLED->begin();
-  powerBtn->begin(powerBtnCallback);
   powerLED->begin();
   networkLED->begin();
 }
 
 void Controls::loop() {
-  manualBtn->loop();
-  powerBtn->loop();
+  manualBtn->check();
+  powerBtn->check();
 
   // enable loop for led because it can blink
   networkLED->loop();
@@ -63,7 +83,5 @@ void Controls::loop() {
 void Controls::disableLEDs() {
   manualLED->disable();
   powerLED->disable();
-
-  networkLED->blink = false;
   networkLED->disable();
 }
