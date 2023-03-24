@@ -132,7 +132,7 @@ void Sensors::publish() {
   Log.info(CR);
 
   // LIGHT
-  float lux = measureLight(true);
+  float lux = measureLight(_debug);
   _iot->publish("/inside/light", lux);
 
   // BME280
@@ -142,7 +142,7 @@ void Sensors::publish() {
   _iot->publish("/inside/humidity", barometer.humidity);
 
   // SOIL
-  SoilMoistureResult soil = readSoilMoisture();
+  SoilMoistureResult soil = readSoilMoisture(_debug);
   _iot->publish("/inside/soil_1", soil.sensor1);
   _iot->publish("/inside/soil_2", soil.sensor2);
   _iot->publish("/inside/soil_3", soil.sensor3);
@@ -230,10 +230,10 @@ OutsideTemperatureResult Sensors::readOutsideTemperature() {
   return result;
 }
 
-SoilMoistureResult Sensors::readSoilMoisture() {
+SoilMoistureResult Sensors::readSoilMoisture(bool debug) {
   SoilMoistureResult result = _soil->readAll();
 
-  if (_debug) {
+  if (debug) {
     Log.info(F("Soil-1 moisture:\t%d%%" CR), result.sensor1);
     Log.info(F("Soil-2 moisture:\t%d%%" CR), result.sensor2);
     Log.info(F("Soil-3 moisture:\t%d%%" CR), result.sensor3);

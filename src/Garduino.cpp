@@ -350,10 +350,6 @@ void Garduino::onSystemWakeup() {
     // enable manual led
     _controls->manualLED->enable();
 
-    // show logo
-    _displayTask->showLogo();
-    delay(1500);
-
     // start display info task
     xTaskCreatePinnedToCore(
       &Garduino::displayInfo,    /* Task function. */
@@ -381,7 +377,15 @@ void Garduino::onPowerButtonPush() {
 }
 
 void Garduino::onLongButtonPush() {
-  Log.info(F("** LooooONNNNNGGGG **" CR));
+  Log.info(F("** Long pressed manual button **" CR));
+
+  if (_menuMode == MENU_DEFAULT) {
+    _menuMode = MENU_SOIL;
+  } else {
+    _menuMode = MENU_DEFAULT;
+  }
+
+  Log.info(F("** Menu mode: %S **" CR), _menuMode);
 }
 
 void Garduino::displayInfo(void *pvParameter) {
@@ -390,8 +394,20 @@ void Garduino::displayInfo(void *pvParameter) {
     Garduino* garduino = reinterpret_cast<Garduino*>(pvParameter);
     int pausedMs = 3500;
 
+     // don't overwrite display when watering
+    if (garduino->_showBootScreen && !garduino->_wateringTask->isValveOpen()) {
+      garduino->_showBootScreen = false;
+
+      // show logo
+      garduino->_displayTask->showLogo();
+
+      // pause the task
+      vTaskDelay(1800 / portTICK_PERIOD_MS);
+    }
+
+    // DEFAULT MENU
     // don't overwrite display when watering
-    if (!garduino->_wateringTask->isValveOpen()) {
+    if (garduino->_menuMode == garduino->MENU_DEFAULT && !garduino->_wateringTask->isValveOpen()) {
       // display temperature
       garduino->displayTemperature();
 
@@ -400,7 +416,7 @@ void Garduino::displayInfo(void *pvParameter) {
     }
 
     // don't overwrite display when watering
-    if (!garduino->_wateringTask->isValveOpen()) {
+    if (garduino->_menuMode == garduino->MENU_DEFAULT && !garduino->_wateringTask->isValveOpen()) {
       // display humidity
       garduino->displayHumidity();
 
@@ -409,7 +425,7 @@ void Garduino::displayInfo(void *pvParameter) {
     }
 
     // don't overwrite display when watering
-    if (!garduino->_wateringTask->isValveOpen()) {
+    if (garduino->_menuMode == garduino->MENU_DEFAULT && !garduino->_wateringTask->isValveOpen()) {
       // display lux
       garduino->displayLux();
 
@@ -418,7 +434,7 @@ void Garduino::displayInfo(void *pvParameter) {
     }
 
     // don't overwrite display when watering
-    if (!garduino->_wateringTask->isValveOpen()) {
+    if (garduino->_menuMode == garduino->MENU_DEFAULT && !garduino->_wateringTask->isValveOpen()) {
       // display signal strength
       garduino->displaySignalStrength();
 
@@ -427,34 +443,42 @@ void Garduino::displayInfo(void *pvParameter) {
     }
 
     // don't overwrite display when watering
-    if (!garduino->_wateringTask->isValveOpen()) {
+    if (garduino->_menuMode == garduino->MENU_DEFAULT && !garduino->_wateringTask->isValveOpen()) {
       // display time
-      garduino->displayTime();
+      garduino->_displayTask->showTime();
 
       // pause the task
       vTaskDelay(pausedMs / portTICK_PERIOD_MS);
     }
 
+    // SOIL
+
+    // don't overwrite display when watering
+    if (garduino->_menuMode == garduino->MENU_SOIL && !garduino->_wateringTask->isValveOpen()) {
+      // display soil
+      garduino->displaySoilMoisture();
+
+      // pause the task
+      vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
+
+
     // pause the task
-    pausedMs = 1000;
+    pausedMs = 500;
     vTaskDelay(pausedMs / portTICK_PERIOD_MS);
   }
 }
 
-void Garduino::displayTime() {
-  _displayTask->showTime();
-}
-
 void Garduino::displayTemperature() {
-  BME280_Result tmp = _sensors->readBarometer();
+  BME280_Result result = _sensors->readBarometer();
 
-  _displayTask->showTemperature(tmp.temperature);
+  _displayTask->showTemperature(result.temperature);
 }
 
 void Garduino::displayHumidity() {
-  BME280_Result tmp = _sensors->readBarometer();
+  BME280_Result result = _sensors->readBarometer();
 
-  _displayTask->showHumidity(tmp.humidity);
+  _displayTask->showHumidity(result.humidity);
 }
 
 void Garduino::displaySignalStrength() {
@@ -467,6 +491,12 @@ void Garduino::displayLux() {
   float lux = _sensors->measureLight();
 
   _displayTask->showLux(lux);
+}
+
+void Garduino::displaySoilMoisture() {
+  SoilMoistureResult result = _sensors->readSoilMoisture();
+
+  _displayTask->showSoilMoisture(result);
 }
 
 void Garduino::printPrefix(Print* _logOutput, int logLevel) {

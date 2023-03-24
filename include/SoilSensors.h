@@ -54,6 +54,7 @@ class SoilSensors {
   public:
     SoilSensors(SoilSensorsConfig cfg, MultiPlexer_MCP3008* adc);
     SoilMoistureResult readAll();
+    SoilMoistureResult readAllPercentage();
     void begin();
 
   private:

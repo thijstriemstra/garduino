@@ -22,6 +22,20 @@ void SoilSensors::begin() {
 
 SoilMoistureResult SoilSensors::readAll() {
   SoilMoistureResult result;
+  result.sensor1 = _soil1->measure();
+  result.sensor2 = _soil2->measure();
+  result.sensor3 = _soil3->measure();
+  result.sensor4 = _soil4->measure();
+  result.sensor5 = _soil5->measure();
+  result.sensor6 = _soil6->measure();
+  result.sensor7 = _soil7->measure();
+  result.sensor8 = _soil8->measure();
+
+  return result;
+}
+
+SoilMoistureResult SoilSensors::readAllPercentage() {
+  SoilMoistureResult result;
   result.sensor1 = _soil1->measurePercentage();
   result.sensor2 = _soil2->measurePercentage();
   result.sensor3 = _soil3->measurePercentage();

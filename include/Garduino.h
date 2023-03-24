@@ -35,9 +35,9 @@ class Garduino {
     void checkWatering();
     void startManualMode();
     void displayLux();
-    void displayTime();
     void displayHumidity();
     void displayTemperature();
+    void displaySoilMoisture();
     void displaySignalStrength();
     void sleep(bool forced = false);
     bool isWatering();
@@ -57,10 +57,15 @@ class Garduino {
     MultiPlexer_PCF8574* _ioExpander;
     SSD1306_OLEDDisplay_Mux* _display;
 
+
     bool _manualMode = false;
+    bool _showBootScreen = true;
     const int _totalReadings = 16;
     const char *_namespace = "garduino";
     const char *_version = "4.0.0";
+    const char *MENU_SOIL = "soil";
+    const char *MENU_DEFAULT = "default";
+    String _menuMode = MENU_DEFAULT;
 
     // tasks
     static void displayInfo(void *pvParameter);

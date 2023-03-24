@@ -151,6 +151,60 @@ void DisplayTask::showLux(float lux) {
   }
 }
 
+void DisplayTask::showSoilMoisture(SoilMoistureResult result) {
+  int moisture = 0;
+  switch (_currentSoilSensor) {
+    case 0:
+      moisture = result.sensor1;
+      break;
+    case 1:
+      moisture = result.sensor2;
+      break;
+    case 2:
+      moisture = result.sensor3;
+      break;
+    case 3:
+      moisture = result.sensor4;
+      break;
+    case 4:
+      moisture = result.sensor5;
+      break;
+    case 5:
+      moisture = result.sensor6;
+      break;
+    case 6:
+      moisture = result.sensor7;
+      break;
+    case 7:
+      moisture = result.sensor8;
+      break;
+  }
+  moisture = 1024;
+  char buffer[9];
+  char tmp[7];
+  dtostrf(moisture, 4, 0, tmp);
+  sprintf(buffer, "%s", tmp);
+
+  _display->writeSmall(String(_currentSoilSensor + 1), 36, 10);
+
+  _display->setTextAlignment(TEXT_ALIGN_LEFT);
+  _display->writeBig(buffer, 60, 0, false);
+  _display->setTextAlignment(TEXT_ALIGN_CENTER);
+
+  _display->drawImage(0, 4,
+    soil_width,
+    soil_height,
+    soil_bits,
+    false
+  );
+
+  if (_currentSoilSensor == 7) {
+    _currentSoilSensor = 0;
+  } else {
+    _currentSoilSensor++;
+  }
+}
+
 void DisplayTask::countdown(void *pvParameter) {
   for (;;) {
     // obtain the instance pointer

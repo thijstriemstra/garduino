@@ -8,10 +8,11 @@
 #define DisplayTask_h
 
 #include <Arduino.h>
+#include <images.h>
 #include <RTClib.h>
 #include <ArduinoLog.h>
 #include <SystemClock.h>
-#include <images.h>
+#include <SoilSensors.h>
 #include <SSD1306_OLEDDisplay_Mux.h>
 
 class DisplayTask {
@@ -33,10 +34,12 @@ class DisplayTask {
     void showHumidity(float humidity);
     void showTemperature(float temperature);
     void showSignalStrength(int signal_strength);
+    void showSoilMoisture(SoilMoistureResult result);
 
   private:
     DateTime _openStart;
     bool _counting = false;
+    int _currentSoilSensor = 0;
 
     SystemClock* _clock;
     SSD1306_OLEDDisplay_Mux* _display;
