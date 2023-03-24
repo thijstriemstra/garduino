@@ -93,9 +93,9 @@ void Garduino::begin() {
   Method powerBtnCallback;
   powerBtnCallback.attachCallback(
     makeFunctor((Functor0 *)0, *this, &Garduino::onPowerButtonPush));
-  Method longBtnCallback;
-  longBtnCallback.attachCallback(
-    makeFunctor((Functor0 *)0, *this, &Garduino::onLongButtonPush));
+  Method manualBtnLongCallback;
+  manualBtnLongCallback.attachCallback(
+    makeFunctor((Functor0 *)0, *this, &Garduino::onManualButtonLongPush));
   Method connectionReadyCallback;
   connectionReadyCallback.attachCallback(
     makeFunctor((Functor0 *)0, *this, &Garduino::onConnectionReady));
@@ -124,7 +124,7 @@ void Garduino::begin() {
   _ioExpander->begin();
 
   // controls
-  _controls->begin(manualBtnCallback, powerBtnCallback, longBtnCallback);
+  _controls->begin(manualBtnCallback, powerBtnCallback, manualBtnLongCallback);
 
   // watering task
   _wateringTask->begin();
@@ -391,7 +391,7 @@ void Garduino::onPowerButtonPush() {
   sleep(true);
 }
 
-void Garduino::onLongButtonPush() {
+void Garduino::onManualButtonLongPush() {
   // don't overwrite display when watering
   if (!_wateringTask->isValveOpen()) {
     Log.info(F("** Long pressed manual button **" CR));

@@ -76,7 +76,7 @@ class Garduino {
     // callbacks
     void onSystemWakeup();
     void onPowerButtonPush();
-    void onLongButtonPush();
+    void onManualButtonLongPush();
     void onManualButtonPush();
     void onConnectionReady();
     void onConnectionClosed();

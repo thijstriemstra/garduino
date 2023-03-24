@@ -6,13 +6,14 @@
 
 Method _manualBtnCallback;
 Method _powerBtnCallback;
-Method _longBtnCallback;
+Method _manualBtnLongCallback;
 ButtonConfig _powerBtnConfig;
 ButtonConfig _manualBtnConfig;
 
 void handleEvent(AceButton* button, uint8_t eventType, uint8_t buttonState) {
   uint8_t btnId = button->getId();
 
+  // power button
   if (btnId == 0) {
     switch (eventType) {
       case AceButton::kEventPressed:
@@ -20,6 +21,7 @@ void handleEvent(AceButton* button, uint8_t eventType, uint8_t buttonState) {
         break;
     }
 
+  // manual button
   } else if (btnId == 1) {
     switch (eventType) {
       // interpret a Released event as a Pressed event, to distinguish it
@@ -29,7 +31,7 @@ void handleEvent(AceButton* button, uint8_t eventType, uint8_t buttonState) {
         break;
 
       case AceButton::kEventLongPressed:
-        _longBtnCallback.callback();
+        _manualBtnLongCallback.callback();
         break;
     }
   }
@@ -49,22 +51,25 @@ Controls::Controls(MultiPlexer_PCF8574* mcp) {
 void Controls::begin(
   Method manualBtnCallback,
   Method powerBtnCallback,
-  Method longBtnCallback
+  Method manualBtnLongCallback
 ) {
+  // callbacks
   _manualBtnCallback = manualBtnCallback;
   _powerBtnCallback = powerBtnCallback;
-  _longBtnCallback = longBtnCallback;
+  _manualBtnLongCallback = manualBtnLongCallback;
 
   // initialize buttons
   pinMode(PowerButtonPin, INPUT);
   pinMode(ManualRunButtonPin, INPUT);
 
   // configure buttons
-  _manualBtnConfig.setLongPressDelay(600);
+  _powerBtnConfig.setClickDelay(200);
+  _powerBtnConfig.setEventHandler(handleEvent);
+  _manualBtnConfig.setClickDelay(200);
   _manualBtnConfig.setEventHandler(handleEvent);
+  _manualBtnConfig.setLongPressDelay(700);
   _manualBtnConfig.setFeature(ButtonConfig::kFeatureLongPress);
   _manualBtnConfig.setFeature(ButtonConfig::kFeatureSuppressAfterLongPress);
-  _powerBtnConfig.setEventHandler(handleEvent);
 
   // configure leds
   manualLED->begin();
