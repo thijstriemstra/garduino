@@ -62,8 +62,12 @@ class Garduino {
     bool _manualMode = false;
     bool _showBootScreen = true;
     const int _totalReadings = 16;
+
+    // version
     const char *_namespace = "garduino";
     const char *_version = "4.0.0";
+
+    // menu
     const char *MENU_SOIL = "soil";
     const char *MENU_DEFAULT = "default";
     String _menuMode = MENU_DEFAULT;
