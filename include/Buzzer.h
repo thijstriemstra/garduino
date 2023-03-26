@@ -16,6 +16,10 @@ class Buzzer {
     Buzzer(int pin, int channel = 0);
     void disable();
     void enable(int note = NOTE_C4, int duration = 100);
+    void powerButtonTune();
+    void manualButtonTune();
+    void valveOpenTune();
+    void valveCloseTune();
 
   private:
     int _buzzerPin;

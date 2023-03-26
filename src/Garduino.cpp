@@ -116,7 +116,8 @@ void Garduino::begin() {
     makeFunctor((Functor0 *)0, *this, &Garduino::onSystemWakeup));
 
   // system time
-  _clock->begin();
+  bool update_time = false;
+  _clock->begin(update_time);
   Log.info(F("Local time:  %S" CR), _clock->getStartupTime());
 
   // I2C multiplexer
@@ -353,9 +354,6 @@ void Garduino::onSystemWakeup() {
     // enable manual led
     _controls->manualLED->enable();
 
-    // enable buzzer
-    _buzzer->enable(NOTE_E5);
-
     // start display info task
     xTaskCreatePinnedToCore(
       &Garduino::displayInfo,    /* Task function. */
@@ -388,7 +386,7 @@ void Garduino::onManualButtonPush() {
       }
 
       // enable buzzer
-      _buzzer->enable(NOTE_E4);
+      _buzzer->manualButtonTune();
 
       // display soil
       displaySoilMoisture();
@@ -398,7 +396,7 @@ void Garduino::onManualButtonPush() {
 
 void Garduino::onPowerButtonPush() {
   // enable buzzer
-  _buzzer->enable(NOTE_E3);
+  _buzzer->powerButtonTune();
 
   // force to sleep
   sleep(true);
@@ -410,7 +408,7 @@ void Garduino::onManualButtonLongPush() {
     Log.info(F("** Long pressed manual button **" CR));
 
     // enable buzzer
-    _buzzer->enable(NOTE_E4);
+    _buzzer->manualButtonTune();
 
     // switch menu
     if (_menuMode == MENU_DEFAULT) {

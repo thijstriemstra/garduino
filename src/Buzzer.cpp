@@ -24,3 +24,19 @@ void Buzzer::disable() {
   // see https://forum.arduino.cc/t/solved-problem-with-arduino-buzzer-module/496242/10
   digitalWrite(_buzzerPin, HIGH);
 }
+
+void Buzzer::manualButtonTune() {
+  enable(NOTE_E4);
+}
+
+void Buzzer::powerButtonTune() {
+  enable(NOTE_E3);
+}
+
+void Buzzer::valveOpenTune() {
+  enable(NOTE_FS7);
+}
+
+void Buzzer::valveCloseTune() {
+  enable(NOTE_F7);
+}

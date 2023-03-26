@@ -114,7 +114,7 @@ void WateringTask::open() {
   _waterValve->start();
 
   // enable buzzer
-  _buzzer->enable(NOTE_FS7);
+  _buzzer->valveOpenTune();
 }
 
 void WateringTask::close() {
@@ -131,7 +131,7 @@ void WateringTask::close() {
   _waterValve->stop();
 
   // enable buzzer
-  _buzzer->enable(NOTE_F7);
+  _buzzer->valveCloseTune();
 }
 
 bool WateringTask::isWatering() {
