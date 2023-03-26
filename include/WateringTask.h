@@ -48,6 +48,7 @@ class WateringTask {
     bool isWatering();
     bool needsWatering(DateTime now);
     String getLastRunTime();
+    bool hasRunToday(DateTime now);
 
   private:
     bool _debug;

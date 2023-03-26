@@ -29,10 +29,6 @@ void Buzzer::manualButtonTune() {
   enable(NOTE_E4);
 }
 
-void Buzzer::powerButtonTune() {
-  enable(NOTE_E3);
-}
-
 void Buzzer::valveOpenTune() {
   enable(NOTE_FS7);
 }

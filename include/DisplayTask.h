@@ -25,9 +25,10 @@ class DisplayTask {
     int currentSoilSensor = 0;
     unsigned long duration;
     bool active = false;
+    bool countdownDuration = false;
 
     void begin();
-    void open();
+    void open(bool countdown_duration = false);
     void close();
     void showLogo();
     void showTime();
@@ -36,6 +37,8 @@ class DisplayTask {
     void showTemperature(float temperature);
     void showSignalStrength(int signal_strength);
     void showSoilMoisture(SoilMoistureResult result);
+    void showSchedule(String schedule, int duration, bool today_complete);
+    void showVersion(String build_date, String build_time, String version_nr);
 
   private:
     DateTime _openStart;

@@ -15,9 +15,10 @@ DisplayTask::DisplayTask(
 void DisplayTask::begin() {
 }
 
-void DisplayTask::open() {
+void DisplayTask::open(bool countdown_duration) {
   _openStart = _clock->now();
   _counting = true;
+  countdownDuration = countdown_duration;
 
   // start countdown task
   xTaskCreatePinnedToCore(
@@ -44,6 +45,19 @@ void DisplayTask::showLogo() {
     logo_bits,
     false
   );
+}
+
+void DisplayTask::showVersion(
+  String build_date,
+  String build_time,
+  String version_nr
+) {
+  _display->setTextAlignment(TEXT_ALIGN_LEFT);
+
+  _display->writeTiny(build_date, 0, 0);
+  _display->writeSmall("v" + version_nr, 70, 12, false);
+
+  _display->setTextAlignment(TEXT_ALIGN_CENTER);
 }
 
 void DisplayTask::showTime() {
@@ -111,6 +125,36 @@ void DisplayTask::showSignalStrength(int signal_strength) {
     wifi_bits,
     false
   );
+}
+
+void DisplayTask::showSchedule(String schedule, int duration, bool today_complete) {
+  _display->setTextAlignment(TEXT_ALIGN_LEFT);
+  _display->writeTiny(schedule, 35, 0);
+  _display->writeTiny(String(duration) + " sec", 35, 16, false);
+  _display->setTextAlignment(TEXT_ALIGN_CENTER);
+
+  _display->drawImage(0, 4,
+    calendar_days_width,
+    calendar_days_height,
+    calendar_days_bits,
+    false
+  );
+
+  if (today_complete) {
+    _display->drawImage(100, 10,
+      circle_check_width,
+      circle_check_height,
+      circle_check_bits,
+      false
+    );
+  } else {
+    _display->drawImage(100, 10,
+      circle_width,
+      circle_height,
+      circle_bits,
+      false
+    );
+  }
 }
 
 void DisplayTask::showLux(float lux) {
@@ -205,10 +249,17 @@ void DisplayTask::countdown(void *pvParameter) {
     DisplayTask* task = reinterpret_cast<DisplayTask*>(pvParameter);
 
     if (task->_counting) {
-      TimeSpan elapsed = task->_clock->now() - task->_openStart;
+      TimeSpan time;
       char timestamp[8];
-      sprintf(timestamp, "%02d:%02d", elapsed.minutes(), elapsed.seconds());
+      if (task->countdownDuration) {
+        // show time left (countdown)
+        time = (task->_openStart + TimeSpan(WateringDuration)) - task->_clock->now();
+      } else {
+        // show elapsed time (countup)
+        time = task->_clock->now() - task->_openStart;
+      }
 
+      sprintf(timestamp, "%02d:%02d", time.minutes(), time.seconds());
       task->_display->writeBig(timestamp, 76);
 
       task->_display->drawImage(0, 6,

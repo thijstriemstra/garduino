@@ -335,7 +335,7 @@ void Garduino::onConnectionReady() {
 
 void Garduino::onValveOpen() {
   // display
-  _displayTask->open();
+  _displayTask->open(_wateringTask->active);
 }
 
 void Garduino::onValveClosed() {
@@ -395,9 +395,6 @@ void Garduino::onManualButtonPush() {
 }
 
 void Garduino::onPowerButtonPush() {
-  // enable buzzer
-  _buzzer->powerButtonTune();
-
   // force to sleep
   sleep(true);
 }
@@ -441,10 +438,30 @@ void Garduino::displayInfo(void *pvParameter) {
       garduino->_displayTask->showLogo();
 
       // pause the task
-      vTaskDelay(1500 / portTICK_PERIOD_MS);
+      vTaskDelay(1000 / portTICK_PERIOD_MS);
+
+      // show version data
+      DateTime dt = DateTime(F(__DATE__), F(__TIME__));
+      garduino->_displayTask->showVersion(
+        garduino->_clock->formatDate(dt),
+        garduino->_clock->formatTime(dt),
+        String(garduino->_version)
+      );
+
+      // pause the task
+      vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 
     // DEFAULT MENU
+    // don't overwrite display when watering
+    if (garduino->_menuMode == garduino->MENU_DEFAULT && !garduino->_wateringTask->isValveOpen()) {
+      // display schedule
+      garduino->displaySchedule();
+
+      // pause the task
+      vTaskDelay(pausedMs / portTICK_PERIOD_MS);
+    }
+
     // don't overwrite display when watering
     if (garduino->_menuMode == garduino->MENU_DEFAULT && !garduino->_wateringTask->isValveOpen()) {
       // display temperature
@@ -535,6 +552,14 @@ void Garduino::displaySoilMoisture() {
   SoilMoistureResult result = _sensors->readSoilMoisture();
 
   _displayTask->showSoilMoisture(result);
+}
+
+void Garduino::displaySchedule() {
+  _displayTask->showSchedule(
+    String(WateringSchedule),
+    WateringDuration,
+    _wateringTask->hasRunToday(_clock->startupTime)
+  );
 }
 
 void Garduino::printPrefix(Print* _logOutput, int logLevel) {

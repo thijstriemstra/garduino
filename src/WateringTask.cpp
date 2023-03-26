@@ -186,6 +186,12 @@ DateTime WateringTask::load() {
   return DateTime(SECONDS_FROM_1970_TO_2000 + timestamp);
 }
 
+bool WateringTask::hasRunToday(DateTime now) {
+  DateTime lastRun = load();
+
+  return lastRun.day() == now.day();
+}
+
 String WateringTask::getLastRunTime() {
   DateTime lastRun = load();
 

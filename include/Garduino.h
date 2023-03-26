@@ -36,6 +36,7 @@ class Garduino {
     void checkWatering();
     void startManualMode();
     void displayLux();
+    void displaySchedule();
     void displayHumidity();
     void displayTemperature();
     void displaySoilMoisture();
