@@ -185,7 +185,7 @@ void DisplayTask::showSoilMoisture(SoilMoistureResult result) {
   dtostrf(moisture, 4, 0, tmp);
   sprintf(buffer, "%s", tmp);
 
-  _display->writeSmall(String(currentSoilSensor + 1), 36, 10);
+  _display->writeSmall(String(currentSoilSensor + 1), 38, 11);
 
   _display->setTextAlignment(TEXT_ALIGN_LEFT);
   _display->writeBig(buffer, 60, 0, false);
