@@ -67,7 +67,7 @@ Garduino::Garduino() {
   _displayTask = new DisplayTask(_display, _clock);
 
   // sensors
-  _sensors = new Sensors(SensorPublishSchedule, _i2c, true, _namespace);
+  _sensors = new Sensors(SensorPublishSchedule, _i2c, &Wire1, true, _namespace);
 }
 
 void Garduino::begin() {
@@ -482,8 +482,8 @@ void Garduino::displayInfo(void *pvParameter) {
 
     // don't overwrite display when watering
     if (garduino->_menuMode == garduino->MENU_DEFAULT && !garduino->_wateringTask->isValveOpen()) {
-      // display lux
-      garduino->displayLux();
+      // display time
+      garduino->_displayTask->showTime();
 
       // pause the task
       vTaskDelay(pausedMs / portTICK_PERIOD_MS);
@@ -491,8 +491,8 @@ void Garduino::displayInfo(void *pvParameter) {
 
     // don't overwrite display when watering
     if (garduino->_menuMode == garduino->MENU_DEFAULT && !garduino->_wateringTask->isValveOpen()) {
-      // display time
-      garduino->_displayTask->showTime();
+      // display lux
+      garduino->displayLux();
 
       // pause the task
       vTaskDelay(pausedMs / portTICK_PERIOD_MS);
