@@ -43,7 +43,7 @@ class Sensors {
     float measureLight(bool debug = false);
     BME280_Result readBarometer(bool debug = false);
     OutsideTemperatureResult readOutsideTemperature();
-    SoilMoistureResult readSoilMoisture(bool debug = false);
+    SoilMoistureResult readSoilMoisture(bool debug = false, bool percentage = false);
 
     IOT* _iot;
     unsigned long interval;

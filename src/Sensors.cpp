@@ -148,7 +148,7 @@ void Sensors::publish() {
   _iot->publish("/inside/humidity", barometer.humidity);
 
   // SOIL
-  SoilMoistureResult soil = readSoilMoisture(_debug);
+  SoilMoistureResult soil = readSoilMoisture(_debug, true);
   _iot->publish("/inside/soil_1", soil.sensor1);
   _iot->publish("/inside/soil_2", soil.sensor2);
   _iot->publish("/inside/soil_3", soil.sensor3);
@@ -245,18 +245,34 @@ OutsideTemperatureResult Sensors::readOutsideTemperature() {
   return result;
 }
 
-SoilMoistureResult Sensors::readSoilMoisture(bool debug) {
-  SoilMoistureResult result = _soil->readAll();
+SoilMoistureResult Sensors::readSoilMoisture(bool debug, bool percentage) {
+  SoilMoistureResult result;
+  if (!percentage) {
+    result = _soil->readAll();
+  } else {
+    result = _soil->readAllPercentage();
+  }
 
   if (debug) {
-    Log.info(F("Soil-1 moisture:\t%d%%" CR), result.sensor1);
-    Log.info(F("Soil-2 moisture:\t%d%%" CR), result.sensor2);
-    Log.info(F("Soil-3 moisture:\t%d%%" CR), result.sensor3);
-    Log.info(F("Soil-4 moisture:\t%d%%" CR), result.sensor4);
-    Log.info(F("Soil-5 moisture:\t%d%%" CR), result.sensor5);
-    Log.info(F("Soil-6 moisture:\t%d%%" CR), result.sensor6);
-    Log.info(F("Soil-7 moisture:\t%d%%" CR), result.sensor7);
-    Log.info(F("Soil-8 moisture:\t%d%%" CR), result.sensor8);
+    if (percentage) {
+      Log.info(F("Soil-1 wet:\t%d%%" CR), result.sensor1);
+      Log.info(F("Soil-2 wet:\t%d%%" CR), result.sensor2);
+      Log.info(F("Soil-3 wet:\t%d%%" CR), result.sensor3);
+      Log.info(F("Soil-4 wet:\t%d%%" CR), result.sensor4);
+      Log.info(F("Soil-5 wet:\t%d%%" CR), result.sensor5);
+      Log.info(F("Soil-6 wet:\t%d%%" CR), result.sensor6);
+      Log.info(F("Soil-7 wet:\t%d%%" CR), result.sensor7);
+      Log.info(F("Soil-8 wet:\t%d%%" CR), result.sensor8);
+    } else {
+      Log.info(F("Soil-1 wet:\t%d" CR), result.sensor1);
+      Log.info(F("Soil-2 wet:\t%d" CR), result.sensor2);
+      Log.info(F("Soil-3 wet:\t%d" CR), result.sensor3);
+      Log.info(F("Soil-4 wet:\t%d" CR), result.sensor4);
+      Log.info(F("Soil-5 wet:\t%d" CR), result.sensor5);
+      Log.info(F("Soil-6 wet:\t%d" CR), result.sensor6);
+      Log.info(F("Soil-7 wet:\t%d" CR), result.sensor7);
+      Log.info(F("Soil-8 wet:\t%d" CR), result.sensor8);
+    }
   }
 
   return result;

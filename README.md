@@ -108,10 +108,10 @@ Example of cycle report on serial line:
 00:00:00.499  WiFi - Connecting...
 00:00:00.708  WiFi - Connected.
 00:00:00.709  WiFi - Hostname: garduino
-00:00:00.709  Wifi - IP address: 192.168.8.155
+00:00:00.709  Wifi - IP address: 192.168.2.2
 00:00:00.710  ================================
 00:00:00.721  MQTT - Timeout set to 30 seconds
-00:00:00.721  MQTT - Broker: 192.168.8.2:1883
+00:00:00.721  MQTT - Broker: 192.168.2.1:1883
 00:00:00.722  MQTT - Connecting...
 00:00:00.775  MQTT - Connected.
 00:00:00.776  ================================
@@ -133,14 +133,14 @@ Example of cycle report on serial line:
 00:00:00.821  Humidity:         44.5%
 00:00:00.822  Temperature:      25.14 °C
 00:00:00.822  Pressure:         1002.44 hPa
-00:00:00.824  Soil-1 moisture:  50%
-00:00:00.825  Soil-2 moisture:  51%
-00:00:00.836  Soil-3 moisture:  49%
-00:00:00.836  Soil-4 moisture:  52%
-00:00:00.837  Soil-5 moisture:  52%
-00:00:00.847  Soil-6 moisture:  58%
-00:00:00.848  Soil-7 moisture:  53%
-00:00:00.848  Soil-8 moisture:  42%
+00:00:00.840  Soil-1 wet:       0%
+00:00:00.841  Soil-2 wet:       0%
+00:00:00.851  Soil-3 wet:       0%
+00:00:00.852  Soil-4 wet:       0%
+00:00:00.852  Soil-5 wet:       0%
+00:00:00.852  Soil-6 wet:       0%
+00:00:00.853  Soil-7 wet:       98%
+00:00:00.863  Soil-8 wet:       0%
 00:00:00.854  System:           23.75 °C
 00:00:00.854
 00:00:00.854  Outside
@@ -156,7 +156,7 @@ Example of cycle report on serial line:
 00:00:00.968  WIFI
 00:00:00.969  ----
 00:00:00.979
-00:00:00.981  RSSI:             -70 dBm
+00:00:00.981  RSSI:             -63 dBm
 00:00:00.981
 00:00:00.981  **********************************************
 00:00:00.982
