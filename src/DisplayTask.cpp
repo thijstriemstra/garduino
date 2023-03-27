@@ -106,6 +106,7 @@ void DisplayTask::showHumidity(float humidity) {
 void DisplayTask::showSignalStrength(int signal_strength) {
   if (signal_strength == 0) {
     _display->writeBig("None", 72);
+    signal_strength = -90;
   } else {
     char buffer[8];
     char tmp[6];
@@ -115,12 +116,47 @@ void DisplayTask::showSignalStrength(int signal_strength) {
     _display->writeSmall(buffer, 70, 6);
   }
 
-  _display->drawImage(0, 7,
-    wifi_width,
-    wifi_height,
-    wifi_bits,
-    false
-  );
+  if (signal_strength <= -90) {
+    // bad signal strength
+    _display->drawImage(0, 5,
+      wifi_strength_alert_width,
+      wifi_strength_alert_height,
+      wifi_strength_alert_bits,
+      false
+    );
+  } else if (signal_strength <= -80) {
+    // unreliable signal strength
+    _display->drawImage(0, 5,
+      wifi_strength_1_width,
+      wifi_strength_1_height,
+      wifi_strength_1_bits,
+      false
+    );
+  } else if (signal_strength <= -70) {
+    // not a strong signal strength
+    _display->drawImage(0, 5,
+      wifi_strength_2_width,
+      wifi_strength_2_height,
+      wifi_strength_2_bits,
+      false
+    );
+  } else if (signal_strength <= -67) {
+    // reliable signal strength
+    _display->drawImage(0, 5,
+      wifi_strength_3_width,
+      wifi_strength_3_height,
+      wifi_strength_3_bits,
+      false
+    );
+  } else {
+    // good signal strength
+    _display->drawImage(0, 5,
+      wifi_strength_4_width,
+      wifi_strength_4_height,
+      wifi_strength_4_bits,
+      false
+    );
+  }
 }
 
 void DisplayTask::showSchedule(String schedule, int duration, bool today_complete) {
@@ -172,7 +208,7 @@ void DisplayTask::showLux(float lux) {
     if (lux < 50) {
       _display->writeBig(buffer, 62);
 
-      _display->drawImage(0, 7,
+      _display->drawImage(2, 7,
         moon_width,
         moon_height,
         moon_bits,
