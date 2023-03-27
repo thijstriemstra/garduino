@@ -28,6 +28,7 @@ class Sensors {
     Sensors(
       long interval_period,
       MultiPlexer_TCA9548A* i2c,
+      TwoWire* wire,
       bool debug = true,
       const char *ns = "garduino"
     );
@@ -54,6 +55,7 @@ class Sensors {
 
     static void setupTask(void *pvParameter);
 
+    TwoWire *_wire;
     SoilSensors* _soil;
     MultiPlexer_MCP3008* _adc;
     BH1750_LightSensor_Mux* _light;
