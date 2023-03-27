@@ -10,10 +10,12 @@
 Sensors::Sensors(
   long interval_period,
   MultiPlexer_TCA9548A* i2c,
+  TwoWire* wire,
   bool debug,
   const char *ns
 ) {
   interval = interval_period;
+  _wire = wire;
   _debug = debug;
 
   SoilSensorsConfig soilCfg;
@@ -45,16 +47,20 @@ Sensors::Sensors(
   _adc = new MultiPlexer_MCP3008(AnalogExpanderCSPin);
   _soil = new SoilSensors(soilCfg, _adc);
   _temperature = new DS18B20_TemperatureSensors(TemperatureSensorsPin);
-  _light = new BH1750_LightSensor_Mux(i2c, LightSensorChannel, LightSensorAddress);
-  _barometer = new BME280_BarometerSensor_Mux(i2c, BarometerChannel);
+  _light = new BH1750_LightSensor_Mux(i2c, _wire, LightSensorChannel, LightSensorAddress);
+  _barometer = new BME280_BarometerSensor_Mux(i2c, _wire, BarometerChannel);
 }
 
 void Sensors::begin() {
   _adc->begin();
   _soil->begin();
   _temperature->begin();
-  _barometer->begin();
   _light->begin();
+  _barometer->begin();
+
+  if (!_barometer->working) {
+    Log.warning(F("Error initialising BME280 sensor!" CR));
+  }
 }
 
 void Sensors::reset() {
@@ -209,7 +215,16 @@ float Sensors::measureLight(bool debug) {
 }
 
 BME280_Result Sensors::readBarometer(bool debug) {
-  BME280_Result result = _barometer->readAll();
+  BME280_Result result;
+  if (_barometer->working) {
+    result = _barometer->readAll();
+  } else {
+    // bme280 not working, use fake values
+    result.altitude = 0;
+    result.humidity = 0;
+    result.pressure = 0;
+    result.temperature = 0;
+  }
 
   if (debug) {
     Log.info(F("Humidity:\t\t%F%%" CR), result.humidity);
