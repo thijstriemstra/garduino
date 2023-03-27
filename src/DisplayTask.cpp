@@ -129,8 +129,8 @@ void DisplayTask::showSignalStrength(int signal_strength) {
 
 void DisplayTask::showSchedule(String schedule, int duration, bool today_complete) {
   _display->setTextAlignment(TEXT_ALIGN_LEFT);
-  _display->writeTiny(schedule, 35, 0);
-  _display->writeTiny(String(duration) + " sec", 35, 16, false);
+  _display->writeTiny(schedule, 38, 0);
+  _display->writeTiny(String(duration) + " sec", 38, 16, false);
   _display->setTextAlignment(TEXT_ALIGN_CENTER);
 
   _display->drawImage(0, 4,
