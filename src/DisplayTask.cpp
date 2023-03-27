@@ -52,12 +52,8 @@ void DisplayTask::showVersion(
   String build_time,
   String version_nr
 ) {
-  _display->setTextAlignment(TEXT_ALIGN_LEFT);
-
-  _display->writeTiny(build_date, 0, 0);
-  _display->writeSmall("v" + version_nr, 70, 12, false);
-
-  _display->setTextAlignment(TEXT_ALIGN_CENTER);
+  _display->writeTiny("v" + version_nr, 64, 0);
+  _display->writeTiny(build_date, 64, 16, false);
 }
 
 void DisplayTask::showTime() {
