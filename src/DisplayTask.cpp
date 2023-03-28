@@ -52,6 +52,7 @@ void DisplayTask::showVersion(
   String build_time,
   String version_nr
 ) {
+  // text
   _display->writeTiny("v" + version_nr, 64, 0);
   _display->writeTiny(build_date, 64, 16, false);
 }
@@ -61,6 +62,7 @@ void DisplayTask::showTime() {
   char timestamp[5];
   sprintf(timestamp, "%02d:%02d", now.hour(), now.minute());
 
+  // text
   _display->writeBig(timestamp, 78);
 
   _display->drawImage(0, 6,
@@ -77,12 +79,14 @@ void DisplayTask::showTemperature(float temperature) {
   dtostrf(temperature, 4, 1, tmp);
   sprintf(buffer, "%s°", tmp);
 
-  _display->writeBig(buffer, 70);
+  // text
+  _display->writeBig(buffer, 76, 2);
 
-  _display->drawImage(2, 5,
-    temperature_three_quarters_width,
-    temperature_three_quarters_height,
-    temperature_three_quarters_bits,
+  // icon
+  _display->drawImage(0, 3,
+    greenhouse_width,
+    greenhouse_height,
+    greenhouse_bits,
     false
   );
 }
@@ -93,8 +97,10 @@ void DisplayTask::showHumidity(float humidity) {
   dtostrf(humidity, 4, 0, tmp);
   sprintf(buffer, "%s%%", tmp);
 
+  // text
   _display->writeBig(buffer);
 
+  // icon
   _display->drawImage(0, 4,
     droplet_width,
     droplet_height,
@@ -107,6 +113,7 @@ void DisplayTask::showSignalStrength(int signal_strength) {
   if (signal_strength == 0) {
     _display->writeBig("None", 72);
     signal_strength = -90;
+
   } else {
     char buffer[8];
     char tmp[6];
@@ -116,6 +123,7 @@ void DisplayTask::showSignalStrength(int signal_strength) {
     _display->writeSmall(buffer, 70, 6);
   }
 
+  // icon
   if (signal_strength <= -90) {
     // bad signal strength
     _display->drawImage(0, 5,
@@ -160,11 +168,13 @@ void DisplayTask::showSignalStrength(int signal_strength) {
 }
 
 void DisplayTask::showSchedule(String schedule, int duration, bool today_complete) {
+  // text
   _display->setTextAlignment(TEXT_ALIGN_LEFT);
   _display->writeTiny(schedule, 38, 0);
   _display->writeTiny(String(duration) + " sec", 38, 16, false);
   _display->setTextAlignment(TEXT_ALIGN_CENTER);
 
+  // icon
   _display->drawImage(0, 4,
     calendar_days_width,
     calendar_days_height,
@@ -172,15 +182,18 @@ void DisplayTask::showSchedule(String schedule, int duration, bool today_complet
     false
   );
 
+  // status icon
   if (today_complete) {
-    _display->drawImage(100, 10,
+    // completed icon
+    _display->drawImage(102, 12,
       circle_check_width,
       circle_check_height,
       circle_check_bits,
       false
     );
   } else {
-    _display->drawImage(100, 10,
+    // uncompleted icon
+    _display->drawImage(102, 12,
       circle_width,
       circle_height,
       circle_bits,
@@ -196,8 +209,10 @@ void DisplayTask::showLux(float lux) {
   sprintf(buffer, "%s lx", tmp);
 
   if (lux > 999) {
+    // text
     _display->writeSmall(buffer, 74, 6);
 
+    // icon
     _display->drawImage(0, 4,
       sun_width,
       sun_height,
@@ -206,8 +221,10 @@ void DisplayTask::showLux(float lux) {
     );
   } else {
     if (lux < 50) {
+      // text
       _display->writeBig(buffer, 62);
 
+      // icon
       _display->drawImage(2, 7,
         moon_width,
         moon_height,
@@ -215,8 +232,10 @@ void DisplayTask::showLux(float lux) {
         false
       );
     } else {
+      // text
       _display->writeBig(buffer, 74);
 
+      // icon
       _display->drawImage(0, 7,
         cloud_width,
         cloud_height,
@@ -228,31 +247,59 @@ void DisplayTask::showLux(float lux) {
 }
 
 void DisplayTask::showSoilMoisture(SoilMoistureResult result) {
+  int icon_width;
+  int icon_height;
   int moisture = 0;
+  static unsigned char *icon_bits;
+
   switch (currentSoilSensor) {
     case 0:
       moisture = result.sensor1;
+      icon_width = numeric_1_circle_width;
+      icon_height = numeric_1_circle_height;
+      icon_bits = numeric_1_circle_bits;
       break;
     case 1:
       moisture = result.sensor2;
+      icon_width = numeric_2_circle_width;
+      icon_height = numeric_2_circle_height;
+      icon_bits = numeric_2_circle_bits;
       break;
     case 2:
       moisture = result.sensor3;
+      icon_width = numeric_3_circle_width;
+      icon_height = numeric_3_circle_height;
+      icon_bits = numeric_3_circle_bits;
       break;
     case 3:
       moisture = result.sensor4;
+      icon_width = numeric_4_circle_width;
+      icon_height = numeric_4_circle_height;
+      icon_bits = numeric_4_circle_bits;
       break;
     case 4:
       moisture = result.sensor5;
+      icon_width = numeric_5_circle_width;
+      icon_height = numeric_5_circle_height;
+      icon_bits = numeric_5_circle_bits;
       break;
     case 5:
       moisture = result.sensor6;
+      icon_width = numeric_6_circle_width;
+      icon_height = numeric_6_circle_height;
+      icon_bits = numeric_6_circle_bits;
       break;
     case 6:
       moisture = result.sensor7;
+      icon_width = numeric_7_circle_width;
+      icon_height = numeric_7_circle_height;
+      icon_bits = numeric_7_circle_bits;
       break;
     case 7:
       moisture = result.sensor8;
+      icon_width = numeric_8_circle_width;
+      icon_height = numeric_8_circle_height;
+      icon_bits = numeric_8_circle_bits;
       break;
   }
 
@@ -261,13 +308,20 @@ void DisplayTask::showSoilMoisture(SoilMoistureResult result) {
   dtostrf(moisture, 4, 0, tmp);
   sprintf(buffer, "%s", tmp);
 
-  _display->writeSmall(String(currentSoilSensor + 1), 38, 11);
+  // icon
+  _display->drawImage(24, 13,
+    icon_width,
+    icon_height,
+    icon_bits
+  );
 
+  // text
   _display->setTextAlignment(TEXT_ALIGN_LEFT);
-  _display->writeBig(buffer, 60, 0, false);
+  _display->writeBig(buffer, 61, 3, false);
   _display->setTextAlignment(TEXT_ALIGN_CENTER);
 
-  _display->drawImage(0, 4,
+  // icon
+  _display->drawImage(0, 6,
     soil_width,
     soil_height,
     soil_bits,

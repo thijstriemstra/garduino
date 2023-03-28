@@ -491,8 +491,8 @@ void Garduino::displayInfo(void *pvParameter) {
 
     // don't overwrite display when watering
     if (garduino->_menuMode == garduino->MENU_DEFAULT && !garduino->_wateringTask->isValveOpen()) {
-      // display lux
-      garduino->displayLux();
+      // display signal strength
+      garduino->displaySignalStrength();
 
       // pause the task
       vTaskDelay(pausedMs / portTICK_PERIOD_MS);
@@ -500,8 +500,8 @@ void Garduino::displayInfo(void *pvParameter) {
 
     // don't overwrite display when watering
     if (garduino->_menuMode == garduino->MENU_DEFAULT && !garduino->_wateringTask->isValveOpen()) {
-      // display signal strength
-      garduino->displaySignalStrength();
+      // display lux
+      garduino->displayLux();
 
       // pause the task
       vTaskDelay(pausedMs / portTICK_PERIOD_MS);
@@ -517,10 +517,6 @@ void Garduino::displayInfo(void *pvParameter) {
       // pause the task
       vTaskDelay(1500 / portTICK_PERIOD_MS);
     }
-
-    // pause the task
-    pausedMs = 500;
-    vTaskDelay(pausedMs / portTICK_PERIOD_MS);
   }
 }
 
