@@ -1,4 +1,4 @@
-/*  Copyright (c) 2020-2022, Collab
+/*  Copyright (c) 2020-2023, Collab
  *  All rights reserved
 */
 /*
@@ -17,7 +17,7 @@
 class PowerManagement
 {
   public:
-    PowerManagement(int wakeupTime = 20);
+    PowerManagement(int wakeupPin, int wakeupTime = 20);
     void init(Method wakeup_callback);
     void sleep();
     void wokeup();
@@ -26,6 +26,7 @@ class PowerManagement
 
   private:
     Method _wakeupCallback;
+    int _wakeupPin;
     int _wakeupTime;
 };
 

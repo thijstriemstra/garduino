@@ -1,6 +1,16 @@
 Garduino changelog
 ==================
 
+4.0.0 (unreleased)
+------------------
+
+- Add buzzer
+- Remove waterflow meter
+- Fix soil sensors
+- Add PC8574
+- Unpin and use latest RTClib
+- Add V4 CAD models
+
 3.4.0 (2022-03-13)
 ------------------
 

@@ -1,4 +1,4 @@
-/*  Copyright (c) 2020-2022, Collab
+/*  Copyright (c) 2020-2023, Collab
  *  All rights reserved
 */
 /*
@@ -14,12 +14,14 @@
 
 #include <IOT.h>
 #include <Utils.h>
+#include <Buzzer.h>
 #include <Controls.h>
 #include <Sensors.h>
 #include <SystemClock.h>
 #include <DisplayTask.h>
 #include <WateringTask.h>
 #include <PowerManagement.h>
+#include <MultiPlexer_PCF8574.h>
 #include <MultiPlexer_TCA9548A.h>
 #include <SSD1306_OLEDDisplay_Mux.h>
 
@@ -33,8 +35,12 @@ class Garduino {
     void toggleValve();
     void checkWatering();
     void startManualMode();
-    void displayTime();
+    void displayLux();
+    void displaySchedule();
+    void displayHumidity();
     void displayTemperature();
+    void displaySoilMoisture();
+    void displaySignalStrength();
     void sleep(bool forced = false);
     bool isWatering();
 
@@ -43,6 +49,7 @@ class Garduino {
 
   private:
     IOT *_iot;
+    Buzzer* _buzzer;
     Sensors* _sensors;
     Controls* _controls;
     SystemClock* _clock;
@@ -50,12 +57,21 @@ class Garduino {
     DisplayTask* _displayTask;
     MultiPlexer_TCA9548A* _i2c;
     WateringTask* _wateringTask;
+    MultiPlexer_PCF8574* _ioExpander;
     SSD1306_OLEDDisplay_Mux* _display;
 
     bool _manualMode = false;
-    int _totalReadings = 15;
+    bool _showBootScreen = true;
+    const int _totalReadings = 16;
+
+    // version
     const char *_namespace = "garduino";
-    const char *_version = "3.5.0";
+    const char *_version = "4.0.0";
+
+    // menu
+    const char *MENU_SOIL = "soil";
+    const char *MENU_DEFAULT = "default";
+    String _menuMode = MENU_DEFAULT;
 
     // tasks
     static void displayInfo(void *pvParameter);
@@ -66,6 +82,7 @@ class Garduino {
     // callbacks
     void onSystemWakeup();
     void onPowerButtonPush();
+    void onManualButtonLongPush();
     void onManualButtonPush();
     void onConnectionReady();
     void onConnectionClosed();

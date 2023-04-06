@@ -1,4 +1,4 @@
-/*  Copyright (c) 2020-2022, Collab
+/*  Copyright (c) 2020-2023, Collab
  *  All rights reserved
 */
 /*
@@ -10,10 +10,12 @@
 Sensors::Sensors(
   long interval_period,
   MultiPlexer_TCA9548A* i2c,
+  TwoWire* wire,
   bool debug,
   const char *ns
 ) {
   interval = interval_period;
+  _wire = wire;
   _debug = debug;
 
   SoilSensorsConfig soilCfg;
@@ -32,29 +34,36 @@ Sensors::Sensors(
   soilCfg.sensor5_channel = SoilSensor5Channel;
   soilCfg.sensor5_wet = SoilSensor5Wet;
   soilCfg.sensor5_dry = SoilSensor5Dry;
+  soilCfg.sensor6_channel = SoilSensor6Channel;
+  soilCfg.sensor6_wet = SoilSensor6Wet;
+  soilCfg.sensor6_dry = SoilSensor6Dry;
+  soilCfg.sensor7_channel = SoilSensor7Channel;
+  soilCfg.sensor7_wet = SoilSensor7Wet;
+  soilCfg.sensor7_dry = SoilSensor7Dry;
+  soilCfg.sensor8_channel = SoilSensor8Channel;
+  soilCfg.sensor8_wet = SoilSensor8Wet;
+  soilCfg.sensor8_dry = SoilSensor8Dry;
 
   _adc = new MultiPlexer_MCP3008(AnalogExpanderCSPin);
   _soil = new SoilSensors(soilCfg, _adc);
-  _rain = new YL83_RainSensor_MCP3008(_adc, RainSensorChannel);
-  _waterFlow = new WaterFlowMeter(WaterFlowMeterPin, ns);
   _temperature = new DS18B20_TemperatureSensors(TemperatureSensorsPin);
-  _light = new BH1750_LightSensor_Mux(i2c, LightSensorChannel, LightSensorAddress);
-  _barometer = new BME280_BarometerSensor_Mux(i2c, BarometerChannel);
+  _light = new BH1750_LightSensor_Mux(i2c, _wire, LightSensorChannel, LightSensorAddress);
+  _barometer = new BME280_BarometerSensor_Mux(i2c, _wire, BarometerChannel);
 }
 
 void Sensors::begin() {
   _adc->begin();
-  _rain->begin();
   _soil->begin();
   _temperature->begin();
-  _barometer->begin();
   _light->begin();
-  _waterFlow->begin();
+  _barometer->begin();
+
+  if (!_barometer->working) {
+    Log.warning(F("Error initialising BME280 sensor!" CR));
+  }
 }
 
 void Sensors::reset() {
-  // water flow
-  _waterFlow->reset();
 }
 
 void Sensors::startPublish(IOT* iot, float system_temperature) {
@@ -97,9 +106,6 @@ void Sensors::setupTask(void *pvParameter) {
 void Sensors::run() {
   // publish data
   publish();
-
-  // water flow
-  _waterFlow->measure(1);
 }
 
 void Sensors::wait() {
@@ -108,8 +114,6 @@ void Sensors::wait() {
 }
 
 void Sensors::save() {
-  // water flow
-  _waterFlow->saveHistoric();
 }
 
 void Sensors::publish() {
@@ -134,7 +138,7 @@ void Sensors::publish() {
   Log.info(CR);
 
   // LIGHT
-  float lux = measureLight();
+  float lux = measureLight(_debug);
   _iot->publish("/inside/light", lux);
 
   // BME280
@@ -144,12 +148,15 @@ void Sensors::publish() {
   _iot->publish("/inside/humidity", barometer.humidity);
 
   // SOIL
-  SoilMoistureResult soil = readSoilMoisture();
+  SoilMoistureResult soil = readSoilMoisture(_debug, true);
   _iot->publish("/inside/soil_1", soil.sensor1);
   _iot->publish("/inside/soil_2", soil.sensor2);
   _iot->publish("/inside/soil_3", soil.sensor3);
   _iot->publish("/inside/soil_4", soil.sensor4);
   _iot->publish("/inside/soil_5", soil.sensor5);
+  _iot->publish("/inside/soil_6", soil.sensor6);
+  _iot->publish("/inside/soil_7", soil.sensor7);
+  _iot->publish("/inside/soil_8", soil.sensor8);
 
   // SYSTEM TEMPERATURE
   _iot->publish("/system/temperature", _sysTemperature);
@@ -163,10 +170,6 @@ void Sensors::publish() {
   Log.info(F("-------" CR));
   Log.info(CR);
 
-  // RAIN
-  int rain = measureRain();
-  _iot->publish("/outside/rain", rain);
-
   // OUTSIDE TEMPERATURE
   OutsideTemperatureResult outside = readOutsideTemperature();
 
@@ -176,19 +179,25 @@ void Sensors::publish() {
   // WATER
   Log.info(CR);
   Log.info(F("Water" CR));
-  Log.info(F("-------" CR));
+  Log.info(F("-----" CR));
   Log.info(CR);
 
-  double totalLiters = _waterFlow->getTotalVolume();
-  double historicLiters = _waterFlow->getHistoricVolume();
   float waterTemp = outside.water;
   _iot->publish("/water/temperature", waterTemp);
-  _iot->publish("/water/cycle_volume", totalLiters);
-  _iot->publish("/water/historic_volume", historicLiters);
   if (_debug) {
     Log.info(F("Temperature:\t%F °C" CR), waterTemp);
-    Log.info(F("Current:\t\t%D ltr" CR), totalLiters);
-    Log.info(F("Total:\t\t%D ltr" CR), historicLiters);
+  }
+
+  // WIFI
+  Log.info(CR);
+  Log.info(F("WIFI" CR));
+  Log.info(F("----" CR));
+  Log.info(CR);
+
+  int8_t signalStrength = _iot->getSignalStrength();
+  _iot->publish("/wifi/rssi", signalStrength);
+  if (_debug) {
+    Log.info(F("RSSI:\t\t%d dBm" CR), signalStrength);
   }
 
   Log.info(CR);
@@ -196,26 +205,26 @@ void Sensors::publish() {
   Log.info(CR);
 }
 
-float Sensors::measureLight() {
+float Sensors::measureLight(bool debug) {
   float lux = _light->read();
 
-  if (_debug) {
+  if (debug) {
     Log.info(F("Light:\t\t%F lx" CR), lux);
   }
   return lux;
 }
 
-int Sensors::measureRain() {
-  int rainSensorValue = _rain->measurePercentage();
-
-  if (_debug) {
-    Log.info(F("Rain:\t\t%D%%" CR), rainSensorValue);
-  }
-  return rainSensorValue;
-}
-
 BME280_Result Sensors::readBarometer(bool debug) {
-  BME280_Result result = _barometer->readAll();
+  BME280_Result result;
+  if (_barometer->working) {
+    result = _barometer->readAll();
+  } else {
+    // bme280 not working, use fake values
+    result.altitude = 0;
+    result.humidity = 0;
+    result.pressure = 0;
+    result.temperature = 0;
+  }
 
   if (debug) {
     Log.info(F("Humidity:\t\t%F%%" CR), result.humidity);
@@ -236,15 +245,34 @@ OutsideTemperatureResult Sensors::readOutsideTemperature() {
   return result;
 }
 
-SoilMoistureResult Sensors::readSoilMoisture() {
-  SoilMoistureResult result = _soil->readAll();
+SoilMoistureResult Sensors::readSoilMoisture(bool debug, bool percentage) {
+  SoilMoistureResult result;
+  if (!percentage) {
+    result = _soil->readAll();
+  } else {
+    result = _soil->readAllPercentage();
+  }
 
-  if (_debug) {
-    Log.info(F("Soil-1 moisture:\t%d%%" CR), result.sensor1);
-    Log.info(F("Soil-2 moisture:\t%d%%" CR), result.sensor2);
-    Log.info(F("Soil-3 moisture:\t%d%%" CR), result.sensor3);
-    Log.info(F("Soil-4 moisture:\t%d%%" CR), result.sensor4);
-    Log.info(F("Soil-5 moisture:\t%d%%" CR), result.sensor5);
+  if (debug) {
+    if (percentage) {
+      Log.info(F("Soil-1 wet:\t%d%%" CR), result.sensor1);
+      Log.info(F("Soil-2 wet:\t%d%%" CR), result.sensor2);
+      Log.info(F("Soil-3 wet:\t%d%%" CR), result.sensor3);
+      Log.info(F("Soil-4 wet:\t%d%%" CR), result.sensor4);
+      Log.info(F("Soil-5 wet:\t%d%%" CR), result.sensor5);
+      Log.info(F("Soil-6 wet:\t%d%%" CR), result.sensor6);
+      Log.info(F("Soil-7 wet:\t%d%%" CR), result.sensor7);
+      Log.info(F("Soil-8 wet:\t%d%%" CR), result.sensor8);
+    } else {
+      Log.info(F("Soil-1 wet:\t%d" CR), result.sensor1);
+      Log.info(F("Soil-2 wet:\t%d" CR), result.sensor2);
+      Log.info(F("Soil-3 wet:\t%d" CR), result.sensor3);
+      Log.info(F("Soil-4 wet:\t%d" CR), result.sensor4);
+      Log.info(F("Soil-5 wet:\t%d" CR), result.sensor5);
+      Log.info(F("Soil-6 wet:\t%d" CR), result.sensor6);
+      Log.info(F("Soil-7 wet:\t%d" CR), result.sensor7);
+      Log.info(F("Soil-8 wet:\t%d" CR), result.sensor8);
+    }
   }
 
   return result;

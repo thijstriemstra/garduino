@@ -1,4 +1,4 @@
-/*  Copyright (c) 2020-2022, Collab
+/*  Copyright (c) 2020-2023, Collab
  *  All rights reserved
 */
 /*
@@ -11,6 +11,8 @@ WateringTask::WateringTask(
   long task_duration,
   int valve_pin,
   int led_pin,
+  Buzzer* buzzer,
+  MultiPlexer_PCF8574* mcp,
   const char* app_namespace,
   String timestamp,
   Method finished_callback,
@@ -19,6 +21,8 @@ WateringTask::WateringTask(
 ) {
   duration = task_duration;
 
+  _mcp = mcp;
+  _buzzer = buzzer;
   _namespace = app_namespace;
   _timestamp = timestamp;
   _finishedCallback = finished_callback;
@@ -29,7 +33,7 @@ WateringTask::WateringTask(
   _prefs = new Preferences();
 
   // indication LED
-  _waterLED = new LED(led_pin);
+  _waterLED = new LED_PCF8574(led_pin, _mcp);
 
   // water valve
   _waterValve = new SolenoidValve(valve_pin);
@@ -108,6 +112,9 @@ void WateringTask::open() {
 
   // open valve
   _waterValve->start();
+
+  // enable buzzer
+  _buzzer->valveOpenTune();
 }
 
 void WateringTask::close() {
@@ -122,6 +129,9 @@ void WateringTask::close() {
 
   // close valve
   _waterValve->stop();
+
+  // enable buzzer
+  _buzzer->valveCloseTune();
 }
 
 bool WateringTask::isWatering() {
@@ -176,9 +186,19 @@ DateTime WateringTask::load() {
   return DateTime(SECONDS_FROM_1970_TO_2000 + timestamp);
 }
 
+bool WateringTask::hasRunToday(DateTime now) {
+  DateTime lastRun = load();
+
+  return lastRun.day() == now.day();
+}
+
 String WateringTask::getLastRunTime() {
   DateTime lastRun = load();
 
   return lastRun.timestamp(DateTime::TIMESTAMP_DATE) + " " +
     lastRun.timestamp(DateTime::TIMESTAMP_TIME);
+}
+
+void WateringTask::disableLEDs() {
+  _waterLED->disable();
 }

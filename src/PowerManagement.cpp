@@ -1,4 +1,4 @@
-/*  Copyright (c) 2020-2022, Collab
+/*  Copyright (c) 2020-2023, Collab
  *  All rights reserved
 */
 /*
@@ -10,25 +10,26 @@
 /**
  * Constructor.
  */
-PowerManagement::PowerManagement(int wakeupTime) {
+PowerManagement::PowerManagement(int wakeupPin, int wakeupTime) {
   _wakeupTime = wakeupTime;
+  _wakeupPin = wakeupPin;
 }
 
 void PowerManagement::init(Method wakeup_callback) {
   _wakeupCallback = wakeup_callback;
 
-  Log.info(F("***********************************" CR));
+  Log.info(F("*******************************************" CR));
 
   // print the wakeup reason
   wokeup();
 
   // configure the wake up sources
-  esp_sleep_enable_ext0_wakeup((gpio_num_t) ManualRunButtonPin, 1);
+  esp_sleep_enable_ext0_wakeup((gpio_num_t) _wakeupPin, 1);
 
   // wake up esp32 periodically
   esp_sleep_enable_timer_wakeup(_wakeupTime * uS_TO_S_FACTOR);
 
-  Log.info(F("***********************************" CR));
+  Log.info(F("*******************************************" CR));
 }
 
 void PowerManagement::sleep() {
@@ -61,9 +62,13 @@ void PowerManagement::wokeup() {
       break;
 
     default:
-      Log.info(F("Wakeup reason: not caused by deep sleep: %d" CR),
-        wakeup_reason
-      );
+      if (wakeup_reason == ESP_SLEEP_WAKEUP_UNDEFINED) {
+        Log.info(F("Wakeup reason: USB Serial" CR));
+      } else {
+        Log.info(F("Wakeup reason - not caused by deep sleep: %d" CR),
+          wakeup_reason
+        );
+      }
       break;
   }
 

@@ -1,4 +1,4 @@
-/*  Copyright (c) 2021-2022, Collab
+/*  Copyright (c) 2021-2023, Collab
  *  All rights reserved
 */
 #ifndef Controls_h
@@ -6,21 +6,32 @@
 
 #include <Arduino.h>
 #include <Method.h>
-#include <LED.h>
-#include <Button.h>
+#include <AceButton.h>
+#include <LED_PCF8574.h>
+#include <MultiPlexer_PCF8574.h>
+
+using namespace ace_button;
 
 class Controls
 {
   public:
-    Controls();
-    void begin(Method manualBtnCallback, Method powerBtnCallback);
+    Controls(MultiPlexer_PCF8574* mcp);
+    void begin(
+      Method manualBtnCallback,
+      Method powerBtnCallback,
+      Method longBtnCallback
+    );
     void loop();
+    void disableLEDs();
 
-    LED *powerLED;
-    LED *manualLED;
-    LED *networkLED;
-    Button *powerBtn;
-    Button *manualBtn;
+    AceButton *powerBtn;
+    AceButton *manualBtn;
+    LED_PCF8574 *powerLED;
+    LED_PCF8574 *manualLED;
+    LED_PCF8574 *networkLED;
+
+  private:
+    MultiPlexer_PCF8574* _mcp;
 };
 
 #endif

@@ -10,5 +10,9 @@ __pycache__/
 
 *.log
 *.blend1
+*.egg-info
 
-secrets.ini
+esphome/.esphome/
+esphome/.esphome/idedata
+
+secrets.*

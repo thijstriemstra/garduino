@@ -1,4 +1,4 @@
-/*  Copyright (c) 2020-2022, Collab
+/*  Copyright (c) 2020-2023, Collab
  *  All rights reserved
 */
 /*
@@ -30,6 +30,7 @@ class IOT
     void connectToMqtt();
     bool connected();
     bool publishReady();
+    int8_t getSignalStrength();
     void exit();
 
   private:

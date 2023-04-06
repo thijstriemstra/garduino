@@ -1,4 +1,4 @@
-/*  Copyright (c) 2020-2022, Collab
+/*  Copyright (c) 2020-2023, Collab
  *  All rights reserved
 */
 /*
@@ -8,15 +8,23 @@
 #include <Garduino.h>
 
 Garduino::Garduino() {
-  // controls
-  _controls = new Controls();
+  // I2C
+  Wire1.setPins(I2CSDAPin, I2CSCLPin);
 
-  // expander on 2nd I2C bus
-  Wire1.setPins(ExpanderSDAPin, ExpanderSCLPin);
-  _i2c = new MultiPlexer_TCA9548A(ExpanderAddress);
+  // I2C multiplexer
+  _i2c = new MultiPlexer_TCA9548A(I2CExpanderAddress);
+
+  // IO expander
+  _ioExpander = new MultiPlexer_PCF8574(IOExpanderAddress, &Wire1);
+
+  // controls
+  _controls = new Controls(_ioExpander);
 
   // wifi/mqtt
   _iot = new IOT();
+
+  // buzzer
+  _buzzer = new Buzzer(BuzzerPin);
 
   // watering task
   Method wateringReadyCallback;
@@ -32,6 +40,8 @@ Garduino::Garduino() {
     WateringDuration,
     WaterValvePin,
     WateringIndicationLEDPin,
+    _buzzer,
+    _ioExpander,
     _namespace,
     WateringSchedule,
     wateringReadyCallback,
@@ -40,24 +50,24 @@ Garduino::Garduino() {
   );
 
   // system time
-  _clock = new SystemClock(ClockSCLPin, ClockSDAPin, NTP_HOST);
+  _clock = new SystemClock(&Wire1, NTP_HOST);
 
   // power management
-  _power = new PowerManagement(WakeupSchedule);
+  _power = new PowerManagement(ManualRunButtonPin, WakeupSchedule);
 
-  // display
+  // display on I2C multiplexer
   _display = new SSD1306_OLEDDisplay_Mux(
     _i2c,
     DisplayChannel,
     DisplayAddress,
-    true
+    false
   );
 
   // display task
   _displayTask = new DisplayTask(_display, _clock);
 
   // sensors
-  _sensors = new Sensors(SensorPublishSchedule, _i2c, true, _namespace);
+  _sensors = new Sensors(SensorPublishSchedule, _i2c, &Wire1, true, _namespace);
 }
 
 void Garduino::begin() {
@@ -72,7 +82,12 @@ void Garduino::begin() {
   Log.info(F("========================" CR));
 
   // board info
-  Log.info(F("Board:\t  %S" CR), ARDUINO_BOARD);
+  Log.info(F("Board:\t   %S" CR), ARDUINO_BOARD);
+  Log.info(F("Arduino:\t   v%d.%d.%d" CR),
+    ESP_ARDUINO_VERSION_MAJOR, ESP_ARDUINO_VERSION_MINOR,
+    ESP_ARDUINO_VERSION_PATCH
+  );
+  Log.info(F("ESP-IDF:\t   %S" CR), ESP.getSdkVersion());
 
   // callbacks
   Method manualBtnCallback;
@@ -81,6 +96,9 @@ void Garduino::begin() {
   Method powerBtnCallback;
   powerBtnCallback.attachCallback(
     makeFunctor((Functor0 *)0, *this, &Garduino::onPowerButtonPush));
+  Method manualBtnLongCallback;
+  manualBtnLongCallback.attachCallback(
+    makeFunctor((Functor0 *)0, *this, &Garduino::onManualButtonLongPush));
   Method connectionReadyCallback;
   connectionReadyCallback.attachCallback(
     makeFunctor((Functor0 *)0, *this, &Garduino::onConnectionReady));
@@ -97,15 +115,20 @@ void Garduino::begin() {
   systemWakeupCallback.attachCallback(
     makeFunctor((Functor0 *)0, *this, &Garduino::onSystemWakeup));
 
-  // i2c
-  _i2c->begin();
-
   // system time
-  _clock->begin();
+  bool update_time = false;
+  _clock->begin(update_time);
   Log.info(F("Local time:  %S" CR), _clock->getStartupTime());
 
+  // I2C multiplexer
+  _i2c->begin();
+  //_i2c->scanAll();
+
+  // expander
+  _ioExpander->begin();
+
   // controls
-  _controls->begin(manualBtnCallback, powerBtnCallback);
+  _controls->begin(manualBtnCallback, powerBtnCallback, manualBtnLongCallback);
 
   // watering task
   _wateringTask->begin();
@@ -121,6 +144,10 @@ void Garduino::begin() {
 
   // power management
   _power->init(systemWakeupCallback);
+
+  // blink network led
+  _controls->networkLED->interval = 400;
+  _controls->networkLED->blink = true;
 
   // connect to wifi/mqtt
   _iot->begin(
@@ -138,9 +165,6 @@ void Garduino::loop() {
 }
 
 void Garduino::sleep(bool forced) {
-  // display
-  _display->disable();
-
   // save total volume added
   _sensors->save();
 
@@ -160,8 +184,12 @@ void Garduino::sleep(bool forced) {
   Log.info(F("**  %S to sleep... Bye.  **" CR), target);
   Log.info(F("******************************" CR));
 
-  // disable power led
-  _controls->powerLED->disable();
+  // disable leds
+  _controls->disableLEDs();
+  _wateringTask->disableLEDs();
+
+   // display
+  _display->disable();
 
   // put device to sleep
   _power->sleep();
@@ -307,7 +335,7 @@ void Garduino::onConnectionReady() {
 
 void Garduino::onValveOpen() {
   // display
-  _displayTask->open();
+  _displayTask->open(_wateringTask->active);
 }
 
 void Garduino::onValveClosed() {
@@ -333,8 +361,8 @@ void Garduino::onSystemWakeup() {
       2048,                      /* Stack size in words. */
       this,                      /* Parameter passed as input of the task */
       8,                         /* Priority of the task. */
-      NULL,                       /* Task handle. */
-      1                           /* Core nr */
+      NULL,                      /* Task handle. */
+      1                          /* Core nr */
     );
   } else {
     _manualMode = false;
@@ -344,7 +372,26 @@ void Garduino::onSystemWakeup() {
 }
 
 void Garduino::onManualButtonPush() {
-  toggleValve();
+  if (_menuMode == MENU_DEFAULT) {
+    toggleValve();
+
+  } else if (_menuMode == MENU_SOIL) {
+    // don't overwrite display when watering
+    if (!_wateringTask->isValveOpen()) {
+      // toggle soil sensors on display
+      if (_displayTask->currentSoilSensor == 7) {
+        _displayTask->currentSoilSensor = 0;
+      } else {
+        _displayTask->currentSoilSensor++;
+      }
+
+      // enable buzzer
+      _buzzer->manualButtonTune();
+
+      // display soil
+      displaySoilMoisture();
+    }
+  }
 }
 
 void Garduino::onPowerButtonPush() {
@@ -352,42 +399,163 @@ void Garduino::onPowerButtonPush() {
   sleep(true);
 }
 
+void Garduino::onManualButtonLongPush() {
+  // don't overwrite display when watering
+  if (!_wateringTask->isValveOpen()) {
+    Log.info(F("** Long pressed manual button **" CR));
+
+    // enable buzzer
+    _buzzer->manualButtonTune();
+
+    // switch menu
+    if (_menuMode == MENU_DEFAULT) {
+        _menuMode = MENU_SOIL;
+
+        // display soil
+        displaySoilMoisture();
+    } else {
+      _menuMode = MENU_DEFAULT;
+
+      // display temperature
+      displayTemperature();
+    }
+
+    Log.info(F("** Menu: %S **" CR), _menuMode);
+  }
+}
+
 void Garduino::displayInfo(void *pvParameter) {
   for (;;) {
     // obtain the instance pointer
     Garduino* garduino = reinterpret_cast<Garduino*>(pvParameter);
+    int pausedMs = 3500;
+
+     // don't overwrite display when watering
+    if (garduino->_showBootScreen && !garduino->_wateringTask->isValveOpen()) {
+      garduino->_showBootScreen = false;
+
+      // show logo
+      garduino->_displayTask->showLogo();
+
+      // pause the task
+      vTaskDelay(1000 / portTICK_PERIOD_MS);
+
+      // show version data
+      DateTime dt = DateTime(F(__DATE__), F(__TIME__));
+      garduino->_displayTask->showVersion(
+        garduino->_clock->formatDate(dt),
+        garduino->_clock->formatTime(dt),
+        String(garduino->_version)
+      );
+
+      // pause the task
+      vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
+
+    // DEFAULT MENU
+    // don't overwrite display when watering
+    if (garduino->_menuMode == garduino->MENU_DEFAULT && !garduino->_wateringTask->isValveOpen()) {
+      // display schedule
+      garduino->displaySchedule();
+
+      // pause the task
+      vTaskDelay(pausedMs / portTICK_PERIOD_MS);
+    }
 
     // don't overwrite display when watering
-    if (!garduino->_wateringTask->isValveOpen()) {
+    if (garduino->_menuMode == garduino->MENU_DEFAULT && !garduino->_wateringTask->isValveOpen()) {
       // display temperature
       garduino->displayTemperature();
 
       // pause the task
-      vTaskDelay(10000 / portTICK_PERIOD_MS);
+      vTaskDelay(pausedMs / portTICK_PERIOD_MS);
     }
 
     // don't overwrite display when watering
-    if (!garduino->_wateringTask->isValveOpen()) {
-      // display time
-      garduino->displayTime();
+    if (garduino->_menuMode == garduino->MENU_DEFAULT && !garduino->_wateringTask->isValveOpen()) {
+      // display humidity
+      garduino->displayHumidity();
 
       // pause the task
-      vTaskDelay(10000 / portTICK_PERIOD_MS);
+      vTaskDelay(pausedMs / portTICK_PERIOD_MS);
     }
 
-    // pause the task
-    vTaskDelay(5000 / portTICK_PERIOD_MS);
+    // don't overwrite display when watering
+    if (garduino->_menuMode == garduino->MENU_DEFAULT && !garduino->_wateringTask->isValveOpen()) {
+      // display time
+      garduino->_displayTask->showTime();
+
+      // pause the task
+      vTaskDelay(pausedMs / portTICK_PERIOD_MS);
+    }
+
+    // don't overwrite display when watering
+    if (garduino->_menuMode == garduino->MENU_DEFAULT && !garduino->_wateringTask->isValveOpen()) {
+      // display signal strength
+      garduino->displaySignalStrength();
+
+      // pause the task
+      vTaskDelay(pausedMs / portTICK_PERIOD_MS);
+    }
+
+    // don't overwrite display when watering
+    if (garduino->_menuMode == garduino->MENU_DEFAULT && !garduino->_wateringTask->isValveOpen()) {
+      // display lux
+      garduino->displayLux();
+
+      // pause the task
+      vTaskDelay(pausedMs / portTICK_PERIOD_MS);
+    }
+
+    // SOIL
+
+    // don't overwrite display when watering
+    if (garduino->_menuMode == garduino->MENU_SOIL && !garduino->_wateringTask->isValveOpen()) {
+      // display soil
+      garduino->displaySoilMoisture();
+
+      // pause the task
+      vTaskDelay(1500 / portTICK_PERIOD_MS);
+    }
   }
 }
 
-void Garduino::displayTime() {
-  _displayTask->showTime();
+void Garduino::displayTemperature() {
+  BME280_Result result = _sensors->readBarometer();
+
+  _displayTask->showTemperature(result.temperature);
 }
 
-void Garduino::displayTemperature() {
-  BME280_Result tmp = _sensors->readBarometer();
+void Garduino::displayHumidity() {
+  BME280_Result result = _sensors->readBarometer();
 
-  _displayTask->showTemperature(tmp.temperature);
+  _displayTask->showHumidity(result.humidity);
+}
+
+void Garduino::displaySignalStrength() {
+  int signal_strength = _iot->getSignalStrength();
+
+  _displayTask->showSignalStrength(signal_strength);
+}
+
+void Garduino::displayLux() {
+  float lux = _sensors->measureLight();
+
+  _displayTask->showLux(lux);
+}
+
+void Garduino::displaySoilMoisture() {
+  SoilMoistureResult result = _sensors->readSoilMoisture();
+
+  _displayTask->showSoilMoisture(result);
+}
+
+void Garduino::displaySchedule() {
+  _displayTask->showSchedule(
+    String(WateringSchedule),
+    WateringDuration,
+    _wateringTask->hasRunToday(_clock->startupTime)
+  );
 }
 
 void Garduino::printPrefix(Print* _logOutput, int logLevel) {
@@ -403,7 +571,7 @@ void Garduino::printPrefix(Print* _logOutput, int logLevel) {
   const unsigned long Hours = (secs % SECS_PER_DAY) / SECS_PER_HOUR;
 
   char timestamp[20];
-  sprintf(timestamp, "%02d:%02d:%02d.%03d ", Hours, Minutes, Seconds, MilliSeconds);
+  sprintf(timestamp, "%02d:%02d:%02d.%03d  ", Hours, Minutes, Seconds, MilliSeconds);
 
   _logOutput->print(timestamp);
 }

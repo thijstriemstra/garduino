@@ -1,4 +1,4 @@
-/*  Copyright (c) 2020-2022, Collab
+/*  Copyright (c) 2020-2023, Collab
  *  All rights reserved
 */
 /*
@@ -12,11 +12,9 @@
 
 #include <IOT.h>
 #include <SoilSensors.h>
-#include <WaterFlowMeter.h>
 #include <MultiPlexer_MCP3008.h>
 #include <MultiPlexer_TCA9548A.h>
 #include <BH1750_LightSensor_Mux.h>
-#include <YL83_RainSensor_MCP3008.h>
 #include <BME280_BarometerSensor_Mux.h>
 #include <DS18B20_TemperatureSensors.h>
 
@@ -30,6 +28,7 @@ class Sensors {
     Sensors(
       long interval_period,
       MultiPlexer_TCA9548A* i2c,
+      TwoWire* wire,
       bool debug = true,
       const char *ns = "garduino"
     );
@@ -39,15 +38,15 @@ class Sensors {
     void wait();
     void reset();
     void publish();
-    void startPublish(IOT* iot, float system_temperature);
-    float measureLight();
     int measureRain();
+    void startPublish(IOT* iot, float system_temperature);
+    float measureLight(bool debug = false);
     BME280_Result readBarometer(bool debug = false);
     OutsideTemperatureResult readOutsideTemperature();
-    SoilMoistureResult readSoilMoisture();
+    SoilMoistureResult readSoilMoisture(bool debug = false, bool percentage = false);
 
     IOT* _iot;
-    long interval;
+    unsigned long interval;
     bool manualMode = false;
 
   private:
@@ -56,11 +55,10 @@ class Sensors {
 
     static void setupTask(void *pvParameter);
 
+    TwoWire *_wire;
     SoilSensors* _soil;
     MultiPlexer_MCP3008* _adc;
-    WaterFlowMeter* _waterFlow;
     BH1750_LightSensor_Mux* _light;
-    YL83_RainSensor_MCP3008* _rain;
     BME280_BarometerSensor_Mux* _barometer;
     DS18B20_TemperatureSensors* _temperature;
 };

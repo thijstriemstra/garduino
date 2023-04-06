@@ -1,0 +1,291 @@
+esphome:
+  name: garduino
+
+  project:
+    name: "thijstriemstra.garduino"
+    version: "4.0.0"
+
+  platformio_options:
+    upload_speed: 115200
+
+#  on_boot:
+#    then:
+#      # read the RTC time once when the system boots
+#      ds1307.read_time:
+
+esp32:
+  board: az-delivery-devkit-v4
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+#api:
+#  password: ""
+
+ota:
+  password: ""
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  # The amount of time to wait before rebooting when no WiFi connection exists.
+  reboot_timeout: 15min
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: !secret hotspot_ssid
+    password: !secret hotspot_password
+    # The time after which to enable the configured fallback hotspot
+    ap_timeout: 1min
+
+captive_portal:
+
+# ---------------------------
+# Fonts
+# ---------------------------
+font:
+  - file: "fonts/Arimo-Regular-Latin.ttf"
+    id: arimo_regular_20
+    size: 20
+  - file: "fonts/Arimo-Regular-Latin.ttf"
+    id: arimo_regular_30
+    size: 30
+
+# -----------------------------------
+# Dallas temperature sensor (DS18B20)
+# -----------------------------------
+
+#dallas:
+#  - pin: GPIO13
+
+# -----------------------------------
+# I2C
+# -----------------------------------
+#  - Bus 0: DS3231 RTC (0x68)
+#  - Bus 0: AT24C32 EEPROM on DS3231 (0x57)
+#  - Bus 1: TCA9548A I2C expander (0x70)
+i2c:
+  - id: bus_0
+    frequency: 200kHz
+    sda: GPIO16
+    scl: GPIO17
+    scan: true
+  - id: bus_1
+    frequency: 200kHz
+    sda: GPIO4
+    scl: GPIO22
+    scan: true
+
+# I2C expander:
+#  - Channel 0: BH1750 light sensor (0x23)
+#  - Channel 1: BME280 barometer (0x76)
+#  - Channel 2: SSD1306 OLED (0x3C)
+tca9548a:
+  - id: multiplex0
+    address: 0x70
+    i2c_id: bus_1
+    channels:
+      - bus_id: multiplex0channel0
+        channel: 0
+      - bus_id: multiplex0channel1
+        channel: 1
+      - bus_id: multiplex0channel2
+        channel: 2
+
+# -----------------------------------
+# SPI
+# -----------------------------------
+#  - MCP3008 analog expander
+#spi:
+#  clk_pin: GPIO18
+#  mosi_pin: GPIO23
+#  miso_pin: GPIO19
+
+# Analog expander:
+#  - Capacitive Soil Sensor x 5
+#mcp3008:
+#  id: soil_mcp
+#  cs_pin: GPIO5
+
+# ---------------------------
+# Sensors
+# ---------------------------
+
+#sensor:
+#  - platform: bh1750
+#    name: "BH1750 Illuminance"
+#    i2c_id: multiplex0channel0
+#    address: 0x23
+#    update_interval: 60s
+#
+#  - platform: bme280
+#    temperature:
+#      name: "BME280 Temperature"
+#      oversampling: 16x
+#    pressure:
+#      name: "BME280 Pressure"
+#    humidity:
+#      name: "BME280 Humidity"
+#    address: 0x76
+#    update_interval: 60s
+#    i2c_id: multiplex0channel1
+
+#  - platform: dallas
+#    address: 0xA40000031F055028
+#    name: "Temperature #1"
+
+#  - platform: mcp3008             # Attached to pin 0 of the MCP3008.
+#    reference_voltage: 3.19
+#    update_interval: 1s
+#    mcp3008_id: soil_mcp
+#    id: freezer_temp_source
+#    number: 0                     # MCP3008 pin number
+#  - platform: resistance
+#    id: freezer_resistance_sensor
+#    sensor: freezer_temp_source
+#    configuration: DOWNSTREAM
+#    resistor: 10kOhm
+#  - platform: ntc
+#    id: freezer_temp
+#    sensor: freezer_resistance_sensor
+#    calibration:
+#      b_constant: 3950
+#      reference_temperature: 25°C
+#      reference_resistance: 10kOhm
+#    name: Freezer Temperature
+
+# ---------------------------
+# Display
+# ---------------------------
+
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x32"
+    i2c_id: multiplex0channel2
+    external_vcc: true
+    address: 0x3C
+    contrast: 100%
+    rotation: 0°
+    flip_x : true
+    flip_y: true
+    invert: false
+    update_interval: 1s
+    lambda: |-
+      it.line(0, 0, 10, 20);
+
+# ---------------------------
+# Relay
+# ---------------------------
+
+#switch:
+#  - platform: gpio
+#    name: "Relay"
+#    pin: GPIO2
+
+# ---------------------------
+# Buttons
+# ---------------------------
+
+#binary_sensor:
+#  # Manual run button
+#  - platform: gpio
+#    pin: GPIO36
+#    name: "Manual"
+#    filters:
+#      - delayed_on: 10ms
+#
+#  # Power button
+#  - platform: gpio
+#    pin: GPIO39
+#    name: "Power"
+#    filters:
+#      - delayed_on: 10ms
+
+# ---------------------------
+# LED
+# ---------------------------
+
+#status_led:
+#  pin:
+#    number: GPIO33
+#    inverted: false
+
+output:
+  # Watering indication LED
+  - platform: gpio
+    pin: GPIO25
+    id: watering_led
+
+  # Manual run LED
+  - platform: gpio
+    pin: GPIO26
+    id: manual_led
+
+  # Network LED
+  - platform: gpio
+    pin: GPIO33
+    id: network_led
+
+  # Power LED
+  - platform: gpio
+    pin: GPIO27
+    id: power_led
+
+# ---------------------------
+# Deep sleep
+# ---------------------------
+# Note: while in deep sleep mode, the node will not do any work and not
+# respond to any network traffic, even Over The Air updates.
+#deep_sleep:
+#  # The time duration to stay in deep sleep mode
+#  sleep_duration: 4min
+#  # A pin to wake up to once in deep sleep mode
+#  wakeup_pin: GPIO39
+
+# ---------------------------
+# Schedule
+# ---------------------------
+
+#time:
+#  # DS3231 Realtime Clock
+#  - platform: ds1307
+#    address: 0x68
+#    i2c_id: bus_0
+#    timezone: "Europe/Amsterdam"
+#    # repeated synchronization is not necessary unless the external RTC
+#    # is much more accurate than the internal clock
+#    update_interval: never
+#
+##  - platform: homeassistant
+#    # instead try to synchronize via network repeatedly ...
+#    on_time_sync:
+#      then:
+#        # ... and update the RTC when the synchronization was successful
+#        ds1307.write_time:
+
+  #- platform: sntp
+    # How often (in sec) the device should publish sensor data while it's
+    # powered on (e.g. during watering or manual mode)
+    # Recommended value: > 30 sec
+    #-D SensorPublishSchedule=35
+    # How long to water daily (in sec)
+    # Recommended value: 120 sec
+    #-D WateringDuration=60
+  #  on_time:
+      # How often (in sec) the device should wake up
+      # Recommended value: 240 sec
+  #    - seconds: 0
+  #      minutes: /4
+  #      then:
+  #        - light.turn_on: power_led
+  #
+  #    # Time to water daily
+  #    - seconds: 0
+  #      minutes: 0
+  #      hours: 19
+  #      days_of_week: "*"
+  #      then:
+  #        - light.turn_on: watering_led
