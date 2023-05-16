@@ -15,7 +15,7 @@ Greenhouse monitoring using ESP32.
 
 | Target | Sensor | Location | Amount |
 | --- | --- | --- | --- |
-| Light | BH1750 | Inside | 1 |
+| Light | TSL2591 | Inside | 1 |
 | Soil moisture | Capacitive Soil Moisture Sensor v2.0 | Inside | 8 |
 | Temperature/pressure/humidity | BME280 | Inside | 1 |
 | Air temperature | DS18B20 | Outside | 1 |
@@ -51,8 +51,8 @@ Readings from the sensors are sent to a MQTT server over WiFi (if available).
 
 | Device | Pin Label | TCA9548A Pin | Address |
 | --- | --- | --- | --- |
-| BH1750 light sensor | SDA | `SD0` | `0x23` |
-| BH1750 light sensor | SCL | `SC0` | `0x23` |
+| TSL2591 light sensor | SDA | `SD0` | `0x29` |
+| TSL2591 light sensor | SCL | `SC0` | `0x29` |
 | BME280 barometer | SDA | `SD1` | `0x76` |
 | BME280 barometer | SCL | `SC1` | `0x76` |
 | 0.91" OLED Display | SDA | `SD2` | `0x3C` |
@@ -104,7 +104,7 @@ Example of cycle report on serial line:
 00:00:00.485  *******************************************
 00:00:00.486  Wakeup reason: timer (60 sec)
 00:00:00.487  *******************************************
-00:00:00.488  WiFi - SSID: Boat
+00:00:00.488  WiFi - SSID: my_ssid
 00:00:00.499  WiFi - Connecting...
 00:00:00.708  WiFi - Connected.
 00:00:00.709  WiFi - Hostname: garduino

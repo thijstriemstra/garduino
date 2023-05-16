@@ -1,7 +1,12 @@
 Garduino changelog
 ==================
 
-4.0.0 (unreleased)
+4.1.0 (unreleased)
+------------------
+
+- Replace BH1750 with TSL2591 light sensor
+
+4.0.0 (2023-04-08)
 ------------------
 
 - Add buzzer

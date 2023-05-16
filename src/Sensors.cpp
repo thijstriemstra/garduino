@@ -47,7 +47,7 @@ Sensors::Sensors(
   _adc = new MultiPlexer_MCP3008(AnalogExpanderCSPin);
   _soil = new SoilSensors(soilCfg, _adc);
   _temperature = new DS18B20_TemperatureSensors(TemperatureSensorsPin);
-  _light = new BH1750_LightSensor_Mux(i2c, _wire, LightSensorChannel, LightSensorAddress);
+  _light = new TSL2591_LightSensor_Mux(i2c, _wire, LightSensorChannel, LightSensorAddress);
   _barometer = new BME280_BarometerSensor_Mux(i2c, _wire, BarometerChannel);
 }
 
@@ -55,9 +55,13 @@ void Sensors::begin() {
   _adc->begin();
   _soil->begin();
   _temperature->begin();
-  _light->begin();
-  _barometer->begin();
 
+  _light->begin();
+  if (!_light->working) {
+    Log.warning(F("Error initialising TSL2591 sensor!" CR));
+  }
+
+  _barometer->begin();
   if (!_barometer->working) {
     Log.warning(F("Error initialising BME280 sensor!" CR));
   }
