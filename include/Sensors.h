@@ -14,7 +14,7 @@
 #include <SoilSensors.h>
 #include <MultiPlexer_MCP3008.h>
 #include <MultiPlexer_TCA9548A.h>
-#include <BH1750_LightSensor_Mux.h>
+#include <TSL2591_LightSensor_Mux.h>
 #include <BME280_BarometerSensor_Mux.h>
 #include <DS18B20_TemperatureSensors.h>
 
@@ -58,7 +58,7 @@ class Sensors {
     TwoWire *_wire;
     SoilSensors* _soil;
     MultiPlexer_MCP3008* _adc;
-    BH1750_LightSensor_Mux* _light;
+    TSL2591_LightSensor_Mux* _light;
     BME280_BarometerSensor_Mux* _barometer;
     DS18B20_TemperatureSensors* _temperature;
 };
